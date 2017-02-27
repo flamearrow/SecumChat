@@ -1,3 +1,32 @@
 <resources>
     <string name="app_name">SecumChat</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_video_chat">Video Call</string>
+    <string name="title_activity_incoming_call">Incoming Call</string>
+
+    <string name="title_activity_login">Login</string>
+    <string name="login">输入你的大名</string>
+    <string name="username">猛烈钢鞭</string>
+    <string name="login_submit">进入</string>
+    <string name="logo_text">welcome!</string>
+
+    <string name="secum_chat">SecumChat</string>
+    <string name="accept">accept</string>
+    <string name="reject">reject</string>
+    <string name="matched">matched</string>
+
+
+    <string name="mlgb">mlgb</string>
+    <string name="connect">connect</string>
+
+    <string name="enter_new_channel">Enter new channel:</string>
+    <string name="action_sign_out">Sign Out</string>
+    <string name="here_now">Here Now:</string>
+    <string name="no_call_history">No call History\n\nRecent calls appear here.</string>
+
+    <!-- Incoming Call Activity -->
+    <string name="incoming_call">Incoming Call&#8230;</string>
+    <string name="incoming_call_from">Kevin Gleason</string>
 </resources>

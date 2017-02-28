@@ -27,11 +27,6 @@ public class LoginActivity extends Activity {
 
         mUsername = (EditText) findViewById(R.id.login_username);
 
-        Bundle extras = getIntent().getExtras();
-        if (extras != null) {
-            String lastUsername = extras.getString("oldUsername", "");
-            mUsername.setText(lastUsername);
-        }
         permissionRequester = new PermissionRequester(this);
     }
 
@@ -88,7 +83,6 @@ public class LoginActivity extends Activity {
      * @param view
      */
     public void secumChat(View view) {
-        mUsername.setText("mlgb");
         String username = mUsername.getText().toString();
         if (!validUsername(username))
             return;

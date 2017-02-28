@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.EditText;
 
 import com.shanjingtech.secumchat.util.Constants;
+import com.shanjingtech.secumchat.util.PermissionRequester;
 
 /**
  * Created by flamearrow on 2/26/17.
@@ -17,6 +18,7 @@ import com.shanjingtech.secumchat.util.Constants;
 public class LoginActivity extends Activity {
 
     private EditText mUsername;
+    private PermissionRequester permissionRequester;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,12 +28,18 @@ public class LoginActivity extends Activity {
         mUsername = (EditText) findViewById(R.id.login_username);
 
         Bundle extras = getIntent().getExtras();
-        if (extras != null){
+        if (extras != null) {
             String lastUsername = extras.getString("oldUsername", "");
             mUsername.setText(lastUsername);
         }
+        permissionRequester = new PermissionRequester(this);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        permissionRequester.requestPermissions();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -76,6 +84,7 @@ public class LoginActivity extends Activity {
 
     /**
      * Start secumChat activity
+     *
      * @param view
      */
     public void secumChat(View view) {
@@ -90,6 +99,7 @@ public class LoginActivity extends Activity {
 
     /**
      * Optional function to specify what a username in your chat app can look like.
+     *
      * @param username The name entered by a user.
      * @return is username valid
      */

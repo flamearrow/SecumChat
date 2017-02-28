@@ -46,4 +46,9 @@ public class Constants {
 
     // logcat
     public static final String MLGB = "MLGB";
+
+    // permission
+    public static final int PERMISSION_CAMERA = 1;
+    public static final int PERMISSION_CAMERARECORD_AUDIO = 2;
+
 }

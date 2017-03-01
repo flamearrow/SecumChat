@@ -2,12 +2,16 @@ package com.shanjingtech.pnwebrtc;
 
 import android.util.Log;
 
-import com.pubnub.api.Callback;
-import com.pubnub.api.Pubnub;
-import com.pubnub.api.PubnubError;
-import com.pubnub.api.PubnubException;
+import com.pubnub.api.PubNub;
+import com.pubnub.api.callbacks.PNCallback;
+import com.pubnub.api.callbacks.SubscribeCallback;
+import com.pubnub.api.enums.PNStatusCategory;
+import com.pubnub.api.models.consumer.PNPublishResult;
+import com.pubnub.api.models.consumer.PNStatus;
+import com.pubnub.api.models.consumer.pubsub.PNMessageResult;
+import com.pubnub.api.models.consumer.pubsub.PNPresenceEventResult;
+import com.shanjingtech.pnwebrtc.utils.JSONUtils;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.webrtc.IceCandidate;
@@ -17,6 +21,7 @@ import org.webrtc.PeerConnectionFactory;
 import org.webrtc.SessionDescription;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -34,13 +39,12 @@ public class PnPeerConnectionClient {
     PnSignalingParams signalingParams;
     int MAX_CONNECTIONS = Integer.MAX_VALUE;
 
-    private Pubnub mPubNub;
-    private PnRTCReceiver mSubscribeReceiver;
+    private PubNub mPubNub;
     private Map<String, PnAction> actionMap;
     private Map<String, PnPeer> peers;
     private String id;
 
-    public PnPeerConnectionClient(Pubnub pubnub, PnSignalingParams signalingParams, PnRTCListener
+    public PnPeerConnectionClient(PubNub pubnub, PnSignalingParams signalingParams, PnRTCListener
             rtcListener) {
         this.mPubNub = pubnub;
         this.signalingParams = signalingParams;
@@ -58,7 +62,7 @@ public class PnPeerConnectionClient {
         this.actionMap.put(AddIceCandidateAction.TRIGGER, new AddIceCandidateAction());
         this.actionMap.put(PnUserHangupAction.TRIGGER, new PnUserHangupAction());
         this.actionMap.put(PnUserMessageAction.TRIGGER, new PnUserMessageAction());
-        mSubscribeReceiver = new PnRTCReceiver();
+        mPubNub.addListener(new PnRTCReceiver());
     }
 
     // if force, enable it to listen on different channels
@@ -111,11 +115,8 @@ public class PnPeerConnectionClient {
     }
 
     private void subscribe(String channel) {
-        try {
-            mPubNub.subscribe(channel, this.mSubscribeReceiver);
-        } catch (PubnubException e) {
-            e.printStackTrace();
-        }
+
+        mPubNub.subscribe().channels(Arrays.asList(channel)).execute();
     }
 
     public void setLocalMediaStream(MediaStream localStream) {
@@ -187,15 +188,16 @@ public class PnPeerConnectionClient {
             message.put(PnRTCMessage.JSON_PACKET, packet);
             message.put(PnRTCMessage.JSON_ID, ""); //Todo: session id, unused in js SDK?
             message.put(PnRTCMessage.JSON_NUMBER, this.id);
-            this.mPubNub.publish(toID, message, new Callback() {  // Todo: reconsider callback.
-                @Override
-                public void successCallback(String channel, Object message, String timetoken) {
-                    mRtcListener.onDebug(new PnRTCMessage((JSONObject) message));
-                }
+            this.mPubNub.publish().channel(toID).message(message).async(new PNCallback<PNPublishResult>() {
 
                 @Override
-                public void errorCallback(String channel, PubnubError error) {
-                    mRtcListener.onDebug(new PnRTCMessage(error.errorObject));
+                public void onResponse(PNPublishResult result, PNStatus status) {
+                    if (status.isError()) {
+                        mRtcListener.onDebug(new PnRTCMessage(status.toString()));
+                    } else {
+                        mRtcListener.onDebug(new PnRTCMessage(status.toString() + " : " + result
+                                .toString()));
+                    }
                 }
             });
         } catch (JSONException e) {
@@ -311,7 +313,7 @@ public class PnPeerConnectionClient {
 
     /**
      * Static method to generate the proper JSON for a user message. Use this when you don't have
-     * a {@link me.kevingleason.pnwebrtc.PnRTCClient} instantiated. Simply send a publish with the
+     * a {@link com.shanjingtech.pnwebrtc.PnRTCClient} instantiated. Simply send a publish with the
      * returned JSONObject to the ID that a user is subscribed to.
      *
      * @param userId  Your UserID, needed to tag the message
@@ -332,68 +334,76 @@ public class PnPeerConnectionClient {
         return json;
     }
 
-    private class PnRTCReceiver extends Callback {
+    private class PnRTCReceiver extends SubscribeCallback {
 
         @Override
-        public void connectCallback(String channel, Object message) {
-            mRtcListener.onDebug(new PnRTCMessage(((JSONArray) message).toString()));
-            mRtcListener.onConnected(channel);
-        }
-
-        @Override
-        public void successCallback(String channel, Object message) {
-            if (!(message instanceof JSONObject)) return; // Ignore if not valid JSON.
-            JSONObject jsonMessage = (JSONObject) message;
-            mRtcListener.onDebug(new PnRTCMessage(jsonMessage));
-            try {
-                String peerId = jsonMessage.getString(PnRTCMessage.JSON_NUMBER);
-                JSONObject packet = jsonMessage.getJSONObject(PnRTCMessage.JSON_PACKET);
-                PnPeer peer;
-                if (!peers.containsKey(peerId)) {
-                    // Possibly threshold number of allowed users
-                    peer = addPeer(peerId);
-                    peer.pc.addStream(localMediaStream);
-                } else {
-                    peer = peers.get(peerId);
-                }
-                if (peer.getStatus().equals(PnPeer.STATUS_DISCONNECTED))
-                    return; // Do nothing if disconnected.
-                if (packet.has(PnRTCMessage.JSON_USERMSG)) {
-                    actionMap.get(PnUserMessageAction.TRIGGER).execute(peerId, packet);
-                    return;
-                }
-                if (packet.has(PnRTCMessage.JSON_HANGUP)) {
-                    actionMap.get(PnUserHangupAction.TRIGGER).execute(peerId, packet);
-                    return;
-                }
-                if (packet.has(PnRTCMessage.JSON_THUMBNAIL)) {
-                    return;   // No handler for thumbnail or hangup yet, will be separate
-                    // controller callback
-                }
-                if (packet.has(PnRTCMessage.JSON_SDP)) {
-                    if (!peer.received) {
-                        peer.setReceived(true);
-                        mRtcListener.onDebug(new PnRTCMessage("SDP - " + peer.toString()));
-                        // Todo: reveivercb(peer);
-                    }
-                    String type = packet.getString(PnRTCMessage.JSON_TYPE);
-                    actionMap.get(type).execute(peerId, packet);
-                    return;
-                }
-                if (packet.has(PnRTCMessage.JSON_ICE)) {
-                    actionMap.get(AddIceCandidateAction.TRIGGER).execute(peerId, packet);
-                    return;
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
+        public void status(PubNub pubnub, PNStatus status) {
+            // these are all logging infos
+            if (status.isError()) {
+                mRtcListener.onDebug(new PnRTCMessage(new PnRTCMessage(status.toString())));
+            } else if (status.getCategory() == PNStatusCategory.PNConnectedCategory) {
+                mRtcListener.onDebug(new PnRTCMessage(status.toString()));
+                mRtcListener.onConnected(pubnub.getSubscribedChannels());
             }
         }
 
         @Override
-        public void errorCallback(String channel, PubnubError error) {
-            super.errorCallback(channel, error);
+        public void message(PubNub pubnub, PNMessageResult message) {
+            String channel = message.getChannel();
+            if (!channel.endsWith(Constants.STDBY_SUFFIX)) {
+                JSONObject jsonMessage = JSONUtils.convertFrom(message.getMessage());
+                mRtcListener.onDebug(new PnRTCMessage(jsonMessage));
+                if (jsonMessage == null) {
+                    Log.d(JSONUtils.JSON_TAG, "empty json or json doesn't have call user");
+                }
+                try {
+                    String peerId = jsonMessage.getString(PnRTCMessage.JSON_NUMBER);
+                    JSONObject packet = jsonMessage.getJSONObject(PnRTCMessage.JSON_PACKET);
+                    PnPeer peer;
+                    if (!peers.containsKey(peerId)) {
+                        // Possibly threshold number of allowed users
+                        peer = addPeer(peerId);
+                        peer.pc.addStream(localMediaStream);
+                    } else {
+                        peer = peers.get(peerId);
+                    }
+                    if (peer.getStatus().equals(PnPeer.STATUS_DISCONNECTED))
+                        return; // Do nothing if disconnected.
+                    if (packet.has(PnRTCMessage.JSON_USERMSG)) {
+                        actionMap.get(PnUserMessageAction.TRIGGER).execute(peerId, packet);
+                        return;
+                    }
+                    if (packet.has(PnRTCMessage.JSON_HANGUP)) {
+                        actionMap.get(PnUserHangupAction.TRIGGER).execute(peerId, packet);
+                        return;
+                    }
+                    if (packet.has(PnRTCMessage.JSON_THUMBNAIL)) {
+                        return;   // No handler for thumbnail or hangup yet, will be separate
+                        // controller callback
+                    }
+                    if (packet.has(PnRTCMessage.JSON_SDP)) {
+                        if (!peer.received) {
+                            peer.setReceived(true);
+                            mRtcListener.onDebug(new PnRTCMessage("SDP - " + peer.toString()));
+                            // Todo: reveivercb(peer);
+                        }
+                        String type = packet.getString(PnRTCMessage.JSON_TYPE);
+                        actionMap.get(type).execute(peerId, packet);
+                        return;
+                    }
+                    if (packet.has(PnRTCMessage.JSON_ICE)) {
+                        actionMap.get(AddIceCandidateAction.TRIGGER).execute(peerId, packet);
+                        return;
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
         }
 
+        @Override
+        public void presence(PubNub pubnub, PNPresenceEventResult presence) {
+        }
     }
 
 }

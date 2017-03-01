@@ -1,6 +1,7 @@
 package com.shanjingtech.pnwebrtc;
 
-import com.pubnub.api.Pubnub;
+import com.pubnub.api.PNConfiguration;
+import com.pubnub.api.PubNub;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -15,62 +16,40 @@ import java.util.List;
 
 public class PnRTCClient {
     private PnSignalingParams pnSignalingParams;
-    private Pubnub mPubNub;
+    private PubNub mPubNub;
     private PnPeerConnectionClient pcClient;
     private String UUID;
 
     /**
-     * Minimal constructor. Requires a valid Pub and Sub key. Get your Pub/Sub keys for free at
-     * https://admin.pubnub.com/#/register and find keys on developer portal.
-     * No UUID provided so a random phone number will be generated with this constructor (XXX-XXXX).
+     * pub, sub, sec key are all required.
+     * Need to set secure to false.
      *
-     * @param pubKey PubNub Pub Key
-     * @param subKey PubNub Sub Key
+     * @param pubKey
+     * @param subKey
+     * @param secKey
+     * @param UUID
      */
-    public PnRTCClient(String pubKey, String subKey) {
-        this.UUID = generateRandomNumber();
-        this.mPubNub = new Pubnub(pubKey, subKey);
-        this.mPubNub.setUUID(this.UUID);
-        this.pnSignalingParams = PnSignalingParams.defaultInstance();
+    public PnRTCClient(String pubKey, String subKey, String secKey, String UUID) {
+        this(pubKey, subKey, secKey, UUID, PnSignalingParams.defaultInstance());
+    }
+
+    public PnRTCClient(String pubKey, String subKey, String secKey, String UUID,
+                       PnSignalingParams signalingParams) {
+        PNConfiguration pnConfiguration = new PNConfiguration();
+        pnConfiguration.setSubscribeKey(subKey);
+        pnConfiguration.setPublishKey(pubKey);
+        pnConfiguration.setSecretKey(secKey);
+        pnConfiguration.setSecure(false);
+        pnConfiguration.setUuid(UUID);
+        this.mPubNub = new PubNub(pnConfiguration);
+        this.pnSignalingParams = signalingParams;
         this.pcClient = new PnPeerConnectionClient(this.mPubNub, this.pnSignalingParams, new
                 PnRTCListener() {
                 });
     }
 
     /**
-     * Slightly more verbose constructor. Requires a valid Pub and Sub key. Get your Pub/Sub keys
-     * for free at
-     * https://admin.pubnub.com/#/register and find keys on developer portal.
-     *
-     * @param pubKey PubNub Pub Key
-     * @param subKey PubNub Sub Key
-     * @param UUID   Any UUID to be used as a username
-     */
-    public PnRTCClient(String pubKey, String subKey, String UUID) {
-        this.UUID = UUID;
-        this.mPubNub = new Pubnub(pubKey, subKey);
-        this.mPubNub.setUUID(this.UUID);
-        this.pnSignalingParams = PnSignalingParams.defaultInstance();
-        this.pcClient = new PnPeerConnectionClient(this.mPubNub, this.pnSignalingParams, new
-                PnRTCListener() {
-                });
-    }
-
-
-    public PnRTCClient(String pubKey, String subKey, String UUID, PnSignalingParams
-            signalingParams) {
-        this.UUID = UUID;
-        this.mPubNub = new Pubnub(pubKey, subKey);
-        this.mPubNub.setUUID(this.UUID);
-        setSignalParams(signalingParams);
-        this.pcClient = new PnPeerConnectionClient(this.mPubNub, this.pnSignalingParams, new
-                PnRTCListener() {
-                });
-    }
-
-
-    /**
-     * Return the {@link me.kevingleason.pnwebrtc.PnRTCClient} peer connection constraints.
+     * Return the {@link com.shanjingtech.pnwebrtc.PnRTCClient} peer connection constraints.
      *
      * @return Peer Connection Constrains
      */
@@ -79,7 +58,7 @@ public class PnRTCClient {
     }
 
     /**
-     * Return the {@link me.kevingleason.pnwebrtc.PnRTCClient} video constraints.
+     * Return the {@link com.shanjingtech.pnwebrtc.PnRTCClient} video constraints.
      *
      * @return Video Constrains
      */
@@ -88,7 +67,7 @@ public class PnRTCClient {
     }
 
     /**
-     * Return the {@link me.kevingleason.pnwebrtc.PnRTCClient} audio constraints.
+     * Return the {@link com.shanjingtech.pnwebrtc.PnRTCClient} audio constraints.
      *
      * @return Audio Constrains
      */
@@ -97,16 +76,16 @@ public class PnRTCClient {
     }
 
     /**
-     * Return the {@link me.kevingleason.pnwebrtc.PnRTCClient} Pubnub instance.
+     * Return the {@link com.shanjingtech.pnwebrtc.PnRTCClient} Pubnub instance.
      *
-     * @return The PnRTCClient's {@link com.pubnub.api.Pubnub} instance
+     * @return The PnRTCClient's {@link PubNub} instance
      */
-    public Pubnub getPubNub() {
+    public PubNub getPubNub() {
         return this.mPubNub;
     }
 
     /**
-     * Return the UUID (username) of the {@link me.kevingleason.pnwebrtc.PnRTCClient}. If not
+     * Return the UUID (username) of the {@link com.shanjingtech.pnwebrtc.PnRTCClient}. If not
      * provided by the constructor, a random phone number is generated and can be retrieived
      * with this method
      *
@@ -116,16 +95,6 @@ public class PnRTCClient {
         return UUID;
     }
 
-    /**
-     * Set the signaling parameters. This includes {@link org.webrtc.MediaConstraints} for
-     * {@link org.webrtc.PeerConnection}, Video, and Audio, as well as a list of possible
-     * {@link org.webrtc.PeerConnection.IceServer} candidates.
-     *
-     * @param signalParams Parameters for WebRTC Signaling
-     */
-    public void setSignalParams(PnSignalingParams signalParams) {
-        this.pnSignalingParams = signalParams;
-    }
 
     /**
      * Need to attach mediaStream before you can connect.
@@ -166,6 +135,7 @@ public class PnRTCClient {
     /**
      * Subscribe to a channel using PubNub to listen for calls, enable listen on different
      * channel
+     *
      * @param channel The channel to listen on, your "phone number"
      */
     public void listenOnForce(String channel) {

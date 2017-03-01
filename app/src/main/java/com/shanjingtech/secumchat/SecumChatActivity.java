@@ -12,8 +12,20 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.pubnub.api.Callback;
-import com.pubnub.api.PubnubError;
+import com.pubnub.api.callbacks.PNCallback;
+import com.pubnub.api.models.consumer.PNPublishResult;
+import com.pubnub.api.models.consumer.PNStatus;
+import com.pubnub.api.models.consumer.pubsub.PNMessageResult;
+import com.shanjingtech.pnwebrtc.PnPeerConnectionClient;
+import com.shanjingtech.pnwebrtc.PnRTCClient;
+import com.shanjingtech.pnwebrtc.PnSignalingParams;
+import com.shanjingtech.pnwebrtc.utils.JSONUtils;
+import com.shanjingtech.secumchat.lifecycle.NonRTCMessageController;
+import com.shanjingtech.secumchat.lifecycle.SecumRTCListener;
+import com.shanjingtech.secumchat.model.GetMatchRequest;
+import com.shanjingtech.secumchat.model.GetMatchResponse;
+import com.shanjingtech.secumchat.servers.XirSysRequest;
+import com.shanjingtech.secumchat.util.Constants;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -31,16 +43,6 @@ import org.webrtc.VideoTrack;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-
-import com.shanjingtech.pnwebrtc.PnPeerConnectionClient;
-import com.shanjingtech.pnwebrtc.PnRTCClient;
-import com.shanjingtech.pnwebrtc.PnSignalingParams;
-import com.shanjingtech.secumchat.lifecycle.NonRTCMessageController;
-import com.shanjingtech.secumchat.lifecycle.SecumRTCListener;
-import com.shanjingtech.secumchat.model.GetMatchRequest;
-import com.shanjingtech.secumchat.model.GetMatchResponse;
-import com.shanjingtech.secumchat.servers.XirSysRequest;
-import com.shanjingtech.secumchat.util.Constants;
 
 /**
  * Created by flamearrow on 2/26/17.
@@ -95,8 +97,6 @@ public class SecumChatActivity extends Activity implements SecumRTCListener.RTCP
         nonRTCMessageController = new NonRTCMessageController(myName, pnRTCClient.getPubNub(),
                 this);
 
-//        nonRTCMessageController.standBy();
-
         switchState(State.MATCHING);
     }
 
@@ -140,11 +140,13 @@ public class SecumChatActivity extends Activity implements SecumRTCListener.RTCP
         // init pubnubClient, order matters
         List<PeerConnection.IceServer> servers = getXirSysIceServers();
         if (!servers.isEmpty()) {
-            pnRTCClient = new PnRTCClient(Constants.PUB_KEY, Constants.SUB_KEY, myName, new
+            pnRTCClient = new PnRTCClient(Constants.PUB_KEY, Constants.SUB_KEY, Constants.SEC_KEY,
+                    myName, new
                     PnSignalingParams(servers));
         } else {
             // TODO: revert to use default signal params
-            pnRTCClient = new PnRTCClient(Constants.PUB_KEY, Constants.SUB_KEY, myName);
+            pnRTCClient = new PnRTCClient(Constants.PUB_KEY, Constants.SUB_KEY, Constants.SEC_KEY,
+                    myName);
         }
 
 
@@ -221,25 +223,44 @@ public class SecumChatActivity extends Activity implements SecumRTCListener.RTCP
     void hangUp() {
         String peerName = getPeerName();
         JSONObject hangupMsg = PnPeerConnectionClient.generateHangupPacket(myName);
-        // when successfully rejected, switch back to waiting state
-        pnRTCClient.getPubNub().publish(peerName, hangupMsg, new Callback() {
-            @Override
-            public void successCallback(String channel, Object message) {
-                Log.d(Constants.MLGB, "hangUp succeeded!");
-            }
+        pnRTCClient.getPubNub().publish().channel(peerName).message(hangupMsg).async(new PNCallback<PNPublishResult>() {
+
 
             @Override
-            public void errorCallback(String channel, PubnubError error) {
-                Log.d(Constants.MLGB, "hangUp failed!");
-
+            public void onResponse(PNPublishResult result, PNStatus status) {
+                if (status.isError()) {
+                    Log.d(Constants.MLGB, "hangUp failed!");
+                } else {
+                    Log.d(Constants.MLGB, "hangUp succeeded!");
+                }
             }
         });
+
+        // when successfully rejected, switch back to waiting state
+//        pnRTCClient.getPubNub().publish(peerName, hangupMsg, new Callback() {
+//            @Override
+//            public void successCallback(String channel, Object message) {
+//                Log.d(Constants.MLGB, "hangUp succeeded!");
+//            }
+//
+//            @Override
+//            public void errorCallback(String channel, PubnubError error) {
+//                Log.d(Constants.MLGB, "hangUp failed!");
+//
+//            }
+//        });
         switchState(State.MATCHING);
     }
 
     private String getPeerName() {
         return myName.equals(getMatchResponse.callee) ? getMatchResponse.caller :
                 getMatchResponse.callee;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        initializeChannels();
     }
 
     @Override
@@ -269,18 +290,21 @@ public class SecumChatActivity extends Activity implements SecumRTCListener.RTCP
         });
     }
 
+    private void initializeChannels() {
+        // subscribe to standby channel and regular channel, hangup all possible RTC peers
+        // note it's ok to subscribe to a pubnub channel multiple times
+        nonRTCMessageController.standBy();
+        pnRTCClient.closeAllConnections();
+        pnRTCClient.listenOnForce(myName);
+    }
+
     private void switchState(State state) {
         currentState = state;
         Log.d(Constants.MLGB, "switched to State: " + state.toString());
         switch (state) {
             case MATCHING: {
                 showMatchingUI();
-                nonRTCMessageController.unStandby();
-                nonRTCMessageController.standBy();
-                pnRTCClient.closeAllConnections();
-//                pnRTCClient.listenOn(myName);
-                pnRTCClient.listenOnForce(myName);
-
+                initializeChannels();
                 return;
             }
             case DIALING: {
@@ -420,10 +444,6 @@ public class SecumChatActivity extends Activity implements SecumRTCListener.RTCP
 
 
     public void acceptChat(View view) {
-//        hideKeyboard();
-//        pnRTCClient.connect(incomingCallerName);
-
-
         // I can't switch to CHATTING state yet as callee hasn't connect
         // me yet, switch to CHATTING when onAddRemoteStream() is called
         if (currentState == State.DIALING) {
@@ -446,19 +466,6 @@ public class SecumChatActivity extends Activity implements SecumRTCListener.RTCP
             // just don't dial and continue waiting
             switchState(State.MATCHING);
         } else if (currentState == State.RECEIVING) {
-            // receiver clicked reject
-            // reject dialer first, this will trigger dialer's
-            //  SecumRTCListener.onPeerConnectionClosed
-            JSONObject hangupMsg = PnPeerConnectionClient.generateHangupPacket(getMatchResponse
-                    .callee);
-            // when successfully rejected, switch back to waiting state
-            pnRTCClient.getPubNub().publish(getMatchResponse.caller, hangupMsg, new Callback() {
-                @Override
-                public void successCallback(String channel, Object message) {
-                    switchState(State.MATCHING);
-                }
-            });
-
             hangUp();
         }
     }
@@ -486,28 +493,30 @@ public class SecumChatActivity extends Activity implements SecumRTCListener.RTCP
     private final static String TAG = "SecumChatCallbacks";
 
     @Override
-    public void onStandbySuccess(String channel, Object message) {
+    public void onStandbySuccess(List<String> channels, PNStatus message) {
         Log.d(TAG, "channel standby: " + message.toString());
     }
 
     @Override
-    public void onStandbyFail(String channel, PubnubError error) {
+    public void onStandbyFail(List<String> channels, PNStatus error) {
         Log.d(TAG, "channel standby fail: " + error.toString());
     }
 
     @Override
-    public void onStandbyCalled(String channel, Object message) {
+    public void onStandbyCalled(String channel, PNMessageResult message) {
         Log.d(TAG, "standby channel called: " + message.toString());
-        if (!(message instanceof JSONObject)) return; // Ignore if not JSONObject
-        JSONObject jsonMsg = (JSONObject) message;
+        JSONObject jsonMsg = JSONUtils.convertFrom(message.getMessage());
         try {
-            if (!jsonMsg.has(Constants.JSON_CALL_USER))
+            if (jsonMsg == null || !jsonMsg.has(Constants.JSON_CALL_USER)) {
+                Log.d(JSONUtils.JSON_TAG, "empty json or json doesn't have call user");
                 return;     //Ignore Signaling messages.
+            }
             String user = jsonMsg.getString(Constants.JSON_CALL_USER);
 
 
             // standby Channel called, verify if it's from the correct caller, if not ignore
             // it's possible callee hasn't receive getMatchResponse yet
+
             // TOREMOVE
             fakeIncomingGetMatchResponse();
             if (user.equals(getMatchResponse.caller)) {
@@ -515,7 +524,6 @@ public class SecumChatActivity extends Activity implements SecumRTCListener.RTCP
             }
 
 
-//                dispatchIncomingCall(user);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -533,12 +541,12 @@ public class SecumChatActivity extends Activity implements SecumRTCListener.RTCP
     }
 
     @Override
-    public void onCallingStandbyFailed(String channel, PubnubError error) {
+    public void onCallingStandbyFailed(String channel, PNStatus error) {
         Log.d(TAG, "Failed to call standby channel: " + channel);
     }
 
     @Override
-    public void onCalleeStandbyCalled(String channel, Object message) {
+    public void onCalleeStandbyCalled(String channel, PNStatus message) {
         // TODO: show a loading status icon
         Log.d(TAG, "callee's phone is ringing: " + message.toString());
     }
@@ -549,7 +557,7 @@ public class SecumChatActivity extends Activity implements SecumRTCListener.RTCP
             hangUp();
         }
         // TODO: might need to delegate real backpress on other states too
-        else if (currentState == State.MATCHING) {
+        else if (currentState == State.MATCHING || currentState == State.WAITING) {
             super.onBackPressed();
         }
     }

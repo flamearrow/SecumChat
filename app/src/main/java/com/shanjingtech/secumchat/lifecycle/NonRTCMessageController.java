@@ -2,15 +2,23 @@ package com.shanjingtech.secumchat.lifecycle;
 
 import android.util.Log;
 
-import com.pubnub.api.Callback;
-import com.pubnub.api.Pubnub;
-import com.pubnub.api.PubnubError;
-import com.pubnub.api.PubnubException;
+import com.pubnub.api.PubNub;
+import com.pubnub.api.callbacks.PNCallback;
+import com.pubnub.api.callbacks.SubscribeCallback;
+import com.pubnub.api.enums.PNOperationType;
+import com.pubnub.api.enums.PNStatusCategory;
+import com.pubnub.api.models.consumer.PNPublishResult;
+import com.pubnub.api.models.consumer.PNStatus;
+import com.pubnub.api.models.consumer.presence.PNHereNowResult;
+import com.pubnub.api.models.consumer.pubsub.PNMessageResult;
+import com.pubnub.api.models.consumer.pubsub.PNPresenceEventResult;
+import com.shanjingtech.secumchat.util.Constants;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.shanjingtech.secumchat.util.Constants;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by flamearrow on 2/26/17.
@@ -23,18 +31,18 @@ public class NonRTCMessageController {
         /**
          * When I successfully subscribed to standy channel - notify
          */
-        void onStandbySuccess(String channel, Object message);
+        void onStandbySuccess(List<String> channel, PNStatus message);
 
         /**
          * When I failed to subscribe to standy channel - notify
          */
-        void onStandbyFail(String channel, PubnubError error);
+        void onStandbyFail(List<String> channel, PNStatus error);
 
         /**
          * When someone called my standby channel - show user someone is calling,
          * turn on the accept button
          */
-        void onStandbyCalled(String channel, Object message);
+        void onStandbyCalled(String channel, PNMessageResult message);
 
         /**
          * When callee's standby channel is online
@@ -49,13 +57,13 @@ public class NonRTCMessageController {
         /**
          * When I failed to call someone's standby channel - notify
          */
-        void onCallingStandbyFailed(String channel, PubnubError error);
+        void onCallingStandbyFailed(String channel, PNStatus error);
 
         /**
          * When callee's stand by channel receives my call - notify so that I know he sees accept
          * button
          */
-        void onCalleeStandbyCalled(String channel, Object message);
+        void onCalleeStandbyCalled(String channel, PNStatus message);
     }
 
     private String username;
@@ -63,13 +71,41 @@ public class NonRTCMessageController {
 
     private NonRTCMessageControllerCallbacks callbacks;
 
-    private Pubnub pubnub;
+    private PubNub pubnub;
 
-    public NonRTCMessageController(String myName, Pubnub pubnub,
+    public NonRTCMessageController(String myName, PubNub pubnub,
                                    NonRTCMessageControllerCallbacks lifeCycleCallbacks) {
         this.username = myName;
         this.callbacks = lifeCycleCallbacks;
         this.pubnub = pubnub;
+        pubnub.addListener(new SubscribeCallback() {
+            @Override
+            public void status(PubNub pubnub, PNStatus status) {
+                List<String> channelNames = pubnub.getSubscribedChannels();
+                if (status.isError()) {
+                    callbacks.onStandbyFail(channelNames, status);
+                } else if (status.getCategory() == PNStatusCategory.PNConnectedCategory) {
+                    callbacks.onStandbySuccess(channelNames, status);
+                } else if (status.getCategory() == PNStatusCategory.PNAcknowledgmentCategory) {
+                    if (status.getOperation() == PNOperationType.PNUnsubscribeOperation) {
+                        Log.d(TAG, "Unsubscribe success");
+                    }
+                }
+            }
+
+            @Override
+            public void message(PubNub pubnub, PNMessageResult message) {
+                String channel = message.getChannel();
+                if (channel.endsWith(Constants.STDBY_SUFFIX)) {
+                    callbacks.onStandbyCalled(message.getChannel(), message);
+                }
+            }
+
+            @Override
+            public void presence(PubNub pubnub, PNPresenceEventResult presence) {
+                String channelName = presence.getChannel();
+            }
+        });
     }
 
     /**
@@ -77,26 +113,7 @@ public class NonRTCMessageController {
      */
     public void standBy() {
         String clientStdby = this.username + Constants.STDBY_SUFFIX;
-        try {
-            pubnub.subscribe(clientStdby, new Callback() {
-                @Override
-                public void successCallback(String channel, Object message) {
-                    callbacks.onStandbyCalled(channel, message);
-                }
-
-                @Override
-                public void connectCallback(String channel, Object message) {
-                    callbacks.onStandbySuccess(channel, message);
-                }
-
-                @Override
-                public void errorCallback(String channel, PubnubError error) {
-                    callbacks.onStandbyFail(channel, error);
-                }
-            });
-        } catch (PubnubException e) {
-            e.printStackTrace();
-        }
+        pubnub.subscribe().channels(Arrays.asList(clientStdby)).execute();
     }
 
     /**
@@ -114,13 +131,13 @@ public class NonRTCMessageController {
     public void dial(final String calleeNumber) {
         // dial through their standy channel
         final String calleeStdBy = calleeNumber + Constants.STDBY_SUFFIX;
-        // TODO: reject if null
-        pubnub.hereNow(calleeStdBy, new Callback() {
+        pubnub.hereNow().channels(Arrays.asList(calleeStdBy)).includeUUIDs(true).async(new PNCallback<PNHereNowResult>() {
             @Override
-            public void successCallback(String channel, Object message) {
+            public void onResponse(PNHereNowResult result, PNStatus status) {
                 // this callback tells us if callee is online
                 try {
-                    int occupancy = ((JSONObject) message).getInt(Constants.JSON_OCCUPANCY);
+//                    int occupancy = ((JSONObject) message).getInt(Constants.JSON_OCCUPANCY);
+                    int occupancy = result.getTotalOccupancy();
                     // if callee is offline we just don't try to call him
                     if (occupancy == 0) {
                         callbacks.onCalleeOffline(calleeNumber);
@@ -135,27 +152,21 @@ public class NonRTCMessageController {
                     jsonCall.put(Constants.JSON_CALL_USER, username);
                     jsonCall.put(Constants.JSON_CALL_TIME, System.currentTimeMillis());
 
-                    pubnub.publish(calleeStdBy, jsonCall, new Callback() {
-                        @Override
-                        public void successCallback(String channel, Object message) {
-                            callbacks.onCalleeStandbyCalled(channel, message);
-                        }
+
+                    pubnub.publish().channel(calleeStdBy).message(jsonCall).async(new PNCallback<PNPublishResult>() {
 
                         @Override
-                        public void errorCallback(String channel, PubnubError error) {
-                            super.errorCallback(channel, error);
-                            callbacks.onCallingStandbyFailed(channel, error);
+                        public void onResponse(PNPublishResult result, PNStatus status) {
+                            if (status.isError()) {
+                                callbacks.onCallingStandbyFailed(calleeStdBy, status);
+                            } else {
+                                callbacks.onCalleeStandbyCalled(calleeStdBy, status);
+                            }
                         }
                     });
                 } catch (JSONException e) {
                     Log.d(TAG, "Json error happened when trying to dial");
                 }
-            }
-
-            @Override
-            public void errorCallback(String channel, PubnubError error) {
-                super.errorCallback(channel, error);
-                callbacks.onCallingStandbyFailed(channel, error);
             }
         });
 

@@ -1,0 +1,83 @@
+1. Register User:
+  Request:
+    curl -X POST -H "Content-Type: application/json" -d '{ "username":"phone+16503181659", "phone": "+16503181659"}' https://www.yxg.me/api/users/
+
+  Response:
+    {
+       "username":"phone+16503181659",
+       "third_party_uid":null,
+       "third_party_auth":null,
+       "email":null,
+       "phone":null,
+       "profile_image_url":null,
+       "lat":null,
+       "lng":null,
+       "nickname":null,
+       "access_code":956782,
+       "num_comments":null,
+       "num_posts":null,
+       "num_following":null,
+       "num_followed":null,
+       "time_created":null,
+       "time_updated":null
+    }
+
+2. Get Access Code:
+  Request
+    curl -X POST -H "Content-Type: application/json" -d '{ "phone":"+16503181659"}' https://www.yxg.me/api/users/get_access_code/
+
+  Response
+    {
+        "access_code":"111262"
+    }
+
+
+3. Get OAuth Token:
+  Request:(username is phone number, password is access_code)
+    curl -X POST  -d "grant_type=password&username=1595005019&password=966468"  -u"A7H5tpb2JQ7H66gPxbs6AAAVZgwtU12VPGoZpYUB:uVVN0JPW5piZf7nZglh92gleVJWnfAZguILU1Z25UR52yZa2lLFPjOtYJj42PiNF0GTQ32OdP8bQyHAbaHwkRArvhzDZDNVuBZqheflBVACDBjHrbedilUfon5JPIm6R" https://www.yxg.me/api/o/token/
+
+  Response:
+    {
+        "access_token": "XXDFSDFSD"
+    }
+
+
+4. Get Match
+  Request
+    curl -X POST -H "Content-Type: application/json" -H "Authorization: Bearer RWmsVIZr46RFQ1j3mDDPa9DMS7YiLs" -d '{ "username":"phone_1595005019"}' https://www.yxg.me/api/matches/get_match/
+
+  Response(not available)
+    {
+       "status":"MATCH_NOT_AVAILABLE",
+       "match_id":null,
+       "chat_uri":null,
+       "text":null,
+       "logging":"Time now: 2017-02-26 01:31:42 ## phone_0771587664; is_matching : True; live_exp: 2017-02-26 01:31:52",
+       "matched_username":null
+    }
+
+
+  Response(available)
+    {
+       "status":"MATCH_ACTIVE",
+       "match_id":8,
+       "chat_uri":"phone_+16503181659|phone_0771587664",
+       "text":"You are matchted to phone_0771587664",
+       "logging":"Time now: 2017-02-26 01:31:48 ## phone_+16503181659; is_matching : False; live_exp: 2017-02-26 01:31:57 ## phone_0771587664; is_matching : False; live_exp: 2017-02-26 01:31:52 ##  match #8 status: CREATED; (phone_+16503181659, phone_0771587664) ; expire at 2017-02-26 01:32:17",
+       "matched_username":"phone_0771587664"
+    }
+
+
+5. End Match
+  Request
+    curl -X POST -H "Content-Type: application/json" -H "Authorization: Bearer RWmsVIZr46RFQ1j3mDDPa9DMS7YiLs" -d '{ "username":"phone_1595005019"}' https://www.yxg.me/api/matches/end_match/
+
+  Response
+    {
+       "status":"MATCH_INVALID",
+       "match_id":8,
+       "chat_uri":"phone_+16503181659|phone_0771587664",
+       "text":"Match is deleted",
+       "logging":"Time now: 2017-02-26 01:32:46 ## phone_+16503181659; is_matching : True; live_exp: 2017-02-26 01:32:55 ## phone_0771587664; is_matching : True; live_exp: 2017-02-26 01:31:52 ##  match #8 status: DELETED; (phone_+16503181659, phone_0771587664) ; expire at 2017-02-26 01:32:17",
+       "matched_username":null
+    }

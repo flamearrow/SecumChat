@@ -8,8 +8,19 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 
+import com.shanjingtech.secumchat.model.User;
+import com.shanjingtech.secumchat.model.UserRequest;
+import com.shanjingtech.secumchat.net.SecumAPI;
 import com.shanjingtech.secumchat.util.Constants;
 import com.shanjingtech.secumchat.util.PermissionRequester;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * Created by flamearrow on 2/26/17.
@@ -60,22 +71,38 @@ public class LoginActivity extends Activity {
 
     /**
      * Takes the username from the EditText, check its validity and saves it if valid.
-     *   Then, redirects to the MainActivity.
+     * Then, redirects to the MainActivity.
+     *
      * @param view Button clicked to trigger call to joinChat
      */
-//    public void joinChat(View view){
-//        String username = mUsername.getText().toString();
-//        if (!validUsername(username))
-//            return;
-//
-//        SharedPreferences sp = getSharedPreferences(Constants.SHARED_PREFS,MODE_PRIVATE);
-//        SharedPreferences.Editor edit = sp.edit();
-//        edit.putString(Constants.USER_NAME, username);
-//        edit.apply();
-//
-//        Intent intent = new Intent(this, MainActivity.class);
-//        startActivity(intent);
-//    }
+    public void testButton(View view) {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(SecumAPI.BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        SecumAPI secumAPI = retrofit.create(SecumAPI.class);
+        UserRequest request = new UserRequest("phone+16503181659", "+16503181659");
+        Call<User> userCall = secumAPI.registerUser(request);
+//        Call<User> userCall = secumAPI.registerUser("phone+16503181659", "+16503181659");
+        userCall.enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(Call<User> call, Response<User> response) {
+                User u = response.body();
+                String name = u.getUsername();
+            }
+
+            @Override
+            public void onFailure(Call<User> call, Throwable t) {
+
+            }
+        });
+//        OkHttpClient okHttpClient = new OkHttpClient();
+//        Request request = new Request.Builder()
+//                .header("Content-Type", "application/json")
+//                .url("https://www.yxg.me/api/users/")
+//                .build();
+
+    }
 
     /**
      * Start secumChat activity

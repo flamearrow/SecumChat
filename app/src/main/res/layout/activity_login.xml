@@ -33,19 +33,17 @@
         android:textColor="#333"
         android:textSize="30sp"/>
 
-    <!--<Button-->
-        <!--android:id="@+id/button"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="50dp"-->
-        <!--android:layout_above="@+id/secum_button"-->
-        <!--android:layout_alignParentLeft="true"-->
-        <!--android:layout_alignParentStart="true"-->
-        <!--android:layout_marginBottom="35dp"-->
-        <!--android:background="@color/pn_red"-->
-        <!--android:onClick="joinChat"-->
-        <!--android:text="@string/login_submit"-->
-        <!--android:textColor="#FFF"-->
-        <!--android:textSize="25sp"/>-->
+    <Button
+        android:id="@+id/testButton"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_above="@+id/secum_button"
+        android:layout_marginBottom="35dp"
+        android:background="@color/pn_red"
+        android:onClick="testButton"
+        android:text="@string/login_submit"
+        android:textColor="#FFF"
+        android:textSize="25sp"/>
 
     <Button
         android:id="@+id/secum_button"

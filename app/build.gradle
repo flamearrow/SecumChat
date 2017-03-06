@@ -28,6 +28,7 @@ dependencies {
     })
     compile 'com.android.support:appcompat-v7:25.2.0'
     compile 'com.squareup.retrofit2:retrofit:2.2.0'
+    compile 'com.squareup.retrofit2:converter-gson'
     compile project(':secumRTC')
 
     testCompile 'junit:junit:4.12'

@@ -3,8 +3,8 @@ package com.shanjingtech.secumchat.lifecycle;
 import android.os.AsyncTask;
 import android.os.Handler;
 
+import com.shanjingtech.secumchat.model.GetMatch;
 import com.shanjingtech.secumchat.model.GetMatchRequest;
-import com.shanjingtech.secumchat.model.GetMatchResponse;
 
 /**
  * Created by flamearrow on 2/26/17.
@@ -21,7 +21,7 @@ public class SecumStateController {
     private final static int POLLING_DELAY_IN_SEC = 5;
     private Handler handler;
     private GetMatchRequest getMatchRequest;
-    private GetMatchResponse getMatchResponse;
+    private GetMatch getMatch;
     private StateListener listener;
     private Runnable servicePoller = new Runnable() {
         @Override
@@ -57,17 +57,17 @@ public class SecumStateController {
         }
     }
 
-    class GetMatchTask extends AsyncTask<Void, String, GetMatchResponse> {
+    class GetMatchTask extends AsyncTask<Void, String, GetMatch> {
         @Override
-        protected GetMatchResponse doInBackground(Void... params) {
+        protected GetMatch doInBackground(Void... params) {
             // TODO: call getMatch and return the match result
-            GetMatchResponse response = new GetMatchResponse();
+            GetMatch response = new GetMatch();
             response.success = true;
             return response;
         }
 
         @Override
-        protected void onPostExecute(GetMatchResponse response) {
+        protected void onPostExecute(GetMatch response) {
             super.onPostExecute(response);
             // if get match, stop polling,
             if (response.success) {

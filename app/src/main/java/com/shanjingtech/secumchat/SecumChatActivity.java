@@ -22,8 +22,8 @@ import com.shanjingtech.pnwebrtc.PnSignalingParams;
 import com.shanjingtech.pnwebrtc.utils.JSONUtils;
 import com.shanjingtech.secumchat.lifecycle.NonRTCMessageController;
 import com.shanjingtech.secumchat.lifecycle.SecumRTCListener;
+import com.shanjingtech.secumchat.model.GetMatch;
 import com.shanjingtech.secumchat.model.GetMatchRequest;
-import com.shanjingtech.secumchat.model.GetMatchResponse;
 import com.shanjingtech.secumchat.servers.XirSysRequest;
 import com.shanjingtech.secumchat.util.Constants;
 
@@ -82,7 +82,7 @@ public class SecumChatActivity extends Activity implements SecumRTCListener.RTCP
 
     // network
     private GetMatchRequest getMatchRequest;
-    private GetMatchResponse getMatchResponse;
+    private GetMatch getMatch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -253,8 +253,8 @@ public class SecumChatActivity extends Activity implements SecumRTCListener.RTCP
     }
 
     private String getPeerName() {
-        return myName.equals(getMatchResponse.callee) ? getMatchResponse.caller :
-                getMatchResponse.callee;
+        return myName.equals(getMatch.callee) ? getMatch.caller :
+                getMatch.callee;
     }
 
     @Override
@@ -352,7 +352,7 @@ public class SecumChatActivity extends Activity implements SecumRTCListener.RTCP
                 // show matching you with callee name
                 // accept/reject button
                 messageField.setVisibility(View.VISIBLE);
-                messageField.setText("matching you with " + getMatchResponse.callee);
+                messageField.setText("matching you with " + getMatch.callee);
                 turnButtons(true);
             }
         });
@@ -361,13 +361,13 @@ public class SecumChatActivity extends Activity implements SecumRTCListener.RTCP
     private void showReceivingUI() {
         // show matching with caller
 //        messageField.setVisibility(View.VISIBLE);
-//        messageField.setText("matching you with " + getMatchResponse.caller);
+//        messageField.setText("matching you with " + getMatch.caller);
 
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 messageField.setVisibility(View.VISIBLE);
-                messageField.setText("matching you with " + getMatchResponse.caller);
+                messageField.setText("matching you with " + getMatch.caller);
                 turnButtons(true);
             }
         });
@@ -392,7 +392,7 @@ public class SecumChatActivity extends Activity implements SecumRTCListener.RTCP
                 // hide buttons
                 turnButtons(false);
                 messageField.setVisibility(View.VISIBLE);
-                messageField.setText("matching you with " + getMatchResponse.callee);
+                messageField.setText("matching you with " + getMatch.callee);
             }
         });
     }
@@ -437,9 +437,9 @@ public class SecumChatActivity extends Activity implements SecumRTCListener.RTCP
     // note this should come from network
     public void fakeIncomingGetMatchResponse() {
         getMatchRequest = new GetMatchRequest();
-        getMatchResponse = new GetMatchResponse();
-        getMatchResponse.callee = "mlgb2";
-        getMatchResponse.caller = "mlgb";
+        getMatch = new GetMatch();
+        getMatch.callee = "mlgb2";
+        getMatch.caller = "mlgb";
     }
 
 
@@ -448,14 +448,14 @@ public class SecumChatActivity extends Activity implements SecumRTCListener.RTCP
         // me yet, switch to CHATTING when onAddRemoteStream() is called
         if (currentState == State.DIALING) {
             // I'm caller, I dial callee
-            nonRTCMessageController.dial(getMatchResponse.callee);
+            nonRTCMessageController.dial(getMatch.callee);
             // when callee accepted, onAddRemoteStream() will be called
             switchState(State.WAITING);
         } else if (currentState == State.RECEIVING) {
             // I'm callee, caller already dialed my standby channel,
             //  I connect to caller through RTC
             // This will trigger caller's onAddRemoteStream()
-            pnRTCClient.connect(getMatchResponse.caller);
+            pnRTCClient.connect(getMatch.caller);
         }
     }
 
@@ -480,7 +480,7 @@ public class SecumChatActivity extends Activity implements SecumRTCListener.RTCP
     public void onRTCPeerDisconnected() {
         if (currentState == State.WAITING) {
             // callee rejected me by generating a hangup message and triggersPnPeer.hangup()
-            showToast("" + getMatchResponse.callee + " rejected");
+            showToast("" + getMatch.callee + " rejected");
             switchState(State.MATCHING);
         } else if (currentState == State.RECEIVING) {
             // TODO: mlgb is it possible to reach here?
@@ -515,11 +515,11 @@ public class SecumChatActivity extends Activity implements SecumRTCListener.RTCP
 
 
             // standby Channel called, verify if it's from the correct caller, if not ignore
-            // it's possible callee hasn't receive getMatchResponse yet
+            // it's possible callee hasn't receive getMatch yet
 
             // TOREMOVE
             fakeIncomingGetMatchResponse();
-            if (user.equals(getMatchResponse.caller)) {
+            if (user.equals(getMatch.caller)) {
                 switchState(State.RECEIVING);
             }
 

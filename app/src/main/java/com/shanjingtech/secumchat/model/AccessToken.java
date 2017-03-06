@@ -4,12 +4,10 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Created by flamearrow on 2/26/17.
  */
 
-public class GetMatchRequest {
+public class AccessToken {
+    @SerializedName("access_token")
     @Expose
-    @SerializedName("username")
-    String username;
-
+    String access_token;
 }

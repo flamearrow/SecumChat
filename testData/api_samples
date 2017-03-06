@@ -3,24 +3,24 @@
     curl -X POST -H "Content-Type: application/json" -d '{ "username":"phone+16503181659", "phone": "+16503181659"}' https://www.yxg.me/api/users/
 
   Response:
-    {
-       "username":"phone+16503181659",
-       "third_party_uid":null,
-       "third_party_auth":null,
-       "email":null,
-       "phone":null,
-       "profile_image_url":null,
-       "lat":null,
-       "lng":null,
-       "nickname":null,
-       "access_code":956782,
-       "num_comments":null,
-       "num_posts":null,
-       "num_following":null,
-       "num_followed":null,
-       "time_created":null,
-       "time_updated":null
-    }
+   {
+      "username":"phone+16503181659",
+      "third_party_uid":null,
+      "third_party_auth":null,
+      "email":null,
+      "phone":null,
+      "profile_image_url":null,
+      "lat":null,
+      "lng":null,
+      "nickname":null,
+      "access_code":null,
+      "num_comments":null,
+      "num_posts":null,
+      "num_following":null,
+      "num_followed":null,
+      "time_created":null,
+      "time_updated":null
+   }
 
 2. Get Access Code:
   Request
@@ -33,6 +33,7 @@
 
 
 3. Get OAuth Token:
+    what is -u here?
   Request:(username is phone number, password is access_code)
     curl -X POST  -d "grant_type=password&username=1595005019&password=966468"  -u"A7H5tpb2JQ7H66gPxbs6AAAVZgwtU12VPGoZpYUB:uVVN0JPW5piZf7nZglh92gleVJWnfAZguILU1Z25UR52yZa2lLFPjOtYJj42PiNF0GTQ32OdP8bQyHAbaHwkRArvhzDZDNVuBZqheflBVACDBjHrbedilUfon5JPIm6R" https://www.yxg.me/api/o/token/
 

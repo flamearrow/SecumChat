@@ -1,6 +1,5 @@
 package com.shanjingtech.secumchat;
 
-import android.app.Activity;
 import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
@@ -48,7 +47,8 @@ import java.util.concurrent.ExecutionException;
  * Created by flamearrow on 2/26/17.
  */
 
-public class SecumChatActivity extends Activity implements SecumRTCListener.RTCPeerListener,
+public class SecumChatActivity extends SecumBaseActivity implements
+        SecumRTCListener.RTCPeerListener,
         NonRTCMessageController.NonRTCMessageControllerCallbacks {
 
     private GLSurfaceView videoView;

@@ -1,6 +1,5 @@
 package com.shanjingtech.secumchat.onboarding;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -8,13 +7,14 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 
 import com.shanjingtech.secumchat.R;
+import com.shanjingtech.secumchat.SecumBaseActivity;
 import com.shanjingtech.secumchat.SecumChatActivity;
 
 /**
  * Input you name, age and gender
  */
 
-public class MyDetailsActivty extends Activity {
+public class MyDetailsActivty extends SecumBaseActivity {
     private EditText name;
     private EditText age;
     private boolean isMale;
@@ -61,6 +61,5 @@ public class MyDetailsActivty extends Activity {
         // populate name here
         Intent intent = new Intent(this, SecumChatActivity.class);
         startActivity(intent);
-
     }
 }

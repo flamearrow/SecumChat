@@ -1,23 +1,20 @@
 package com.shanjingtech.secumchat.onboarding;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
 import com.shanjingtech.secumchat.R;
+import com.shanjingtech.secumchat.SecumBaseActivity;
 import com.shanjingtech.secumchat.model.AccessCode;
 import com.shanjingtech.secumchat.model.AccessCodeRequest;
-import com.shanjingtech.secumchat.net.SecumAPI;
 import com.shanjingtech.secumchat.util.Constants;
 import com.shanjingtech.secumchat.util.PermissionRequester;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * Register flow:
@@ -27,7 +24,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * c) name/age/gender
  * d) request access
  */
-public class AccessCodeActivity extends Activity {
+public class AccessCodeActivity extends SecumBaseActivity {
     private TextView accesCode;
     private String phoneNo;
     private String correctAccessCode;
@@ -43,24 +40,19 @@ public class AccessCodeActivity extends Activity {
     }
 
     private void requestAccessCodeFromServer() {
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(SecumAPI.BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        SecumAPI secumAPI = retrofit.create(SecumAPI.class);
+        secumAPI.getAccessCode(new AccessCodeRequest(phoneNo)).enqueue(
+                new Callback<AccessCode>() {
+                    @Override
+                    public void onResponse(Call<AccessCode> call, Response<AccessCode> response) {
+                        AccessCode code = response.body();
+                        correctAccessCode = code.getAccess_code();
+                    }
 
-        secumAPI.getAccessCode(new AccessCodeRequest(phoneNo)).enqueue(new Callback<AccessCode>() {
-            @Override
-            public void onResponse(Call<AccessCode> call, Response<AccessCode> response) {
-                AccessCode code = response.body();
-                correctAccessCode = code.getAccess_code();
-            }
+                    @Override
+                    public void onFailure(Call<AccessCode> call, Throwable t) {
 
-            @Override
-            public void onFailure(Call<AccessCode> call, Throwable t) {
-
-            }
-        });
+                    }
+                });
     }
 
     private boolean validateAccessCode(String code) {
@@ -74,9 +66,9 @@ public class AccessCodeActivity extends Activity {
             if (PermissionRequester.needToRequestPermission()) {
                 intent = new Intent(this, PermissionRequestActivity.class);
             } else {
+                intent = new Intent(this, MyDetailsActivty.class);
                 String username = Constants.USER_NAME_PREVIX + phoneNo;
                 intent.putExtra(Constants.MY_NAME, username);
-                intent = new Intent(this, MyDetailsActivty.class);
             }
             startActivity(intent);
         } else {

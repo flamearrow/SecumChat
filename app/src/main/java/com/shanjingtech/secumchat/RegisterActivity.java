@@ -1,7 +1,5 @@
 package com.shanjingtech.secumchat;
 
-import android.app.Activity;
-import android.app.FragmentManager;
 import android.os.Bundle;
 
 /**
@@ -13,7 +11,7 @@ import android.os.Bundle;
  * d) request access
  */
 
-public class RegisterActivity extends Activity {
+public class RegisterActivity extends SecumBaseActivity {
 
 
     @Override

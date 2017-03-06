@@ -9,7 +9,7 @@
     <string name="title_activity_login">Login</string>
     <string name="login">输入你的大名</string>
     <string name="username">username</string>
-    <string name="login_submit">进入</string>
+    <string name="login_submit">debugAPI</string>
     <string name="logo_text">welcome!</string>
 
     <string name="secum_chat">SecumChat</string>

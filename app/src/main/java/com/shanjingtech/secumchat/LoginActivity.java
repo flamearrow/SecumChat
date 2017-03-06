@@ -1,6 +1,5 @@
 package com.shanjingtech.secumchat;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -10,21 +9,18 @@ import android.widget.EditText;
 
 import com.shanjingtech.secumchat.model.User;
 import com.shanjingtech.secumchat.model.UserRequest;
-import com.shanjingtech.secumchat.net.SecumAPI;
 import com.shanjingtech.secumchat.util.Constants;
 import com.shanjingtech.secumchat.util.PermissionRequester;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
- * Created by flamearrow on 2/26/17.
+ * Legacy login activity, direct access to SecumChat and debug api
  */
 
-public class LoginActivity extends Activity {
+public class LoginActivity extends SecumBaseActivity {
 
     private EditText mUsername;
     private PermissionRequester permissionRequester;
@@ -74,32 +70,20 @@ public class LoginActivity extends Activity {
      * @param view Button clicked to trigger call to joinChat
      */
     public void testButton(View view) {
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(SecumAPI.BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        SecumAPI secumAPI = retrofit.create(SecumAPI.class);
-        UserRequest request = new UserRequest("phone+16503181659", "+16503181659");
-        Call<User> userCall = secumAPI.registerUser(request);
-//        Call<User> userCall = secumAPI.registerUser("phone+16503181659", "+16503181659");
-        userCall.enqueue(new Callback<User>() {
-            @Override
-            public void onResponse(Call<User> call, Response<User> response) {
-                User u = response.body();
-                String name = u.getUsername();
-            }
+        secumAPI.registerUser(new UserRequest("phone+16503181659", "+16503181659"))
+                .enqueue(
+                        new Callback<User>() {
+                            @Override
+                            public void onResponse(Call<User> call, Response<User> response) {
+                                User u = response.body();
+                                String name = u.getUsername();
+                            }
 
-            @Override
-            public void onFailure(Call<User> call, Throwable t) {
-                String s = call.getClass().toString();
-            }
-        });
-//        OkHttpClient okHttpClient = new OkHttpClient();
-//        Request request = new Request.Builder()
-//                .header("Content-Type", "application/json")
-//                .url("https://www.yxg.me/api/users/")
-//                .build();
-
+                            @Override
+                            public void onFailure(Call<User> call, Throwable t) {
+                                String s = call.getClass().toString();
+                            }
+                        });
     }
 
     /**

@@ -33,6 +33,11 @@
             android:name="com.shanjingtech.secumchat.LoginActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
         </activity>
         <activity
             android:name="com.shanjingtech.secumchat.SecumChatActivity"
@@ -42,11 +47,6 @@
             android:name="com.shanjingtech.secumchat.onboarding.PhoneNumActivity"
             android:label="@string/secum_chat"
             android:screenOrientation="portrait">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
         </activity>
         <activity
             android:name="com.shanjingtech.secumchat.onboarding.AccessCodeActivity"

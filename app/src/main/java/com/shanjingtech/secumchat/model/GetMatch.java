@@ -16,11 +16,30 @@ public class GetMatch {
         return true;
     }
 
+    public boolean isSuccess() {
+        return matchId != null;
+    }
+
+    /**
+     * Should I call or receive
+     */
+    public boolean isCaller() {
+        return matchedUsername.equals(getCallee());
+    }
+
+    public String getCaller() {
+        return matchId.split("|")[0];
+    }
+
+    public String getCallee() {
+        return matchId.split("|")[1];
+    }
 
     @Expose
     @SerializedName("status")
     String status;
 
+    // TODO: make sure camel case works
     @Expose
     @SerializedName("match_id")
     String matchId;

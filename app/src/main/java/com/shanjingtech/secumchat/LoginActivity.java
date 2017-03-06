@@ -7,6 +7,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 
+import com.shanjingtech.secumchat.model.GetMatch;
+import com.shanjingtech.secumchat.model.GetMatchRequest;
 import com.shanjingtech.secumchat.model.User;
 import com.shanjingtech.secumchat.model.UserRequest;
 import com.shanjingtech.secumchat.util.Constants;
@@ -70,20 +72,35 @@ public class LoginActivity extends SecumBaseActivity {
      * @param view Button clicked to trigger call to joinChat
      */
     public void testButton(View view) {
-        secumAPI.registerUser(new UserRequest("phone+16503181659", "+16503181659"))
-                .enqueue(
-                        new Callback<User>() {
-                            @Override
-                            public void onResponse(Call<User> call, Response<User> response) {
-                                User u = response.body();
-                                String name = u.getUsername();
-                            }
+//        secumAPI.registerUser(new UserRequest("phone+16503181659", "+16503181659"))
+//                .enqueue(
+//                        new Callback<User>() {
+//                            @Override
+//                            public void onResponse(Call<User> call, Response<User> response) {
+//                                User u = response.body();
+//                                String name = u.getUsername();
+//                            }
+//
+//                            @Override
+//                            public void onFailure(Call<User> call, Throwable t) {
+//                                String s = call.getClass().toString();
+//                            }
+//                        });
+        String testName = "phone+16314560722";
+        secumAPI.getMatch(new GetMatchRequest(testName)).enqueue(
+                new Callback<GetMatch>() {
+                    @Override
+                    public void onResponse(Call<GetMatch> call, Response<GetMatch> response) {
+                        GetMatch matchResult = response.body();
+                        String s = matchResult.getMatchedUsername();
+                        String status = matchResult.getStatus();
+                    }
 
-                            @Override
-                            public void onFailure(Call<User> call, Throwable t) {
-                                String s = call.getClass().toString();
-                            }
-                        });
+                    @Override
+                    public void onFailure(Call<GetMatch> call, Throwable t) {
+
+                    }
+                });
     }
 
     /**

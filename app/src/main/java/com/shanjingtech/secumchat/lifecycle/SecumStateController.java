@@ -31,7 +31,7 @@ public class SecumStateController {
     };
 
     public SecumStateController(StateListener listener) {
-        getMatchRequest = new GetMatchRequest();
+        getMatchRequest = new GetMatchRequest("mlgb");
         handler = new Handler();
         this.listener = listener;
     }

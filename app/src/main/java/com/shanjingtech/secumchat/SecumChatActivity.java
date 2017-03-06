@@ -436,7 +436,7 @@ public class SecumChatActivity extends SecumBaseActivity implements
 
     // note this should come from network
     public void fakeIncomingGetMatchResponse() {
-        getMatchRequest = new GetMatchRequest();
+        getMatchRequest = new GetMatchRequest("mlgb");
         getMatch = new GetMatch();
         getMatch.callee = "mlgb2";
         getMatch.caller = "mlgb";

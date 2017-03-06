@@ -1,6 +1,6 @@
 1. Register User:
   Request:
-    curl -X POST -H "Content-Type: application/json" -d '{ "username":"phone+16503181659", "phone": "+16503181659"}' https://www.yxg.me/api/users/
+    curl -X POST -H "Content-Type: application/json" -d '{ "username":"phone+16314560722", "phone":"+16314560722"}' https://www.yxg.me/api/users/
 
   Response:
    {
@@ -45,7 +45,7 @@
 
 4. Get Match
   Request
-    curl -X POST -H "Content-Type: application/json" -H "Authorization: Bearer RWmsVIZr46RFQ1j3mDDPa9DMS7YiLs" -d '{ "username":"phone_1595005019"}' https://www.yxg.me/api/matches/get_match/
+    curl -X POST -H "Content-Type: application/json" -d '{ "username":"phone+16314560722"}' https://www.yxg.me/api/matches/get_match/
 
   Response(not available)
     {
@@ -53,7 +53,7 @@
        "match_id":null,
        "chat_uri":null,
        "text":null,
-       "logging":"Time now: 2017-02-26 01:31:42 ## phone_0771587664; is_matching : True; live_exp: 2017-02-26 01:31:52",
+       "logging":"Time now: 2017-03-06 07:43:02 ## phone_+16314560722; is_matching : True; live_exp: 2017-03-06 07:43:12",
        "matched_username":null
     }
 

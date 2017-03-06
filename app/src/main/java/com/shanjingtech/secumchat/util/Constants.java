@@ -44,4 +44,8 @@ public class Constants {
     public static final int PERMISSION_CAMERA = 1;
     public static final int PERMISSION_CAMERARECORD_AUDIO = 2;
 
+    public static final String PHONE_NUMBER = "PHONE_NUMBER";
+    public static final String MY_NAME = "USER_NAME";
+
+    public static final String USER_NAME_PREVIX = "phone";
 }

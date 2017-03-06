@@ -88,7 +88,7 @@ public class SecumChatActivity extends Activity implements SecumRTCListener.RTCP
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.secum_chat_activity);
-        this.myName = getIntent().getStringExtra(Constants.USER_NAME);
+        this.myName = getIntent().getStringExtra(Constants.MY_NAME);
         setTitle(myName);
 
         initUI();

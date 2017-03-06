@@ -29,4 +29,16 @@
     <!-- Incoming Call Activity -->
     <string name="incoming_call">Incoming Call&#8230;</string>
     <string name="incoming_call_from">Kevin Gleason</string>
+
+    <string name="cell">Cell:</string>
+    <string name="go">GO</string>
+
+    <string name="confirm_access_code">Input the access code from sms</string>
+
+    <string name="name">name</string>
+    <string name="age">age</string>
+    <string name="gender">gender</string>
+    <string name="male">male</string>
+    <string name="female">female</string>
+
 </resources>

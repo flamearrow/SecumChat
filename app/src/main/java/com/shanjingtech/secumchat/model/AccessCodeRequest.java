@@ -13,6 +13,10 @@ public class AccessCodeRequest {
     @SerializedName("phone")
     String phone;
 
+    public AccessCodeRequest(String phone) {
+        this.phone = phone;
+    }
+
     public String getPhone() {
         return phone;
     }

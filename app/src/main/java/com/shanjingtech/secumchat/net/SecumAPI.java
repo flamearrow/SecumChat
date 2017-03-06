@@ -21,8 +21,8 @@ import retrofit2.http.POST;
  */
 
 public interface SecumAPI {
-    //String BASE_URL = "https://www.yxg.me/api/";
-    String BASE_URL = "http://59.110.93.125/";
+    String BASE_URL = "https://www.yxg.me/";
+//    String BASE_URL = "http://59.110.93.125/";
 
     /**
      * Register a user through phone number and username
@@ -38,7 +38,7 @@ public interface SecumAPI {
      * Send access code to user's phone through sms, confirm ownership
      */
     @Headers("Content-Type: application/json")
-    @POST("api/users/get_access_code/")
+    @POST("/api/users/get_access_code/")
     Call<AccessCode> getAccessCode(@Body AccessCodeRequest request);
 
 
@@ -46,7 +46,7 @@ public interface SecumAPI {
 //    curl -X POST  -d "grant_type=password&username=1595005019&password=966468"
 // -u"A7H5tpb2JQ7H66gPxbs6AAAVZgwtU12VPGoZpYUB
 // :uVVN0JPW5piZf7nZglh92gleVJWnfAZguILU1Z25UR52yZa2lLFPjOtYJj42PiNF0GTQ32OdP8bQyHAbaHwkRArvhzDZDNVuBZqheflBVACDBjHrbedilUfon5JPIm6R" https://www.yxg.me/api/o/token/
-    @POST("api/o/token/")
+    @POST("/api/o/token/")
     Call<AccessToken> getAccessToken(@Body AccessTokenRequest request);
 
     /**
@@ -57,7 +57,7 @@ public interface SecumAPI {
             // TODO: pass in this programmatically
             "Authorization: Bearer RWmsVIZr46RFQ1j3mDDPa9DMS7YiLs"
     })
-    @POST("api/matches/get_match/")
+    @POST("/api/matches/get_match/")
     Call<GetMatch> getMatch(@Body GetMatchRequest request);
 
     /**
@@ -68,7 +68,7 @@ public interface SecumAPI {
             // TODO: pass in this programmatically
             "Authorization: Bearer RWmsVIZr46RFQ1j3mDDPa9DMS7YiLs"
     })
-    @POST("api/matches/end_match/")
+    @POST("/api/matches/end_match/")
     Call<EndMatch> endMatch(@Body EndMatchRequest request);
 
 }

@@ -20,11 +20,15 @@ public class PermissionRequester implements ActivityCompat.OnRequestPermissionsR
         this.activity = activity;
     }
 
+    public static boolean needToRequestPermission() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
+    }
+
     /**
      * Request for camera and microphone permission
      */
     public void requestPermissions() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        if (needToRequestPermission()) {
             requestPermission(Manifest.permission.CAMERA, Constants.PERMISSION_CAMERA);
             requestPermission(Manifest.permission.RECORD_AUDIO, Constants
                     .PERMISSION_CAMERARECORD_AUDIO);

@@ -14,8 +14,6 @@ import com.shanjingtech.secumchat.net.SecumAPI;
 import com.shanjingtech.secumchat.util.Constants;
 import com.shanjingtech.secumchat.util.PermissionRequester;
 
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -93,7 +91,7 @@ public class LoginActivity extends Activity {
 
             @Override
             public void onFailure(Call<User> call, Throwable t) {
-
+                String s = call.getClass().toString();
             }
         });
 //        OkHttpClient okHttpClient = new OkHttpClient();
@@ -114,7 +112,7 @@ public class LoginActivity extends Activity {
         if (!validUsername(username))
             return;
         Intent intent = new Intent(this, SecumChatActivity.class);
-        intent.putExtra(Constants.USER_NAME, username);
+        intent.putExtra(Constants.MY_NAME, username);
         startActivity(intent);
     }
 

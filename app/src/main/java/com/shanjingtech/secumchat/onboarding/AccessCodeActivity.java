@@ -11,6 +11,7 @@ import com.shanjingtech.secumchat.model.AccessCode;
 import com.shanjingtech.secumchat.model.AccessCodeRequest;
 import com.shanjingtech.secumchat.util.Constants;
 import com.shanjingtech.secumchat.util.PermissionRequester;
+import com.shanjingtech.secumchat.util.SecumDebug;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -28,6 +29,7 @@ public class AccessCodeActivity extends SecumBaseActivity {
     private TextView accesCode;
     private String phoneNo;
     private String correctAccessCode;
+    private boolean isDebug;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +38,10 @@ public class AccessCodeActivity extends SecumBaseActivity {
         accesCode = (TextView) findViewById(R.id.access_code);
         // Passed from PhoneNumActivity
         phoneNo = getIntent().getStringExtra(Constants.PHONE_NUMBER);
-        requestAccessCodeFromServer();
+        isDebug = SecumDebug.isDebugMode(this);
+        if (!isDebug) {
+            requestAccessCodeFromServer();
+        }
     }
 
     private void requestAccessCodeFromServer() {
@@ -61,15 +66,16 @@ public class AccessCodeActivity extends SecumBaseActivity {
 
     public void clickGo(View view) {
         String code = accesCode.getText().toString();
-        if (validateAccessCode(code)) {
+        if (isDebug || validateAccessCode(code)) {
             Intent intent = null;
-            if (PermissionRequester.needToRequestPermission()) {
-                intent = new Intent(this, PermissionRequestActivity.class);
-            } else {
+            // TODO: make permission requester work
+//            if (PermissionRequester.needToRequestPermission()) {
+//                intent = new Intent(this, PermissionRequestActivity.class);
+//            } else {
                 intent = new Intent(this, MyDetailsActivty.class);
                 String username = Constants.USER_NAME_PREVIX + phoneNo;
                 intent.putExtra(Constants.MY_NAME, username);
-            }
+//            }
             startActivity(intent);
         } else {
             accesCode.setError("Incorrect access code");

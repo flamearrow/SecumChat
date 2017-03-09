@@ -1,18 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:orientation="vertical">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+    <TextView
+        style="@style/OnboardingText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/access_code"
+        android:layout_centerHorizontal="true"
+        android:text="@string/confirm_access_code"/>
 
     <EditText
         android:id="@+id/access_code"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/confirm_access_code"/>
-
-    <Button
+        style="@style/OnboardingInputText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerInParent="true"
+        android:layout_marginBottom="20dp"
+        android:layout_marginTop="20dp"
+        android:hint="1234567890"
+        android:inputType="phone"/>
+
+    <Button
+        style="@style/OnboardingButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/access_code"
+        android:layout_centerHorizontal="true"
         android:onClick="clickGo"
         android:text="@string/go"/>
-</LinearLayout>
+
+</RelativeLayout>

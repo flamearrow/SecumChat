@@ -2,90 +2,98 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
+              android:layout_margin="30dp"
+              android:gravity="center_vertical"
               android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
         android:orientation="horizontal">
 
         <TextView
-            android:layout_width="0dp"
+            style="@style/OnboardingText"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="20dp"
-            android:layout_weight="1"
-            android:gravity="right"
             android:text="@string/name"/>
 
         <EditText
             android:id="@+id/name"
+            style="@style/OnboardingInputText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:gravity="left"/>
+            android:hint="@string/mlgb"/>
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
         android:orientation="horizontal">
 
         <TextView
-            android:layout_width="0dp"
+            style="@style/OnboardingText"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="20dp"
-            android:layout_weight="1"
-            android:gravity="right"
             android:text="@string/age"/>
 
         <EditText
             android:id="@+id/age"
+            style="@style/OnboardingInputText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:gravity="left"
+            android:hint="@string/mlgb"
             android:inputType="number"/>
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_marginBottom="30dp"
+        android:orientation="horizontal">
 
         <TextView
-            android:layout_width="match_parent"
+            style="@style/OnboardingText"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center"
             android:text="@string/gender"/>
 
         <RadioGroup
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
             android:orientation="horizontal">
 
             <RadioButton
                 android:id="@+id/male"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:onClick="clickGender"
-                android:text="@string/male"/>
+                android:layout_marginRight="30dp"
+                android:button="@drawable/penis_button"
+                android:onClick="clickGender"/>
 
             <RadioButton
                 android:id="@+id/female"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:button="@drawable/female_button"
                 android:checked="true"
-                android:onClick="clickGender"
-                android:text="@string/female"/>
+                android:onClick="clickGender"/>
         </RadioGroup>
 
     </LinearLayout>
 
     <Button
-        android:layout_width="match_parent"
+        android:id="@+id/button"
+        style="@style/OnboardingButton"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
         android:onClick="clickGo"
         android:text="@string/go"/>
 </LinearLayout>

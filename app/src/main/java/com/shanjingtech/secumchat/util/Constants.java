@@ -48,4 +48,7 @@ public class Constants {
     public static final String MY_NAME = "USER_NAME";
 
     public static final String USER_NAME_PREVIX = "phone";
+
+    // shared preference
+    public static final String PREF_FILE = "com.shanjingtech.secumchat.PREF_FILE";
 }

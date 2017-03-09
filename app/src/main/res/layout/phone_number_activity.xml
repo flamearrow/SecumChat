@@ -1,35 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:background="@color/violet"
-              android:orientation="vertical">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="0dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <CheckBox
+            android:id="@+id/debug"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="20dp"
-            android:layout_weight="1"
-            android:gravity="right"
-            android:text="@string/cell"/>
-
-        <EditText
-            android:id="@+id/phone_number"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="left"/>
+            android:text="@string/debug"
+            android:checked="true"/>
     </LinearLayout>
-
-    <Button
+    <TextView
+        style="@style/OnboardingText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
+        android:layout_above="@+id/phone_number"
+        android:layout_centerHorizontal="true"
+        android:text="@string/cell"/>
+
+    <EditText
+        android:id="@+id/phone_number"
+        style="@style/OnboardingInputText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerInParent="true"
+        android:layout_marginBottom="20dp"
+        android:layout_marginTop="20dp"
+        android:hint="1234567890"
+        android:inputType="phone"/>
+
+    <Button
+        style="@style/OnboardingButton"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/phone_number"
+        android:layout_centerHorizontal="true"
         android:onClick="clickGo"
-        android:text="@string/go"/>
-</LinearLayout>
+        android:text="@string/get_code"/>
+</RelativeLayout>

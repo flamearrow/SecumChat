@@ -22,6 +22,7 @@ public class SecumApplication extends Application {
                 .appModule(new AppModule(this))
                 .netModule(new NetModule(SecumAPI.BASE_URL))
                 .build();
+
     }
 
     public NetComponent getNetComponet() {

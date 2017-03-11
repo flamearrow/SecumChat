@@ -8,6 +8,10 @@ import com.google.gson.annotations.SerializedName;
  */
 
 public class EndMatchRequest {
+    public EndMatchRequest(String username) {
+        this.username = username;
+    }
+
     @Expose
     @SerializedName("username")
     String username;

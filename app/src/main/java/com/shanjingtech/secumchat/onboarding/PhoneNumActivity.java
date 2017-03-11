@@ -1,7 +1,6 @@
 package com.shanjingtech.secumchat.onboarding;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.CheckBox;
@@ -57,7 +56,7 @@ public class PhoneNumActivity extends SecumBaseActivity {
             SecumDebug.enableDebugMode(this);
             Intent intent = new Intent(PhoneNumActivity.this,
                     AccessCodeActivity.class);
-            intent.putExtra(Constants.PHONE_NUMBER, 12345);
+            intent.putExtra(Constants.PHONE_NUMBER, "12345");
             startActivity(intent);
         } else {
             final String phoneNo = phoneNumber.getText().toString();
@@ -77,8 +76,8 @@ public class PhoneNumActivity extends SecumBaseActivity {
 
                                     @Override
                                     public void onFailure(Call<User> call, Throwable t) {
-
                                     }
+
                                 });
 
             }

@@ -2,9 +2,10 @@ package com.shanjingtech.secumchat.model;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.shanjingtech.secumchat.net.SecumAPI;
 
 /**
- * {@link com.shanjingtech.secumchat.net.SecumAPI#endMatchRequest(EndMatchRequest)}
+ * {@link com.shanjingtech.secumchat.net.SecumAPI#endMatch(EndMatchRequest)}
  */
 
 public class EndMatch {
@@ -26,6 +27,10 @@ public class EndMatch {
     @Expose
     @SerializedName("matched_username")
     String matchedUsername;
+
+    public boolean isSuccess() {
+        return SecumAPI.MATCH_INVALID.equals(status);
+    }
 
     public String getStatus() {
         return status;

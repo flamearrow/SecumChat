@@ -2,37 +2,35 @@ package com.shanjingtech.secumchat.model;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.shanjingtech.secumchat.net.SecumAPI;
 
 /**
  * Created by flamearrow on 2/26/17.
  */
 
 public class GetMatch {
-    public boolean success;
-    public String caller;
-    public String callee;
-
-    public boolean shouldDial() {
-        return true;
-    }
 
     public boolean isSuccess() {
-        return matchId != null;
+        return SecumAPI.MATCH_ACTIVE.equals(status);
     }
 
     /**
      * Should I call or receive
      */
     public boolean isCaller() {
-        return matchedUsername.equals(getCallee());
+        return isCaller;
+    }
+
+    public boolean isCallee() {
+        return !isCaller;
     }
 
     public String getCaller() {
-        return matchId.split("|")[0];
+        return callerName;
     }
 
     public String getCallee() {
-        return matchId.split("|")[1];
+        return calleeName;
     }
 
     @Expose
@@ -42,11 +40,23 @@ public class GetMatch {
     // TODO: make sure camel case works
     @Expose
     @SerializedName("match_id")
-    String matchId;
+    int matchId;
 
     @Expose
     @SerializedName("chat_uri")
     String chatURI;
+
+    @Expose
+    @SerializedName("is_caller")
+    boolean isCaller;
+
+    @Expose
+    @SerializedName("caller_username")
+    String callerName;
+
+    @Expose
+    @SerializedName("callee_username")
+    String calleeName;
 
     @Expose
     @SerializedName("text")
@@ -68,12 +78,8 @@ public class GetMatch {
         this.status = status;
     }
 
-    public String getMatchId() {
+    public int getMatchId() {
         return matchId;
-    }
-
-    public void setMatchId(String matchId) {
-        this.matchId = matchId;
     }
 
     public String getChatURI() {
@@ -106,5 +112,13 @@ public class GetMatch {
 
     public void setMatchedUsername(String matchedUsername) {
         this.matchedUsername = matchedUsername;
+    }
+
+    public void setCallerName(String callerName) {
+        this.callerName = callerName;
+    }
+
+    public void setCalleeName(String calleeName) {
+        this.calleeName = calleeName;
     }
 }

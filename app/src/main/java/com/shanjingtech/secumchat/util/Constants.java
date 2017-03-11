@@ -46,6 +46,8 @@ public class Constants {
 
     public static final String PHONE_NUMBER = "PHONE_NUMBER";
     public static final String MY_NAME = "USER_NAME";
+    public static final String MY_AGE = "USER_AGE";
+    public static final String ME_MALE = "USER_IS_MALE";
 
     public static final String USER_NAME_PREVIX = "phone";
 

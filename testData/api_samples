@@ -1,6 +1,6 @@
 1. Register User:
   Request:
-    curl -X POST -H "Content-Type: application/json" -d '{ "username":"phone+16314560722", "phone":"+16314560722"}' https://www.yxg.me/api/users/
+    curl -X POST -H "Content-Type: application/json" -d '{ "username":"phone_+16314560722", "phone":"+16314560722"}' https://www.shanjingtech.com/api/users/
 
   Response:
    {

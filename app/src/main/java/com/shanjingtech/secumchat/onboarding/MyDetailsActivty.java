@@ -9,6 +9,7 @@ import android.widget.RadioButton;
 import com.shanjingtech.secumchat.R;
 import com.shanjingtech.secumchat.SecumBaseActivity;
 import com.shanjingtech.secumchat.SecumChatActivity;
+import com.shanjingtech.secumchat.util.Constants;
 
 /**
  * Input you name, age and gender
@@ -23,8 +24,8 @@ public class MyDetailsActivty extends SecumBaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.my_details_activity);
-        name = (EditText) findViewById(R.id.name);
-        age = (EditText) findViewById(R.id.age);
+        name = (EditText) findViewById(R.id.my_name);
+        age = (EditText) findViewById(R.id.my_age);
         isMale = false;
     }
 
@@ -57,9 +58,13 @@ public class MyDetailsActivty extends SecumBaseActivity {
     public void clickGo(View view) {
         // TODO: need another api call to link userinfo to phone number
         // pass name, age and gender
-        validateInfo();
-        // populate name here
-        Intent intent = new Intent(this, SecumChatActivity.class);
-        startActivity(intent);
+        if (validateInfo()) {
+            Intent intent = new Intent(this, SecumChatActivity.class);
+            // populate name here
+            intent.putExtra(Constants.MY_NAME, name.getText().toString());
+            intent.putExtra(Constants.MY_AGE, age.getText().toString());
+            intent.putExtra(Constants.ME_MALE, isMale);
+            startActivity(intent);
+        }
     }
 }

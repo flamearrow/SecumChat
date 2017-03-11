@@ -21,7 +21,13 @@ import retrofit2.http.POST;
  */
 
 public interface SecumAPI {
-    String BASE_URL = "https://www.yxg.me/";
+    public static final String MATCH_ACTIVE = "MATCH_ACTIVE";
+    public static final String MATCH_NOT_AVAILABLE = "MATCH_NOT_AVAILABLE";
+    public static final String MATCH_INVALID = "MATCH_INVALID";
+
+    public static final String TAG = "SecumAPI";
+
+    String BASE_URL = "https://www.shanjingtech.com/";
 //    String BASE_URL = "http://59.110.93.125/";
 
     /**

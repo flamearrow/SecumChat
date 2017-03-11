@@ -2,11 +2,14 @@ package com.shanjingtech.secumchat;
 
 import android.app.Application;
 
+import com.crashlytics.android.Crashlytics;
 import com.shanjingtech.secumchat.injection.AppModule;
 import com.shanjingtech.secumchat.injection.DaggerNetComponent;
 import com.shanjingtech.secumchat.injection.NetComponent;
 import com.shanjingtech.secumchat.injection.NetModule;
 import com.shanjingtech.secumchat.net.SecumAPI;
+
+import io.fabric.sdk.android.Fabric;
 
 /**
  * Provide app-wise controls
@@ -18,6 +21,7 @@ public class SecumApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        Fabric.with(this, new Crashlytics());
         netComponent = DaggerNetComponent.builder()
                 .appModule(new AppModule(this))
                 .netModule(new NetModule(SecumAPI.BASE_URL))

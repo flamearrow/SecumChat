@@ -29,7 +29,7 @@
         android:gravity="center"
         android:hint="@string/username"
         android:inputType="text"
-        android:text="@string/mlgb"
+        android:text="@string/phone11"
         android:textColor="#333"
         android:textSize="30sp"/>
 

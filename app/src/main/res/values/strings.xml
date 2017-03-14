@@ -19,6 +19,7 @@
 
 
     <string name="mlgb">mlgb</string>
+    <string name="phone11">phone_11</string>
     <string name="connect">connect</string>
 
     <string name="enter_new_channel">Enter new channel:</string>

@@ -100,8 +100,6 @@ public class SecumChatActivity extends SecumBaseActivity implements
         nonRTCMessageController = new NonRTCMessageController(myName, pnRTCClient.getPubNub(),
                 this);
         networkRequester = new SecumNetworkRequester(this, myName, this);
-
-        switchState(State.MATCHING);
     }
 
     private void initUI() {
@@ -139,7 +137,6 @@ public class SecumChatActivity extends SecumBaseActivity implements
                 true,  // Video Enabled
                 true,  // Hardware Acceleration Enabled
                 null); // Render EGL Context
-        PeerConnectionFactory pcFactory = new PeerConnectionFactory();
 
         // init pubnubClient, order matters
         List<PeerConnection.IceServer> servers = getXirSysIceServers();
@@ -153,7 +150,21 @@ public class SecumChatActivity extends SecumBaseActivity implements
                     myName);
         }
 
+        // Init camera views: this view is in charge of both bigger(bg) and small cameras views by
+        // adding renderer
+        videoView = (GLSurfaceView) findViewById(R.id.gl_surface);
+        VideoRendererGui.setView(
+                videoView,
+                null);
 
+        secumRTCListener = new SecumRTCListener(this);
+        secumRTCListener.addRemoteStreamListener(this);
+        pnRTCClient.attachRTCListener(secumRTCListener);
+
+    }
+
+    private void initializeMediaStream() {
+        PeerConnectionFactory pcFactory = new PeerConnectionFactory();
         int camNumber = VideoCapturerAndroid.getDeviceCount();
         String frontFacingCam = VideoCapturerAndroid.getNameOfFrontFacingDevice();
         String backFacingCam = VideoCapturerAndroid.getNameOfBackFacingDevice();
@@ -168,16 +179,11 @@ public class SecumChatActivity extends SecumBaseActivity implements
                 localVideoSource);
 
         // First we create an AudioSource then we can create our AudioTrack
-        AudioSource audioSource = pcFactory.createAudioSource(this.pnRTCClient.audioConstraints());
+        AudioSource localAudioSource = pcFactory.createAudioSource(this.pnRTCClient
+                .audioConstraints());
         AudioTrack localAudioTrack = pcFactory.createAudioTrack(Constants.AUDIO_TRACK_ID,
-                audioSource);
+                localAudioSource);
 
-        // Init camera views: this view is in charge of both bigger(bg) and small cameras views by
-        // adding renderer
-        videoView = (GLSurfaceView) findViewById(R.id.gl_surface);
-        VideoRendererGui.setView(
-                videoView,
-                null);
 
         localStream = pcFactory.createLocalMediaStream(Constants.LOCAL_MEDIA_STREAM_ID);
 
@@ -185,15 +191,7 @@ public class SecumChatActivity extends SecumBaseActivity implements
         localStream.addTrack(localVideoTrack);
         localStream.addTrack(localAudioTrack);
 
-        // trigger pubnub callback
-        secumRTCListener = new SecumRTCListener(this);
-        secumRTCListener.addRemoteStreamListener(this);
-        pnRTCClient.attachRTCListener(secumRTCListener);
         pnRTCClient.attachLocalMediaStream(localStream);
-
-        // listenOn myself, this is required for both caller and callee
-        // TODO: mlgb do I need to do this when entering MATCHING?
-//        pnRTCClient.listenOn(myName);
     }
 
     public List<PeerConnection.IceServer> getXirSysIceServers() {
@@ -250,7 +248,8 @@ public class SecumChatActivity extends SecumBaseActivity implements
     @Override
     protected void onResume() {
         super.onResume();
-        initializeChannels();
+        switchState(State.MATCHING);
+        initializeMediaStream();
     }
 
     @Override
@@ -260,6 +259,11 @@ public class SecumChatActivity extends SecumBaseActivity implements
         nonRTCMessageController.unStandby();
         // stop all RTC connection
         pnRTCClient.closeAllConnections();
+        // stop querying server
+        networkRequester.cancellAll();
+        // stop camera
+        // TODO: make sure this turns off camera
+        localStream.dispose();
     }
 
     private void hideKeyboard() {
@@ -289,14 +293,17 @@ public class SecumChatActivity extends SecumBaseActivity implements
     }
 
     private void switchState(State state) {
+        if (currentState == state) {
+            return;
+        }
         currentState = state;
         Log.d(Constants.MLGB, "switched to State: " + state.toString());
         switch (state) {
             case MATCHING: {
+                getMatch = null;
                 showMatchingUI();
                 initializeChannels();
                 networkRequester.initializeMatch();
-//                initializeMatch();
                 return;
             }
             case DIALING: {
@@ -394,7 +401,7 @@ public class SecumChatActivity extends SecumBaseActivity implements
             @Override
             public void run() {
                 // TODO: replace otherside with real name
-                showToast("otherside rejected");
+                showToast("" + getPeerName() + " rejected");
                 messageField.setVisibility(View.INVISIBLE);
                 turnButtons(false);
             }
@@ -423,7 +430,7 @@ public class SecumChatActivity extends SecumBaseActivity implements
         // need to be called after peer switch to dial
 
 //        fakeIncomingGetMatchResponse();
-        switchState(State.RECEIVING);
+//        switchState(State.RECEIVING);
     }
 
     // note this should come from network
@@ -554,7 +561,7 @@ public class SecumChatActivity extends SecumBaseActivity implements
     }
 
     @Override
-    public void onGetMatchSucceed(GetMatch getMatch, boolean isCaller) {
+    public void onGetMatchSucceed(final GetMatch getMatch, boolean isCaller) {
         this.getMatch = getMatch;
         if (isCaller) {
             switchState(State.DIALING);
@@ -562,7 +569,7 @@ public class SecumChatActivity extends SecumBaseActivity implements
     }
 
     @Override
-    public void onGetMatchFailed(@Nullable GetMatch getMatch) {
+    public void onGetMatchFailed(final @Nullable GetMatch getMatch) {
         this.getMatch = getMatch;
     }
 

@@ -3,8 +3,10 @@ package com.shanjingtech.secumchat;
 import android.app.Application;
 
 import com.crashlytics.android.Crashlytics;
+import com.crashlytics.android.answers.Answers;
 import com.shanjingtech.secumchat.injection.AppModule;
 import com.shanjingtech.secumchat.injection.DaggerNetComponent;
+import com.shanjingtech.secumchat.injection.FabricModule;
 import com.shanjingtech.secumchat.injection.NetComponent;
 import com.shanjingtech.secumchat.injection.NetModule;
 import com.shanjingtech.secumchat.net.SecumAPI;
@@ -22,9 +24,11 @@ public class SecumApplication extends Application {
     public void onCreate() {
         super.onCreate();
         Fabric.with(this, new Crashlytics());
+        Fabric.with(this, new Answers());
         netComponent = DaggerNetComponent.builder()
                 .appModule(new AppModule(this))
                 .netModule(new NetModule(SecumAPI.BASE_URL))
+                .fabricModule(new FabricModule())
                 .build();
 
     }

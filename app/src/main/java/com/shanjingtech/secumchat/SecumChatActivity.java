@@ -3,7 +3,7 @@ package com.shanjingtech.secumchat;
 import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
-import android.os.Handler;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -22,11 +22,8 @@ import com.shanjingtech.pnwebrtc.PnSignalingParams;
 import com.shanjingtech.pnwebrtc.utils.JSONUtils;
 import com.shanjingtech.secumchat.lifecycle.NonRTCMessageController;
 import com.shanjingtech.secumchat.lifecycle.SecumRTCListener;
-import com.shanjingtech.secumchat.model.EndMatch;
-import com.shanjingtech.secumchat.model.EndMatchRequest;
 import com.shanjingtech.secumchat.model.GetMatch;
-import com.shanjingtech.secumchat.model.GetMatchRequest;
-import com.shanjingtech.secumchat.net.SecumAPI;
+import com.shanjingtech.secumchat.net.SecumNetworkRequester;
 import com.shanjingtech.secumchat.servers.XirSysRequest;
 import com.shanjingtech.secumchat.util.Constants;
 
@@ -47,17 +44,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-
 /**
- * Created by flamearrow on 2/26/17.
+ * Activity to make you cum.
  */
 
 public class SecumChatActivity extends SecumBaseActivity implements
         SecumRTCListener.RTCPeerListener,
-        NonRTCMessageController.NonRTCMessageControllerCallbacks {
+        NonRTCMessageController.NonRTCMessageControllerCallbacks,
+        SecumNetworkRequester.SecumNetworkRequesterCallbacks {
 
     private GLSurfaceView videoView;
 
@@ -89,8 +83,9 @@ public class SecumChatActivity extends SecumBaseActivity implements
     private State currentState;
 
     // network
-    private GetMatchRequest getMatchRequest;
     private GetMatch getMatch;
+    private SecumNetworkRequester networkRequester;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,6 +99,7 @@ public class SecumChatActivity extends SecumBaseActivity implements
 
         nonRTCMessageController = new NonRTCMessageController(myName, pnRTCClient.getPubNub(),
                 this);
+        networkRequester = new SecumNetworkRequester(this, myName, this);
 
         switchState(State.MATCHING);
     }
@@ -299,8 +295,8 @@ public class SecumChatActivity extends SecumBaseActivity implements
             case MATCHING: {
                 showMatchingUI();
                 initializeChannels();
-//                postMatchRequest();
-                initializeMatch();
+                networkRequester.initializeMatch();
+//                initializeMatch();
                 return;
             }
             case DIALING: {
@@ -432,7 +428,6 @@ public class SecumChatActivity extends SecumBaseActivity implements
 
     // note this should come from network
     public void fakeIncomingGetMatchResponse() {
-        getMatchRequest = new GetMatchRequest("mlgb");
         getMatch = new GetMatch();
         getMatch.setCalleeName("mlgb2");
         getMatch.setCallerName("mlgb");
@@ -525,88 +520,6 @@ public class SecumChatActivity extends SecumBaseActivity implements
         }
     }
 
-
-    private Runnable getMarchRunnable = new Runnable() {
-        @Override
-        public void run() {
-            Log.d(SecumAPI.TAG, "Posting GetMatch(" + myName + ")");
-            secumAPI.getMatch(new GetMatchRequest(myName)).enqueue(new Callback<GetMatch>() {
-                @Override
-                public void onResponse(Call<GetMatch> call, Response<GetMatch> response) {
-                    getMatch = response.body();
-                    if (getMatch.isSuccess()) {
-                        Log.d(SecumAPI.TAG, "GetMatch(" + myName + ") Success, caller: " + getMatch
-                                .getCaller());
-                        if (getMatch.isCaller()) {
-                            switchState(State.DIALING);
-                        } else if (getMatch.isCallee()) {
-                            Log.d(SecumAPI.TAG, "GetMatch(" + myName + ")  Success, callee: " +
-                                    getMatch.getCallee
-                                            ());
-                            // do nothing
-                        }
-                    } else {
-                        Log.d(SecumAPI.TAG, "GetMatch(" + myName + ")  failed, posting another " +
-                                "get match");
-                        postMatchRequest();
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<GetMatch> call, Throwable t) {
-                }
-            });
-        }
-    };
-
-    private Runnable endMatchRunnable = new Runnable() {
-        @Override
-        public void run() {
-            Log.d(SecumAPI.TAG, "Posting EndMatch(" + myName + ")");
-            secumAPI.endMatch(new EndMatchRequest(myName)).enqueue(
-                    new Callback<EndMatch>() {
-                        @Override
-                        public void onResponse(Call<EndMatch> call, Response<EndMatch> response) {
-                            EndMatch endMatch = response.body();
-                            if (endMatch.isSuccess()) {
-                                Log.d(SecumAPI.TAG, "EndMatch(" + myName + ") Success, posting " +
-                                        "GetMatch");
-                                postMatchRequest();
-                            } else {
-                                Log.d(SecumAPI.TAG, "EndMatch(" + myName + ") failed, reposting " +
-                                        "EndMatch");
-                                initializeMatch();
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(Call<EndMatch> call, Throwable t) {
-                            initializeMatch();
-                        }
-                    }
-            );
-        }
-    };
-
-
-    private static final int GET_MATCH_DELAY = 2000;
-
-    final Handler handler = new Handler();
-
-    /**
-     * Fire an end match request, if success, start loop get match request
-     */
-    private void initializeMatch() {
-        handler.postDelayed(endMatchRunnable, GET_MATCH_DELAY);
-    }
-
-    /**
-     * keep getMatchRequest until we get a valid response
-     */
-    private void postMatchRequest() {
-        handler.postDelayed(getMarchRunnable, GET_MATCH_DELAY);
-    }
-
     @Override
     public void onCalleeOnline(String calleeName) {
         Log.d(TAG, "callee " + calleeName + " is online");
@@ -640,6 +553,29 @@ public class SecumChatActivity extends SecumBaseActivity implements
         }
     }
 
+    @Override
+    public void onGetMatchSucceed(GetMatch getMatch, boolean isCaller) {
+        this.getMatch = getMatch;
+        if (isCaller) {
+            switchState(State.DIALING);
+        }
+    }
+
+    @Override
+    public void onGetMatchFailed(@Nullable GetMatch getMatch) {
+        this.getMatch = getMatch;
+    }
+
+    @Override
+    public void onEndMatchSucceed() {
+
+    }
+
+    @Override
+    public void onEndMatchFailed() {
+
+    }
+
     enum State {
         MATCHING, // wait for server to give me a match
         DIALING, // I dial the other, call dial(callee)
@@ -648,4 +584,5 @@ public class SecumChatActivity extends SecumBaseActivity implements
         WAITING, // When one side accept, waiting for the other side to accept
         ERROR //various, always show 'otherside rejected' and switch back to waiting
     }
+
 }

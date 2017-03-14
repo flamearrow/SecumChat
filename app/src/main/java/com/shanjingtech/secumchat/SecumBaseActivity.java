@@ -3,6 +3,8 @@ package com.shanjingtech.secumchat;
 import android.app.Activity;
 import android.os.Bundle;
 
+import com.crashlytics.android.answers.Answers;
+import com.crashlytics.android.answers.CustomEvent;
 import com.shanjingtech.secumchat.net.SecumAPI;
 
 import javax.inject.Inject;

@@ -23,7 +23,7 @@ import retrofit2.Response;
 
 /**
  * Requester for GetMatch and EndMatch.
- * When {@link #initializeMatch()} is called, a EndMatch is sent first, upon returning
+ * When {@link #startMatch()} is called, a EndMatch is sent first, upon returning
  * if succeed, start looping for GetMatch:
  * call {@link #postMatchRequest()}, send GetMatch, upon returning
  * * if match success
@@ -70,7 +70,7 @@ public class SecumNetworkRequester {
         handler = new Handler();
     }
 
-    public void initializeMatch() {
+    public void startMatch() {
         handler.postDelayed(endMatchRunnable, GET_MATCH_DELAY);
     }
 
@@ -142,14 +142,14 @@ public class SecumNetworkRequester {
                                 callbacks.onEndMatchFailed();
                                 Log.d(SecumAPI.TAG, "EndMatch(" + myName + ") failed, reposting " +
                                         "EndMatch");
-                                initializeMatch();
+                                startMatch();
                             }
                         }
 
                         @Override
                         public void onFailure(Call<EndMatch> call, Throwable t) {
                             callbacks.onEndMatchFailed();
-                            initializeMatch();
+                            startMatch();
                         }
                     }
             );

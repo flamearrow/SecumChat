@@ -303,7 +303,7 @@ public class SecumChatActivity extends SecumBaseActivity implements
                 getMatch = null;
                 showMatchingUI();
                 initializeChannels();
-                networkRequester.initializeMatch();
+                networkRequester.startMatch();
                 return;
             }
             case DIALING: {

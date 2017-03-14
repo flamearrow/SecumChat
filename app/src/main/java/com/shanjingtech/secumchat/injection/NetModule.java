@@ -9,12 +9,19 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.shanjingtech.secumchat.net.SecumAPI;
 
+import java.io.IOException;
+
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import okhttp3.Authenticator;
 import okhttp3.Cache;
+import okhttp3.Credentials;
 import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.Route;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -56,8 +63,24 @@ public class NetModule {
 
     @Provides
     @Singleton
-    OkHttpClient provideOkHttpClient(Cache cache) {
-        return new OkHttpClient.Builder().cache(cache).build();
+    OkHttpClient provideOkHttpClient(Cache cache, Authenticator authenticator) {
+        return new OkHttpClient.Builder().cache(cache).authenticator(authenticator).build();
+    }
+
+    @Provides
+    @Singleton
+    Authenticator provideAuthenticator() {
+        return new Authenticator() {
+            @Override
+            public Request authenticate(Route route, Response response) throws IOException {
+                System.out.println("Authenticating for response: " + response);
+                System.out.println("Challenges: " + response.challenges());
+                String credential = Credentials.basic(SecumAPI.USER_NAME, SecumAPI.PASSWORD);
+                return response.request().newBuilder()
+                        .header("Authorization", credential)
+                        .build();
+            }
+        };
     }
 
     @Provides

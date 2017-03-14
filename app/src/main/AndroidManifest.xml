@@ -31,6 +31,10 @@
         android:theme="@style/AppTheme">
         <activity
             android:name="com.shanjingtech.secumchat.LoginActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
         </activity>
         <activity
             android:name="com.shanjingtech.secumchat.SecumChatActivity"/>
@@ -48,15 +52,12 @@
         <activity
             android:name=".SplashActivity"
             android:theme="@style/SplashTheme">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
         </activity>
+
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="91e00c9c2689e489f2366001bd2585ac08dff096"
-        />
+            />
     </application>
 
 </manifest>

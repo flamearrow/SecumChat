@@ -3,16 +3,17 @@ package com.shanjingtech.secumchat.net;
 import com.shanjingtech.secumchat.model.AccessCode;
 import com.shanjingtech.secumchat.model.AccessCodeRequest;
 import com.shanjingtech.secumchat.model.AccessToken;
-import com.shanjingtech.secumchat.model.AccessTokenRequest;
 import com.shanjingtech.secumchat.model.EndMatch;
 import com.shanjingtech.secumchat.model.EndMatchRequest;
-import com.shanjingtech.secumchat.model.GetMatchRequest;
 import com.shanjingtech.secumchat.model.GetMatch;
+import com.shanjingtech.secumchat.model.GetMatchRequest;
 import com.shanjingtech.secumchat.model.User;
 import com.shanjingtech.secumchat.model.UserRequest;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.Field;
+import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
 
@@ -28,7 +29,9 @@ public interface SecumAPI {
     public static final String TAG = "SecumAPI";
 
     String BASE_URL = "https://www.shanjingtech.com/";
-//    String BASE_URL = "http://59.110.93.125/";
+    String USER_NAME = "A7H5tpb2JQ7H66gPxbs6AAAVZgwtU12VPGoZpYUB";
+    String PASSWORD =
+            "uVVN0JPW5piZf7nZglh92gleVJWnfAZguILU1Z25UR52yZa2lLFPjOtYJj42PiNF0GTQ32OdP8bQyHAbaHwkRArvhzDZDNVuBZqheflBVACDBjHrbedilUfon5JPIm6R";
 
     /**
      * Register a user through phone number and username
@@ -48,12 +51,10 @@ public interface SecumAPI {
     Call<AccessCode> getAccessCode(@Body AccessCodeRequest request);
 
 
-    //TODO: figure out how to send with raw data(non json)
-//    curl -X POST  -d "grant_type=password&username=1595005019&password=966468"
-// -u"A7H5tpb2JQ7H66gPxbs6AAAVZgwtU12VPGoZpYUB
-// :uVVN0JPW5piZf7nZglh92gleVJWnfAZguILU1Z25UR52yZa2lLFPjOtYJj42PiNF0GTQ32OdP8bQyHAbaHwkRArvhzDZDNVuBZqheflBVACDBjHrbedilUfon5JPIm6R" https://www.yxg.me/api/o/token/
     @POST("/api/o/token/")
-    Call<AccessToken> getAccessToken(@Body AccessTokenRequest request);
+    @FormUrlEncoded
+    Call<AccessToken> getAccessToken(@Field("grant_type") String grantType, @Field("username")
+            String userName, @Field("password") String password);
 
     /**
      * Request a match and make me happy

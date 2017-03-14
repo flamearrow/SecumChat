@@ -7,10 +7,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 
-import com.shanjingtech.secumchat.model.GetMatch;
-import com.shanjingtech.secumchat.model.GetMatchRequest;
-import com.shanjingtech.secumchat.model.User;
-import com.shanjingtech.secumchat.model.UserRequest;
+import com.shanjingtech.secumchat.model.AccessToken;
 import com.shanjingtech.secumchat.util.Constants;
 import com.shanjingtech.secumchat.util.PermissionRequester;
 
@@ -86,21 +83,20 @@ public class LoginActivity extends SecumBaseActivity {
 //                                String s = call.getClass().toString();
 //                            }
 //                        });
-        String testName = "phone+16314560722";
-        secumAPI.getMatch(new GetMatchRequest(testName)).enqueue(
-                new Callback<GetMatch>() {
-                    @Override
-                    public void onResponse(Call<GetMatch> call, Response<GetMatch> response) {
-                        GetMatch matchResult = response.body();
-                        String s = matchResult.getMatchedUsername();
-                        String status = matchResult.getStatus();
-                    }
+        String formData = "grant_type=password&username=%2B16503181659&password=851927";
+        secumAPI.getAccessToken("password", "+16503181659", "851927").enqueue(new Callback<AccessToken>() {
+            @Override
+            public void onResponse(Call<AccessToken> call, Response<AccessToken> response) {
+                int i = 1;
+                int j = 2;
+            }
 
-                    @Override
-                    public void onFailure(Call<GetMatch> call, Throwable t) {
-
-                    }
-                });
+            @Override
+            public void onFailure(Call<AccessToken> call, Throwable t) {
+                int i = 1;
+                int j = 2;
+            }
+        });
     }
 
     /**

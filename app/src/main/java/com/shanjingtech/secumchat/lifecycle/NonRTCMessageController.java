@@ -78,6 +78,7 @@ public class NonRTCMessageController {
         this.username = myName;
         this.callbacks = lifeCycleCallbacks;
         this.pubnub = pubnub;
+        // listens to message to stand by channel
         pubnub.addListener(new SubscribeCallback() {
             @Override
             public void status(PubNub pubnub, PNStatus status) {

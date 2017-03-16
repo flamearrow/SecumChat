@@ -333,7 +333,7 @@ public class PnPeerConnectionClient {
         }
         return json;
     }
-
+    // listens on messages sent to own channel
     private class PnRTCReceiver extends SubscribeCallback {
 
         @Override

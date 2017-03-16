@@ -12,6 +12,7 @@ import com.pubnub.api.models.consumer.PNStatus;
 import com.pubnub.api.models.consumer.presence.PNHereNowResult;
 import com.pubnub.api.models.consumer.pubsub.PNMessageResult;
 import com.pubnub.api.models.consumer.pubsub.PNPresenceEventResult;
+import com.shanjingtech.pnwebrtc.PnPeerConnectionClient;
 import com.shanjingtech.secumchat.util.Constants;
 
 import org.json.JSONException;
@@ -21,7 +22,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Created by flamearrow on 2/26/17.
+ * Handle Pubnub messages
  */
 
 public class NonRTCMessageController {
@@ -104,7 +105,6 @@ public class NonRTCMessageController {
 
             @Override
             public void presence(PubNub pubnub, PNPresenceEventResult presence) {
-                String channelName = presence.getChannel();
             }
         });
     }
@@ -125,37 +125,34 @@ public class NonRTCMessageController {
     }
 
     /**
-     * Dial a callee, they'll be notified someone is calling
+     * Dial a peer, they'll be notified someone is calling
      *
-     * @param calleeNumber
+     * @param peerName
      */
-    public void dial(final String calleeNumber) {
+    public void dial(final String peerName) {
         // dial through their standy channel
-        final String calleeStdBy = calleeNumber + Constants.STDBY_SUFFIX;
+        final String calleeStdBy = peerName + Constants.STDBY_SUFFIX;
         pubnub.hereNow().channels(Arrays.asList(calleeStdBy)).includeUUIDs(true).async(new PNCallback<PNHereNowResult>() {
             @Override
             public void onResponse(PNHereNowResult result, PNStatus status) {
                 // this callback tells us if callee is online
                 try {
-//                    int occupancy = ((JSONObject) message).getInt(Constants.JSON_OCCUPANCY);
                     int occupancy = result.getTotalOccupancy();
                     // if callee is offline we just don't try to call him
                     if (occupancy == 0) {
-                        callbacks.onCalleeOffline(calleeNumber);
+                        callbacks.onCalleeOffline(peerName);
                         return;
                     }
                     // otherwise go ahead call callee
                     else {
-                        callbacks.onCalleeOnline(calleeNumber);
+                        callbacks.onCalleeOnline(peerName);
                     }
 
                     JSONObject jsonCall = new JSONObject();
                     jsonCall.put(Constants.JSON_CALL_USER, username);
                     jsonCall.put(Constants.JSON_CALL_TIME, System.currentTimeMillis());
 
-
                     pubnub.publish().channel(calleeStdBy).message(jsonCall).async(new PNCallback<PNPublishResult>() {
-
                         @Override
                         public void onResponse(PNPublishResult result, PNStatus status) {
                             if (status.isError()) {
@@ -171,5 +168,24 @@ public class NonRTCMessageController {
             }
         });
 
+    }
+
+    /**
+     * Send a hangup message to peer's own channel
+     *
+     * @param peerName
+     */
+    public void hangUp(final String peerName) {
+        JSONObject hangupMsg = PnPeerConnectionClient.generateHangupPacket(peerName);
+        pubnub.publish().channel(peerName).message(hangupMsg).async(new PNCallback<PNPublishResult>() {
+            @Override
+            public void onResponse(PNPublishResult result, PNStatus status) {
+                if (status.isError()) {
+                    Log.d(Constants.MLGB, "hangUp failed!");
+                } else {
+                    Log.d(Constants.MLGB, "hangUp succeeded!");
+                }
+            }
+        });
     }
 }

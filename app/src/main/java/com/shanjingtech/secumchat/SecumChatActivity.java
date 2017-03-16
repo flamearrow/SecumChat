@@ -12,11 +12,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.pubnub.api.callbacks.PNCallback;
-import com.pubnub.api.models.consumer.PNPublishResult;
 import com.pubnub.api.models.consumer.PNStatus;
 import com.pubnub.api.models.consumer.pubsub.PNMessageResult;
-import com.shanjingtech.pnwebrtc.PnPeerConnectionClient;
 import com.shanjingtech.pnwebrtc.PnRTCClient;
 import com.shanjingtech.pnwebrtc.PnSignalingParams;
 import com.shanjingtech.pnwebrtc.utils.JSONUtils;
@@ -223,21 +220,7 @@ public class SecumChatActivity extends SecumBaseActivity implements
      * Send peer an hangup message, regardless of its result, switch back to matching state
      */
     void hangUp() {
-        String peerName = getPeerName();
-        JSONObject hangupMsg = PnPeerConnectionClient.generateHangupPacket(myName);
-        pnRTCClient.getPubNub().publish().channel(peerName).message(hangupMsg).async(new PNCallback<PNPublishResult>() {
-
-
-            @Override
-            public void onResponse(PNPublishResult result, PNStatus status) {
-                if (status.isError()) {
-                    Log.d(Constants.MLGB, "hangUp failed!");
-                } else {
-                    Log.d(Constants.MLGB, "hangUp succeeded!");
-                }
-            }
-        });
-
+        nonRTCMessageController.hangUp(getPeerName());
         switchState(State.MATCHING);
     }
 
@@ -248,8 +231,8 @@ public class SecumChatActivity extends SecumBaseActivity implements
     @Override
     protected void onResume() {
         super.onResume();
-        switchState(State.MATCHING);
         initializeMediaStream();
+        switchState(State.MATCHING);
     }
 
     @Override

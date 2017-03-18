@@ -15,6 +15,7 @@ public class PnRTCMessage extends JSONObject {
     public static final String JSON_MESSAGE    = "message";
     public static final String JSON_USERMSG    = "usermsg";
     public static final String JSON_HANGUP     = "hangup";
+    public static final String JSON_ADDTIME    = "addtime";
     public static final String JSON_THUMBNAIL  = "thumbnail";
     public static final String JSON_SDP        = "sdp";
     public static final String JSON_ICE        = "candidate"; // Identify ICE

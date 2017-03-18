@@ -49,5 +49,6 @@
     <string name="end">end</string>
     <string name="meAdd">meAdd</string>
     <string name="peerAdd">peerAdd</string>
+    <string name="addTime">addTime</string>
 
 </resources>

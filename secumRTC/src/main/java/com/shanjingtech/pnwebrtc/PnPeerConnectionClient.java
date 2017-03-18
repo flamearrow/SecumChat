@@ -23,9 +23,11 @@ import org.webrtc.SessionDescription;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by flamearrow on 2/26/17.
@@ -55,13 +57,14 @@ public class PnPeerConnectionClient {
     }
 
     private void init() {
-        this.actionMap = new HashMap<String, PnAction>();
+        this.actionMap = new HashMap<>();
         this.actionMap.put(CreateOfferAction.TRIGGER, new CreateOfferAction());
         this.actionMap.put(CreateAnswerAction.TRIGGER, new CreateAnswerAction());
         this.actionMap.put(SetRemoteSDPAction.TRIGGER, new SetRemoteSDPAction());
         this.actionMap.put(AddIceCandidateAction.TRIGGER, new AddIceCandidateAction());
         this.actionMap.put(PnUserHangupAction.TRIGGER, new PnUserHangupAction());
         this.actionMap.put(PnUserMessageAction.TRIGGER, new PnUserMessageAction());
+        this.actionMap.put(PnUserAddtimeAction.TRIGGER, new PnUserAddtimeAction());
         mPubNub.addListener(new PnRTCReceiver());
     }
 
@@ -167,9 +170,14 @@ public class PnPeerConnectionClient {
      * Close connections (hangup) on all open connections.
      */
     public void closeAllConnections() {
-        Iterator<String> peerIds = this.peers.keySet().iterator();
-        while (peerIds.hasNext()) {
-            closeConnection(peerIds.next());
+//        Iterator<String> peerIds = this.peers.keySet().iterator();
+//        while (peerIds.hasNext()) {
+//            closeConnection(peerIds.next());
+//        }
+
+        Set<String> peerIds = new HashSet<>((this.peers.keySet()));
+        for (String peerId : peerIds) {
+            closeConnection(peerId);
         }
     }
 
@@ -209,11 +217,13 @@ public class PnPeerConnectionClient {
         void execute(String peerId, JSONObject payload) throws JSONException;
     }
 
+    private static final String PNACTION = "PnAction";
+
     private class CreateOfferAction implements PnAction {
         public static final String TRIGGER = "init";
 
         public void execute(String peerId, JSONObject payload) throws JSONException {
-            Log.d("COAction", "CreateOfferAction");
+            Log.d(PNACTION, "CreateOfferAction");
             PnPeer peer = peers.get(peerId);
             peer.setDialed(true);
             peer.setType(PnPeer.TYPE_ANSWER);
@@ -225,7 +235,7 @@ public class PnPeerConnectionClient {
         public static final String TRIGGER = "offer";
 
         public void execute(String peerId, JSONObject payload) throws JSONException {
-            Log.d("CAAction", "CreateAnswerAction");
+            Log.d(PNACTION, "CreateAnswerAction");
             PnPeer peer = peers.get(peerId);
             peer.setType(PnPeer.TYPE_OFFER);
             peer.setStatus(PnPeer.STATUS_CONNECTED);
@@ -242,7 +252,7 @@ public class PnPeerConnectionClient {
         public static final String TRIGGER = "answer";
 
         public void execute(String peerId, JSONObject payload) throws JSONException {
-            Log.d("SRSAction", "SetRemoteSDPAction");
+            Log.d(PNACTION, "SetRemoteSDPAction");
             PnPeer peer = peers.get(peerId);
             SessionDescription sdp = new SessionDescription(
                     SessionDescription.Type.fromCanonicalForm(payload.getString("type")),
@@ -256,7 +266,7 @@ public class PnPeerConnectionClient {
         public static final String TRIGGER = "candidate";
 
         public void execute(String peerId, JSONObject payload) throws JSONException {
-            Log.d("AICAction", "AddIceCandidateAction");
+            Log.d(PNACTION, "AddIceCandidateAction");
             PeerConnection pc = peers.get(peerId).pc;
             if (pc.getRemoteDescription() != null) {
                 IceCandidate candidate = new IceCandidate(
@@ -273,7 +283,7 @@ public class PnPeerConnectionClient {
         public static final String TRIGGER = PnRTCMessage.JSON_HANGUP;
 
         public void execute(String peerId, JSONObject payload) throws JSONException {
-            Log.d("PnUserHangup", "PnUserHangupAction");
+            Log.d(PNACTION, "PnUserHangupAction");
             PnPeer peer = peers.get(peerId);
             peer.hangup();
             mRtcListener.onPeerConnectionClosed(peer);
@@ -285,10 +295,20 @@ public class PnPeerConnectionClient {
         public static final String TRIGGER = PnRTCMessage.JSON_USERMSG;
 
         public void execute(String peerId, JSONObject payload) throws JSONException {
-            Log.d("PnUserMessage", "AddIceCandidateAction");
+            Log.d(PNACTION, "AddIceCandidateAction");
             JSONObject msgJson = payload.getJSONObject(PnRTCMessage.JSON_USERMSG);
             PnPeer peer = peers.get(peerId);
             mRtcListener.onMessage(peer, msgJson);
+        }
+    }
+
+    private class PnUserAddtimeAction implements PnAction {
+        public static final String TRIGGER = PnRTCMessage.JSON_ADDTIME;
+
+        public void execute(String peerId, JSONObject payload) throws JSONException {
+            Log.d(PNACTION, "PnUserAddtimeAction");
+            PnPeer peer = peers.get(peerId);
+            mRtcListener.onAddTime(peer);
         }
     }
 
@@ -302,6 +322,24 @@ public class PnPeerConnectionClient {
         try {
             JSONObject packet = new JSONObject();
             packet.put(PnRTCMessage.JSON_HANGUP, true);
+            json.put(PnRTCMessage.JSON_PACKET, packet);
+            json.put(PnRTCMessage.JSON_ID, ""); //Todo: session id, unused in js SDK?
+            json.put(PnRTCMessage.JSON_NUMBER, userId);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return json;
+    }
+
+    /**
+     * @param userId Your id. Used to tag the message before publishing it to another user.
+     * @return
+     */
+    public static JSONObject generateAddtimePacket(String userId) {
+        JSONObject json = new JSONObject();
+        try {
+            JSONObject packet = new JSONObject();
+            packet.put(PnRTCMessage.JSON_ADDTIME, true);
             json.put(PnRTCMessage.JSON_PACKET, packet);
             json.put(PnRTCMessage.JSON_ID, ""); //Todo: session id, unused in js SDK?
             json.put(PnRTCMessage.JSON_NUMBER, userId);
@@ -333,6 +371,7 @@ public class PnPeerConnectionClient {
         }
         return json;
     }
+
     // listens on messages sent to own channel
     private class PnRTCReceiver extends SubscribeCallback {
 
@@ -375,6 +414,10 @@ public class PnPeerConnectionClient {
                     }
                     if (packet.has(PnRTCMessage.JSON_HANGUP)) {
                         actionMap.get(PnUserHangupAction.TRIGGER).execute(peerId, packet);
+                        return;
+                    }
+                    if (packet.has(PnRTCMessage.JSON_ADDTIME)) {
+                        actionMap.get(PnUserAddtimeAction.TRIGGER).execute(peerId, packet);
                         return;
                     }
                     if (packet.has(PnRTCMessage.JSON_THUMBNAIL)) {

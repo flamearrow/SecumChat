@@ -1,6 +1,5 @@
 package com.shanjingtech.secumchat.lifecycle;
 
-import android.app.Activity;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -17,6 +16,7 @@ import java.util.Set;
 
 import com.shanjingtech.pnwebrtc.PnPeer;
 import com.shanjingtech.pnwebrtc.PnRTCListener;
+import com.shanjingtech.secumchat.SecumChatActivity;
 import com.shanjingtech.secumchat.util.Constants;
 
 /**
@@ -31,7 +31,7 @@ public class SecumRTCListener extends PnRTCListener {
     }
 
     private static final String TAG = "SecumRTCListener";
-    private Activity activity;
+    private SecumChatActivity secumChatActivity;
     private VideoRenderer localVideoRenderer;
     private VideoRenderer remoteVideoRenderer;
     private VideoRenderer.Callbacks localCallbacks;
@@ -39,8 +39,8 @@ public class SecumRTCListener extends PnRTCListener {
 
     private Set<RTCPeerListener> rTCPeerListeners;
 
-    public SecumRTCListener(Activity activity) {
-        this.activity = activity;
+    public SecumRTCListener(SecumChatActivity secumChatActivity) {
+        this.secumChatActivity = secumChatActivity;
         remoteCallbacks = VideoRendererGui.create(0, 0, 100, 100, VideoRendererGui.ScalingType
                 .SCALE_ASPECT_FILL, false);
         localCallbacks = VideoRendererGui.create(0, 0, 100, 100, VideoRendererGui.ScalingType
@@ -61,7 +61,7 @@ public class SecumRTCListener extends PnRTCListener {
     @Override
     public void onLocalStream(final MediaStream localStream) {
         super.onLocalStream(localStream); // Will log values
-        activity.runOnUiThread(new Runnable() {
+        secumChatActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 if (localStream.videoTracks.size() == 0) {
@@ -77,7 +77,7 @@ public class SecumRTCListener extends PnRTCListener {
      * Reset local stream to full screen
      */
     public void resetLocalStream() {
-        activity.runOnUiThread(new Runnable() {
+        secumChatActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 VideoRendererGui.update(localCallbacks, 0, 0, 100, 100, VideoRendererGui
@@ -92,10 +92,10 @@ public class SecumRTCListener extends PnRTCListener {
         for (RTCPeerListener listener : rTCPeerListeners) {
             listener.onRTCPeerConnected();
         }
-        activity.runOnUiThread(new Runnable() {
+        secumChatActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(activity, "Connected to " + peer.getId(), Toast
+                Toast.makeText(secumChatActivity, "Connected to " + peer.getId(), Toast
                         .LENGTH_SHORT).show();
                 try {
                     if (remoteStream.audioTracks.size() == 0 || remoteStream.videoTracks.size
@@ -133,16 +133,15 @@ public class SecumRTCListener extends PnRTCListener {
             String uuid = jsonMsg.getString(Constants.JSON_MSG_UUID);
             String msg = jsonMsg.getString(Constants.JSON_MSG);
             long time = jsonMsg.getLong(Constants.JSON_TIME);
-//            final ChatMessage chatMsg = new ChatMessage(uuid, msg, time);
-//                SecumChatActivity.this.runOnUiThread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        mChatAdapter.addMessage(chatMsg);
-//                    }
-//                });
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void onAddTime(PnPeer peer) {
+        super.onAddTime(peer);
+        secumChatActivity.peerAddTime();
     }
 
     @Override

@@ -53,4 +53,8 @@ public class Constants {
 
     // shared preference
     public static final String PREF_FILE = "com.shanjingtech.secumchat.PREF_FILE";
+
+    // counter
+    public static final int TORA = 9;
+    public static final int SECONDS_TO_ADD = 30;
 }

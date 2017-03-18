@@ -181,11 +181,31 @@ public class NonRTCMessageController {
             @Override
             public void onResponse(PNPublishResult result, PNStatus status) {
                 if (status.isError()) {
-                    Log.d(Constants.MLGB, "hangUp failed!");
+                    Log.d(TAG, "hangUp failed!");
                 } else {
-                    Log.d(Constants.MLGB, "hangUp succeeded!");
+                    Log.d(TAG, "hangUp succeeded!");
                 }
             }
         });
+    }
+
+    /**
+     * Send a addtime message to peer's own channel, they'll be notified peerAdd
+     *
+     * @param peerName
+     */
+    public void addTime(final String peerName) {
+        JSONObject addtimeMsg = PnPeerConnectionClient.generateAddtimePacket(peerName);
+        pubnub.publish().channel(peerName).message(addtimeMsg).async(new PNCallback<PNPublishResult>() {
+            @Override
+            public void onResponse(PNPublishResult result, PNStatus status) {
+                if (status.isError()) {
+                    Log.d(TAG, "addTime failed!");
+                } else {
+                    Log.d(TAG, "addTime succeeded!");
+                }
+            }
+        });
+
     }
 }

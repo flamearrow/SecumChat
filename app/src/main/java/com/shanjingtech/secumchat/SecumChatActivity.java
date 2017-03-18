@@ -23,6 +23,7 @@ import com.shanjingtech.secumchat.model.GetMatch;
 import com.shanjingtech.secumchat.net.SecumNetworkRequester;
 import com.shanjingtech.secumchat.servers.XirSysRequest;
 import com.shanjingtech.secumchat.util.Constants;
+import com.shanjingtech.secumchat.util.SecumCounter;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -48,7 +49,8 @@ import java.util.concurrent.ExecutionException;
 public class SecumChatActivity extends SecumBaseActivity implements
         SecumRTCListener.RTCPeerListener,
         NonRTCMessageController.NonRTCMessageControllerCallbacks,
-        SecumNetworkRequester.SecumNetworkRequesterCallbacks {
+        SecumNetworkRequester.SecumNetworkRequesterCallbacks,
+        SecumCounter.SecumCounterListener {
 
     private GLSurfaceView videoView;
 
@@ -66,7 +68,9 @@ public class SecumChatActivity extends SecumBaseActivity implements
     // The button should be invisible until the user is being called
     private Button acceptButton;
     private Button rejectButton;
+    private Button addTimeButton;
     private TextView messageField;
+    private SecumCounter secumCounter;
 
     // debug field, to be removed
     private Button connectButton;
@@ -102,8 +106,10 @@ public class SecumChatActivity extends SecumBaseActivity implements
     private void initUI() {
         acceptButton = (Button) findViewById(R.id.accept_button);
         rejectButton = (Button) findViewById(R.id.reject_button);
+        addTimeButton = (Button) findViewById(R.id.add_time_button);
         messageField = (TextView) findViewById(R.id.message_field);
-
+        secumCounter = (SecumCounter) findViewById(R.id.secum_counter);
+        secumCounter.setSecumCounterListener(this);
         // to be removed
         calleeField = (EditText) findViewById(R.id.callee_name);
         connectButton = (Button) findViewById(R.id.connect_button);
@@ -219,13 +225,22 @@ public class SecumChatActivity extends SecumBaseActivity implements
     /**
      * Send peer an hangup message, regardless of its result, switch back to matching state
      */
-    void hangUp() {
-        nonRTCMessageController.hangUp(getPeerName());
+    private void hangUp() {
+        String peerName = getPeerName();
+        if (peerName != null) {
+            nonRTCMessageController.hangUp(peerName);
+        }
         switchState(State.MATCHING);
     }
 
+    @Nullable
     private String getPeerName() {
-        return getMatch.getMatchedUsername();
+        // getMatch could be nullified by peer hangup
+        if (getMatch == null) {
+            return null;
+        } else {
+            return getMatch.getMatchedUsername();
+        }
     }
 
     @Override
@@ -318,10 +333,11 @@ public class SecumChatActivity extends SecumBaseActivity implements
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                hidAllUI();
                 // show buttons invisible, message field visible
                 messageField.setVisibility(View.VISIBLE);
                 messageField.setText("matching...");
-                turnButtons(false);
+//                turnButtons(false);
                 secumRTCListener.resetLocalStream();
             }
         });
@@ -331,6 +347,7 @@ public class SecumChatActivity extends SecumBaseActivity implements
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                hidAllUI();
                 // show matching you with callee name
                 // accept/reject button
                 messageField.setVisibility(View.VISIBLE);
@@ -348,6 +365,7 @@ public class SecumChatActivity extends SecumBaseActivity implements
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                hidAllUI();
                 messageField.setVisibility(View.VISIBLE);
                 messageField.setText("matching you with " + getMatch.getCaller());
                 turnButtons(true);
@@ -359,10 +377,14 @@ public class SecumChatActivity extends SecumBaseActivity implements
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                hidAllUI();
                 // hide message field,
                 // TODO: mlgb need to addtime button
-                messageField.setVisibility(View.INVISIBLE);
-                turnButtons(false);
+//                messageField.setVisibility(View.INVISIBLE);
+//                turnButtons(false);
+                secumCounter.setVisibility(View.VISIBLE);
+                addTimeButton.setVisibility(View.VISIBLE);
+                secumCounter.initialize();
             }
         });
     }
@@ -371,8 +393,9 @@ public class SecumChatActivity extends SecumBaseActivity implements
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                hidAllUI();
                 // hide buttons
-                turnButtons(false);
+//                turnButtons(false);
                 messageField.setVisibility(View.VISIBLE);
                 messageField.setText("matching you with " + getMatch.getCallee());
             }
@@ -383,10 +406,11 @@ public class SecumChatActivity extends SecumBaseActivity implements
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                hidAllUI();
                 // TODO: replace otherside with real name
                 showToast("" + getPeerName() + " rejected");
-                messageField.setVisibility(View.INVISIBLE);
-                turnButtons(false);
+//                messageField.setVisibility(View.INVISIBLE);
+//                turnButtons(false);
             }
         });
     }
@@ -399,6 +423,13 @@ public class SecumChatActivity extends SecumBaseActivity implements
             acceptButton.setVisibility(View.INVISIBLE);
             rejectButton.setVisibility(View.INVISIBLE);
         }
+    }
+
+    private void hidAllUI() {
+        turnButtons(false);
+        messageField.setVisibility(View.INVISIBLE);
+        secumCounter.setVisibility(View.INVISIBLE);
+        addTimeButton.setVisibility(View.INVISIBLE);
     }
 
     public void toDial(View view) {
@@ -423,6 +454,23 @@ public class SecumChatActivity extends SecumBaseActivity implements
         getMatch.setCallerName("mlgb");
     }
 
+    /**
+     * When I clicked addTime
+     *
+     * @param view
+     */
+    public void addTime(View view) {
+        secumCounter.meAdd();
+        // send a addTime packet
+        nonRTCMessageController.addTime(getPeerName());
+    }
+
+    /**
+     * When peer clicked addTime
+     */
+    public void peerAddTime() {
+        secumCounter.peerAdd();
+    }
 
     public void acceptChat(View view) {
         // I can't switch to CHATTING state yet as callee hasn't connect
@@ -558,12 +606,40 @@ public class SecumChatActivity extends SecumBaseActivity implements
 
     @Override
     public void onEndMatchSucceed() {
-
     }
 
     @Override
     public void onEndMatchFailed() {
 
+    }
+
+    private static final String SECUMCOUNTER = "SecumCounter";
+
+    @Override
+    public void onCounterStart() {
+        Log.d(SECUMCOUNTER, "onCounterStart");
+    }
+
+    @Override
+    public void onCounterExpire() {
+        hangUp();
+        Log.d(SECUMCOUNTER, "onCounterExpire");
+    }
+
+    @Override
+    public void onMeAdd() {
+        Log.d(SECUMCOUNTER, "onMeAdd");
+    }
+
+    @Override
+    public void onPeerAdd() {
+        Log.d(SECUMCOUNTER, "onPeerAdd");
+    }
+
+    @Override
+    public void onAddTimePaired(int secondsLeft) {
+        Log.d(SECUMCOUNTER, "onAddTimePaired: " + secondsLeft);
+        answers.logCustom(addTimePairedFactory.create(getMatch.getCaller(), getMatch.getCallee()));
     }
 
     enum State {

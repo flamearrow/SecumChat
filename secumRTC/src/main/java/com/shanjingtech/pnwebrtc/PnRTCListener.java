@@ -76,6 +76,14 @@ public abstract class PnRTCListener {
     }
 
     /**
+     * Called when a addtime message is send via {@link com.pubnub.api.PubNub} object.
+     *
+     * @param peer    The peer who sent the message
+     */
+    public void onAddTime(PnPeer peer) {
+    }
+
+    /**
      * A helpful debugging callback for testing and developing your app.
      *
      * @param message The {@link PnRTCMessage} debug message.

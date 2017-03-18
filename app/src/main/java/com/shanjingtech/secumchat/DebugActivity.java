@@ -47,8 +47,8 @@ public class DebugActivity extends Activity implements SecumCounter.SecumCounter
     }
 
     @Override
-    public void onCounterAddTime(int secondsLeft) {
-        Log.d(TAG, "onCounterAddTime " + secondsLeft);
+    public void onAddTimePaired(int secondsLeft) {
+        Log.d(TAG, "onAddTimePaired " + secondsLeft);
 
     }
 

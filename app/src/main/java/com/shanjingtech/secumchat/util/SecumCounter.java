@@ -30,7 +30,7 @@ public class SecumCounter extends android.support.v7.widget.AppCompatTextView {
          *
          * @param secondsLeft how many seconds left
          */
-        void onCounterAddTime(int secondsLeft);
+        void onAddTimePaired(int secondsLeft);
     }
 
     private boolean running;
@@ -86,7 +86,7 @@ public class SecumCounter extends android.support.v7.widget.AppCompatTextView {
         if (meAdd && peerAdd) {
             secondsLeft += Constants.SECONDS_TO_ADD;
             if (listener != null) {
-                listener.onCounterAddTime(secondsLeft);
+                listener.onAddTimePaired(secondsLeft);
             }
             meAdd = false;
             peerAdd = false;

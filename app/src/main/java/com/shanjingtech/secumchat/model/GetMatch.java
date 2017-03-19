@@ -9,6 +9,9 @@ import com.shanjingtech.secumchat.net.SecumAPI;
  */
 
 public class GetMatch {
+    public boolean isValid() {
+        return callerName != null && calleeName != null;
+    }
 
     public boolean isSuccess() {
         return SecumAPI.MATCH_ACTIVE.equals(status);

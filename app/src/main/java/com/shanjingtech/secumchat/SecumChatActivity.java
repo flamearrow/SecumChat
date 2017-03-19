@@ -1,15 +1,11 @@
 package com.shanjingtech.secumchat;
 
-import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.pubnub.api.models.consumer.PNStatus;
@@ -22,6 +18,7 @@ import com.shanjingtech.secumchat.lifecycle.SecumRTCListener;
 import com.shanjingtech.secumchat.model.GetMatch;
 import com.shanjingtech.secumchat.net.SecumNetworkRequester;
 import com.shanjingtech.secumchat.servers.XirSysRequest;
+import com.shanjingtech.secumchat.ui.DialingReceivingWaitingLayout;
 import com.shanjingtech.secumchat.util.Constants;
 import com.shanjingtech.secumchat.util.SecumCounter;
 
@@ -62,20 +59,13 @@ public class SecumChatActivity extends SecumBaseActivity implements
     private PnRTCClient pnRTCClient;
 
     private String myName;
-    private String incomingCallerName;
 
     // UI
     // The button should be invisible until the user is being called
-    private Button acceptButton;
-    private Button rejectButton;
+    private DialingReceivingWaitingLayout dialingReceivingWaitingView;
+    private View matchingView;
     private Button addTimeButton;
-    private TextView messageField;
     private SecumCounter secumCounter;
-
-    // debug field, to be removed
-    private Button connectButton;
-    private EditText calleeField;
-
 
     // pubnub
     private NonRTCMessageController nonRTCMessageController;
@@ -104,31 +94,12 @@ public class SecumChatActivity extends SecumBaseActivity implements
     }
 
     private void initUI() {
-        acceptButton = (Button) findViewById(R.id.accept_button);
-        rejectButton = (Button) findViewById(R.id.reject_button);
         addTimeButton = (Button) findViewById(R.id.add_time_button);
-        messageField = (TextView) findViewById(R.id.message_field);
         secumCounter = (SecumCounter) findViewById(R.id.secum_counter);
         secumCounter.setSecumCounterListener(this);
-        // to be removed
-        calleeField = (EditText) findViewById(R.id.callee_name);
-        connectButton = (Button) findViewById(R.id.connect_button);
-        calleeField.setVisibility(View.INVISIBLE);
-        connectButton.setVisibility(View.INVISIBLE);
-    }
-
-    // turn on Accept button
-    // should it's accepted, #acceptChat will be called
-    private void dispatchIncomingCall(final String userId) {
-        Log.d(Constants.MLGB, "incoming call from: " + userId);
-        incomingCallerName = userId;
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                acceptButton.setText("accept call from " + userId);
-                acceptButton.setVisibility(View.VISIBLE);
-            }
-        });
+        dialingReceivingWaitingView = (DialingReceivingWaitingLayout) findViewById(R.id
+                .dialing_receiving_waiting);
+        matchingView = findViewById(R.id.matching_view);
     }
 
     private void initRTCComponents() {
@@ -209,19 +180,6 @@ public class SecumChatActivity extends SecumBaseActivity implements
         return servers;
     }
 
-    // TODO: to remove
-    public void connect(View view) {
-        String calleeName = calleeField.getText().toString();
-        if (calleeName.isEmpty() || calleeName.equals(this.myName)) {
-            showToast("Enter a valid user ID to call.");
-            return;
-        }
-        hideKeyboard();
-
-        // TODO: mlgb: this should be triggered when we receive server getmatch response
-        nonRTCMessageController.dial(calleeName);
-    }
-
     /**
      * Send peer an hangup message, regardless of its result, switch back to matching state
      */
@@ -262,15 +220,6 @@ public class SecumChatActivity extends SecumBaseActivity implements
         // stop camera
         // TODO: make sure this turns off camera
         localStream.dispose();
-    }
-
-    private void hideKeyboard() {
-        View view = this.getCurrentFocus();
-        if (view != null) {
-            InputMethodManager imm = (InputMethodManager) getSystemService(Context
-                    .INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-        }
     }
 
     private void showToast(final String message) {
@@ -334,10 +283,7 @@ public class SecumChatActivity extends SecumBaseActivity implements
             @Override
             public void run() {
                 hidAllUI();
-                // show buttons invisible, message field visible
-                messageField.setVisibility(View.VISIBLE);
-                messageField.setText("matching...");
-//                turnButtons(false);
+                matchingView.setVisibility(View.VISIBLE);
                 secumRTCListener.resetLocalStream();
             }
         });
@@ -348,27 +294,21 @@ public class SecumChatActivity extends SecumBaseActivity implements
             @Override
             public void run() {
                 hidAllUI();
-                // show matching you with callee name
-                // accept/reject button
-                messageField.setVisibility(View.VISIBLE);
-                messageField.setText("matching you with " + getMatch.getCallee());
-                turnButtons(true);
+                dialingReceivingWaitingView.setMessage("matching you with " + getMatch.getCallee());
+                dialingReceivingWaitingView.setVisibility(View.VISIBLE);
+                dialingReceivingWaitingView.switchUIState(State.DIALING);
             }
         });
     }
 
     private void showReceivingUI() {
-        // show matching with caller
-//        messageField.setVisibility(View.VISIBLE);
-//        messageField.setText("matching you with " + getMatch.caller);
-
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 hidAllUI();
-                messageField.setVisibility(View.VISIBLE);
-                messageField.setText("matching you with " + getMatch.getCaller());
-                turnButtons(true);
+                dialingReceivingWaitingView.setMessage("matching you with " + getMatch.getCaller());
+                dialingReceivingWaitingView.setVisibility(View.VISIBLE);
+                dialingReceivingWaitingView.switchUIState(State.RECEIVING);
             }
         });
     }
@@ -378,10 +318,6 @@ public class SecumChatActivity extends SecumBaseActivity implements
             @Override
             public void run() {
                 hidAllUI();
-                // hide message field,
-                // TODO: mlgb need to addtime button
-//                messageField.setVisibility(View.INVISIBLE);
-//                turnButtons(false);
                 secumCounter.setVisibility(View.VISIBLE);
                 addTimeButton.setVisibility(View.VISIBLE);
                 secumCounter.initialize();
@@ -394,10 +330,9 @@ public class SecumChatActivity extends SecumBaseActivity implements
             @Override
             public void run() {
                 hidAllUI();
-                // hide buttons
-//                turnButtons(false);
-                messageField.setVisibility(View.VISIBLE);
-                messageField.setText("matching you with " + getMatch.getCallee());
+                dialingReceivingWaitingView.setMessage("matching you with " + getMatch.getCallee());
+                dialingReceivingWaitingView.setVisibility(View.VISIBLE);
+                dialingReceivingWaitingView.switchUIState(State.WAITING);
             }
         });
     }
@@ -407,51 +342,24 @@ public class SecumChatActivity extends SecumBaseActivity implements
             @Override
             public void run() {
                 hidAllUI();
-                // TODO: replace otherside with real name
                 showToast("" + getPeerName() + " rejected");
-//                messageField.setVisibility(View.INVISIBLE);
-//                turnButtons(false);
             }
         });
     }
 
-    private void turnButtons(boolean on) {
-        if (on) {
-            acceptButton.setVisibility(View.VISIBLE);
-            rejectButton.setVisibility(View.VISIBLE);
-        } else {
-            acceptButton.setVisibility(View.INVISIBLE);
-            rejectButton.setVisibility(View.INVISIBLE);
-        }
-    }
-
     private void hidAllUI() {
-        turnButtons(false);
-        messageField.setVisibility(View.INVISIBLE);
+        dialingReceivingWaitingView.setVisibility(View.INVISIBLE);
         secumCounter.setVisibility(View.INVISIBLE);
         addTimeButton.setVisibility(View.INVISIBLE);
+        matchingView.setVisibility(View.INVISIBLE);
     }
 
     public void toDial(View view) {
         // test, need to be switch from getMatch
-
-//        fakeIncomingGetMatchResponse();
-        switchState(State.DIALING);
     }
 
     public void toReceive(View view) {
         // test, need to be switch from getMatch
-        // need to be called after peer switch to dial
-
-//        fakeIncomingGetMatchResponse();
-//        switchState(State.RECEIVING);
-    }
-
-    // note this should come from network
-    public void fakeIncomingGetMatchResponse() {
-        getMatch = new GetMatch();
-        getMatch.setCalleeName("mlgb2");
-        getMatch.setCallerName("mlgb");
     }
 
     /**
@@ -546,8 +454,6 @@ public class SecumChatActivity extends SecumBaseActivity implements
             // standby Channel called, verify if it's from the correct caller, if not ignore
             // it's possible callee hasn't receive getMatch yet
 
-            // TO REMOVE
-//            fakeIncomingGetMatchResponse();
             if (user.equals(getMatch.getCaller())) {
                 switchState(State.RECEIVING);
             }
@@ -634,6 +540,7 @@ public class SecumChatActivity extends SecumBaseActivity implements
     @Override
     public void onPeerAdd() {
         Log.d(SECUMCOUNTER, "onPeerAdd");
+        showToast(getPeerName() + " wants to add time!");
     }
 
     @Override
@@ -642,7 +549,7 @@ public class SecumChatActivity extends SecumBaseActivity implements
         answers.logCustom(addTimePairedFactory.create(getMatch.getCaller(), getMatch.getCallee()));
     }
 
-    enum State {
+    public enum State {
         MATCHING, // wait for server to give me a match
         DIALING, // I dial the other, call dial(callee)
         RECEIVING, // I'm about to receive the dial

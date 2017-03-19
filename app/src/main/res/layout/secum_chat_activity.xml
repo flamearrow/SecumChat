@@ -36,66 +36,18 @@
         android:layout_marginTop="300dp"
         android:orientation="vertical">
 
-        <EditText
-            android:id="@+id/callee_name"
-            android:layout_width="200dp"
-            android:layout_height="match_parent"
-            android:hint="@string/mlgb"
-            android:textColor="@color/white"
-            android:textSize="20dp"/>
+        <ImageView
+            android:id="@+id/matching_view"
+            android:layout_width="160dp"
+            android:layout_height="160dp"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/coolcat"/>
 
-        <Button
-            android:id="@+id/connect_button"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:onClick="connect"
-            android:text="@string/connect"/>
-
-        <TextView
-            android:id="@+id/message_field"
+        <com.shanjingtech.secumchat.ui.DialingReceivingWaitingLayout
+            android:id="@+id/dialing_receiving_waiting"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/matched"
-            android:textColor="@color/pn_blue"
-            android:textSize="25sp"/>
+            android:layout_height="wrap_content"/>
 
-        <com.shanjingtech.secumchat.util.SecumCounter
-            android:id="@+id/secum_counter"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/mlgb"
-            android:textColor="@color/white"
-            android:textSize="25sp"/>
-
-        <Button
-            android:id="@+id/add_time_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@color/white"
-            android:onClick="addTime"
-            android:text="@string/addTime"/>
-
-        <Button
-            android:id="@+id/accept_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/white"
-            android:onClick="acceptChat"
-            android:text="@string/accept"
-            android:textColor="@color/pn_blue"
-            android:textSize="25sp"/>
-
-        <Button
-            android:id="@+id/reject_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/white"
-            android:onClick="rejectChat"
-            android:text="@string/reject"
-            android:textColor="@color/pn_blue"
-            android:textSize="25sp"/>
-
+        <include layout="@layout/chatting_layout"/>
     </LinearLayout>
-
-
 </RelativeLayout>

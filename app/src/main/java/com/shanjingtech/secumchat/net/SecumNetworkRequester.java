@@ -92,9 +92,9 @@ public class SecumNetworkRequester {
                 @Override
                 public void onResponse(Call<GetMatch> call, Response<GetMatch> response) {
                     GetMatch getMatch = response.body();
-                    answers.logCustom(getMatchSuccessFactory.create(getMatch.getCaller(),
-                            getMatch.getCallee()));
-                    if (getMatch.isSuccess()) {
+                    if (getMatch != null && getMatch.isSuccess()) {
+                        answers.logCustom(getMatchSuccessFactory.create(getMatch.getCaller(),
+                                getMatch.getCallee()));
                         Log.d(SecumAPI.TAG, "GetMatch(" + myName + ") Success, caller: " + getMatch
                                 .getCaller());
                         if (getMatch.isCaller()) {
@@ -133,7 +133,7 @@ public class SecumNetworkRequester {
                         @Override
                         public void onResponse(Call<EndMatch> call, Response<EndMatch> response) {
                             EndMatch endMatch = response.body();
-                            if (endMatch.isSuccess()) {
+                            if (endMatch != null && endMatch.isSuccess()) {
                                 callbacks.onEndMatchSucceed();
                                 Log.d(SecumAPI.TAG, "EndMatch(" + myName + ") Success, posting " +
                                         "GetMatch");

@@ -82,3 +82,6 @@
        "logging":"Time now: 2017-02-26 01:32:46 ## phone_+16503181659; is_matching : True; live_exp: 2017-02-26 01:32:55 ## phone_0771587664; is_matching : True; live_exp: 2017-02-26 01:31:52 ##  match #8 status: DELETED; (phone_+16503181659, phone_0771587664) ; expire at 2017-02-26 01:32:17",
        "matched_username":null
     }
+
+6. Update user
+  curl -X POST -H "Content-Type: application/json" -u superuser:superuser -d '{"phone": "+16503181659","age": 200, "gender": "male",  "lat": "37.37073050000001", "lng": "-122.01352050000001"}'  http://127.0.0.1:8000/api/users/update_user/

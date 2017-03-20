@@ -61,6 +61,8 @@ dependencies {
         transitive = true;
     }
 
+    compile 'com.wefika:horizontal-picker:1.1.1'
+
     compile project(':secumRTC')
 
     testCompile 'junit:junit:4.12'

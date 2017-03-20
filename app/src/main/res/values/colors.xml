@@ -6,16 +6,22 @@
     <color name="pn_red">#d02129</color>
     <color name="pn_blue">#ff19a2c6</color>
     <color name="pn_blue_dark">#ff187998</color>
-    <color name="white">#FFF</color>
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="disabled_text">#42000000</color>
     <color name="green">#ff1ce322</color>
-    <color name="grey">#80FFFFFF</color>
+    <color name="grey">#4E4E4E</color>
     <color name="violet">#EE82EE</color>
 
 
     <!--Analogous color palette-->
+    <color name="disabled_button_background">#42b79412</color>
+    <color name="light_yellow">#FFF600</color>
     <color name="lemon_yellow">#FFE600</color>
     <color name="mid_yellow">#E8BC08</color>
-    <color name="dark_yellow">#FFA200</color>
+    <color name="dark_yellow">#B89512</color>
     <color name="magenta">#E8057B</color>
-    <color name="gay_purple">#831CFF</color>
+    <color name="light_purple">#7B47D8</color>
+    <color name="mid_purple">#6032B1</color>
+    <color name="dark_purple">#562D9F</color>
 </resources>

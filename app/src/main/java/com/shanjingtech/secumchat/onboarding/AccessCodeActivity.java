@@ -2,15 +2,17 @@ package com.shanjingtech.secumchat.onboarding;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.shanjingtech.secumchat.R;
 import com.shanjingtech.secumchat.SecumBaseActivity;
 import com.shanjingtech.secumchat.model.AccessCode;
 import com.shanjingtech.secumchat.model.AccessCodeRequest;
+import com.shanjingtech.secumchat.ui.AccessCodeLayout;
 import com.shanjingtech.secumchat.util.Constants;
-import com.shanjingtech.secumchat.util.PermissionRequester;
 import com.shanjingtech.secumchat.util.SecumDebug;
 
 import retrofit2.Call;
@@ -25,20 +27,32 @@ import retrofit2.Response;
  * c) name/age/gender
  * d) request access
  */
-public class AccessCodeActivity extends SecumBaseActivity {
-    private TextView accesCode;
+public class AccessCodeActivity extends SecumBaseActivity
+        implements AccessCodeLayout.OnTextChangedListener {
+    public static final String TAG = "AccessCodeActivity";
+    private AccessCodeLayout accessCode;
     private String phoneNo;
     private String correctAccessCode;
     private boolean isDebug;
+    private Button goButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.access_code_activity);
-        accesCode = (TextView) findViewById(R.id.access_code);
+        accessCode = (AccessCodeLayout) findViewById(R.id.access_code);
+        accessCode.setOnTextChangedListener(this);
+        goButton = (Button) findViewById(R.id.go);
         // Passed from PhoneNumActivity
         phoneNo = getIntent().getStringExtra(Constants.PHONE_NUMBER);
         isDebug = SecumDebug.isDebugMode(this);
+        if (!isDebug) {
+            requestAccessCodeFromServer();
+        }
+    }
+
+    public void resend(View view) {
+        Log.d(TAG, "resend");
         if (!isDebug) {
             requestAccessCodeFromServer();
         }
@@ -65,21 +79,28 @@ public class AccessCodeActivity extends SecumBaseActivity {
     }
 
     public void clickGo(View view) {
-        String code = accesCode.getText().toString();
+        String code = accessCode.getAccessCode();
         if (isDebug || validateAccessCode(code)) {
             Intent intent = null;
             // TODO: make permission requester work
 //            if (PermissionRequester.needToRequestPermission()) {
 //                intent = new Intent(this, PermissionRequestActivity.class);
 //            } else {
-                intent = new Intent(this, MyDetailsActivty.class);
-                String username = Constants.USER_NAME_PREVIX + phoneNo;
-                intent.putExtra(Constants.MY_NAME, username);
+            intent = new Intent(this, MyDetailsActivty.class);
+            String username = Constants.USER_NAME_PREVIX + phoneNo;
+            intent.putExtra(Constants.MY_NAME, username);
 //            }
             startActivity(intent);
-        } else {
-            accesCode.setError("Incorrect access code");
         }
+
+//        else {
+//            accessCode.setError("Incorrect access code");
+//        }
     }
 
+    @Override
+    public void onTextChanged(boolean valid) {
+        Log.d(TAG, "onTextChanged, validation: " + valid);
+        goButton.setEnabled(valid);
+    }
 }

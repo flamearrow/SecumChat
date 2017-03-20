@@ -32,8 +32,12 @@
     <string name="incoming_call_from">Kevin Gleason</string>
 
     <string name="cell">Input phone number</string>
+    <string name="login_with_phone_number">Log in with phone number</string>
+
     <string name="go">GO</string>
     <string name="get_code">Get code</string>
+    <string name="send_code">Send code</string>
+    <string name="resend">Didn\'t get it? Resend code</string>
 
     <string name="confirm_access_code">Input access code</string>
 

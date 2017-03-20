@@ -7,31 +7,39 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
+
         <CheckBox
             android:id="@+id/debug"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/debug"
-            android:checked="true"/>
+            android:checked="true"
+            android:text="@string/debug"/>
     </LinearLayout>
+
     <TextView
+        android:id="@+id/header"
         style="@style/OnboardingText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/phone_number"
         android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/onboarding_vertical_margin"
         android:text="@string/cell"/>
+
+    <ImageView
+        android:id="@+id/flags"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_below="@+id/header"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/onboarding_vertical_margin"
+        android:src="@drawable/coolcat"/>
 
     <EditText
         android:id="@+id/phone_number"
         style="@style/OnboardingInputText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_below="@+id/flags"
         android:layout_centerHorizontal="true"
-        android:layout_centerInParent="true"
-        android:layout_marginBottom="20dp"
-        android:layout_marginTop="20dp"
-        android:hint="1234567890"
+        android:layout_marginTop="@dimen/onboarding_vertical_margin"
         android:inputType="phone"/>
 
     <Button
@@ -40,6 +48,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/phone_number"
         android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/onboarding_vertical_margin"
         android:onClick="clickGo"
-        android:text="@string/get_code"/>
+        android:text="@string/send_code"/>
 </RelativeLayout>

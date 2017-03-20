@@ -5,32 +5,42 @@
                 android:orientation="vertical">
 
     <TextView
+        android:id="@+id/header"
         style="@style/OnboardingText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/access_code"
         android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/onboarding_vertical_margin"
         android:text="@string/confirm_access_code"/>
 
-    <EditText
+    <com.shanjingtech.secumchat.ui.AccessCodeLayout
         android:id="@+id/access_code"
-        style="@style/OnboardingInputText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/header"
         android:layout_centerHorizontal="true"
-        android:layout_centerInParent="true"
-        android:layout_marginBottom="20dp"
-        android:layout_marginTop="20dp"
-        android:hint="1234567890"
-        android:inputType="phone"/>
+        android:layout_marginTop="@dimen/onboarding_vertical_margin"/>
 
     <Button
+        android:id="@+id/go"
         style="@style/OnboardingButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/access_code"
         android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/onboarding_vertical_margin"
+        android:enabled="false"
         android:onClick="clickGo"
         android:text="@string/go"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/go"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="15dp"
+        android:onClick="resend"
+        android:text="@string/resend"
+        android:textColor="@color/dark_purple"/>
 
 </RelativeLayout>

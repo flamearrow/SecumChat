@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_column="4">
+
+    <EditText
+        android:id="@+id/field1"
+        style="@style/AccessCodeText"/>
+
+    <EditText
+        android:id="@+id/field2"
+        style="@style/AccessCodeText"/>
+
+    <EditText
+        android:id="@+id/field3"
+        style="@style/AccessCodeText"/>
+
+    <EditText
+        android:id="@+id/field4"
+        style="@style/AccessCodeText"/>
+</GridLayout>

@@ -58,13 +58,15 @@ public class MyDetailsActivty extends SecumBaseActivity {
     public void clickGo(View view) {
         // TODO: need another api call to link userinfo to phone number
         // pass name, age and gender
-        if (validateInfo()) {
-            Intent intent = new Intent(this, SecumChatActivity.class);
-            String age = agesArray[agePicker.getSelectedItem()];
-            intent.putExtra(Constants.MY_NAME, name.getText().toString());
-            intent.putExtra(Constants.MY_AGE, age);
-            intent.putExtra(Constants.ME_MALE, isMale);
-            startActivity(intent);
+        if (requestSecumPermissions()) {
+            if (validateInfo()) {
+                Intent intent = new Intent(this, SecumChatActivity.class);
+                String age = agesArray[agePicker.getSelectedItem()];
+                intent.putExtra(Constants.MY_NAME, name.getText().toString());
+                intent.putExtra(Constants.MY_AGE, age);
+                intent.putExtra(Constants.ME_MALE, isMale);
+                startActivity(intent);
+            }
         }
     }
 }

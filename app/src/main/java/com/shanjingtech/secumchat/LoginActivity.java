@@ -7,13 +7,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 
-import com.shanjingtech.secumchat.model.AccessToken;
 import com.shanjingtech.secumchat.util.Constants;
-import com.shanjingtech.secumchat.util.PermissionRequester;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 /**
  * Legacy login activity, direct access to SecumChat and debug api
@@ -22,7 +16,6 @@ import retrofit2.Response;
 public class LoginActivity extends SecumBaseActivity {
 
     private EditText mUsername;
-    private PermissionRequester permissionRequester;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,13 +24,11 @@ public class LoginActivity extends SecumBaseActivity {
 
         mUsername = (EditText) findViewById(R.id.login_username);
 
-        permissionRequester = new PermissionRequester(this);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        permissionRequester.requestPermissions();
     }
 
     @Override
@@ -69,34 +60,22 @@ public class LoginActivity extends SecumBaseActivity {
      * @param view Button clicked to trigger call to joinChat
      */
     public void testButton(View view) {
-//        secumAPI.registerUser(new UserRequest("phone+16503181659", "+16503181659"))
-//                .enqueue(
-//                        new Callback<User>() {
-//                            @Override
-//                            public void onResponse(Call<User> call, Response<User> response) {
-//                                User u = response.body();
-//                                String name = u.getUsername();
-//                            }
+        // get access token - this works
+//        secumAPI.getAccessToken("password", "+16503181659", "851927").enqueue(new
+// Callback<AccessToken>() {
+//            @Override
+//            public void onResponse(Call<AccessToken> call, Response<AccessToken> response) {
+//                int i = 1;
+//                int j = 2;
+//            }
 //
-//                            @Override
-//                            public void onFailure(Call<User> call, Throwable t) {
-//                                String s = call.getClass().toString();
-//                            }
-//                        });
-        String formData = "grant_type=password&username=%2B16503181659&password=851927";
-        secumAPI.getAccessToken("password", "+16503181659", "851927").enqueue(new Callback<AccessToken>() {
-            @Override
-            public void onResponse(Call<AccessToken> call, Response<AccessToken> response) {
-                int i = 1;
-                int j = 2;
-            }
-
-            @Override
-            public void onFailure(Call<AccessToken> call, Throwable t) {
-                int i = 1;
-                int j = 2;
-            }
-        });
+//            @Override
+//            public void onFailure(Call<AccessToken> call, Throwable t) {
+//                int i = 1;
+//                int j = 2;
+//            }
+//        });
+        requestSecumPermissions();
     }
 
     /**

@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
 
 import com.shanjingtech.secumchat.R;
 import com.shanjingtech.secumchat.SecumBaseActivity;
@@ -81,21 +80,11 @@ public class AccessCodeActivity extends SecumBaseActivity
     public void clickGo(View view) {
         String code = accessCode.getAccessCode();
         if (isDebug || validateAccessCode(code)) {
-            Intent intent = null;
-            // TODO: make permission requester work
-//            if (PermissionRequester.needToRequestPermission()) {
-//                intent = new Intent(this, PermissionRequestActivity.class);
-//            } else {
-            intent = new Intent(this, MyDetailsActivty.class);
+            Intent intent = new Intent(this, MyDetailsActivty.class);
             String username = Constants.USER_NAME_PREVIX + phoneNo;
             intent.putExtra(Constants.MY_NAME, username);
-//            }
             startActivity(intent);
         }
-
-//        else {
-//            accessCode.setError("Incorrect access code");
-//        }
     }
 
     @Override

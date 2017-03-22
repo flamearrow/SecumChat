@@ -6,5 +6,6 @@
     <dimen name="onboarding_vertical_margin">50dp</dimen>
     <dimen name="onboarding_vertical_margin_thin">20dp</dimen>
     <dimen name="onboarding_side_margin">60dp</dimen>
+    <dimen name="onboarding_side_margin_thin">30dp</dimen>
 
 </resources>

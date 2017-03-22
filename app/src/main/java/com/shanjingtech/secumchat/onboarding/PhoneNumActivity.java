@@ -2,10 +2,12 @@ package com.shanjingtech.secumchat.onboarding;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
 
+import com.shanjingtech.countrycodepicker.CountryCodePicker;
 import com.shanjingtech.secumchat.R;
 import com.shanjingtech.secumchat.SecumBaseActivity;
 import com.shanjingtech.secumchat.model.User;
@@ -27,8 +29,10 @@ import retrofit2.Response;
  */
 
 public class PhoneNumActivity extends SecumBaseActivity {
+    private static final String TAG = "PhoneNumActivity";
     private EditText phoneNumber;
     private CheckBox debugCheckbox;
+    private CountryCodePicker ccp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,16 +40,18 @@ public class PhoneNumActivity extends SecumBaseActivity {
         setContentView(R.layout.phone_number_activity);
         phoneNumber = (EditText) findViewById(R.id.phone_number);
         debugCheckbox = (CheckBox) findViewById(R.id.debug);
+        ccp = (CountryCodePicker) findViewById(R.id.country_code);
     }
 
-    // need to match +11234567890
-    private boolean validatePhone(String username) {
-        if (username.length() == 0) {
-            phoneNumber.setError("Username cannot be empty.");
+    private boolean validatePhone() {
+        String number = phoneNumber.getText().toString();
+
+        if (number == null || number.length() == 0) {
+            phoneNumber.setError(getResources().getString(R.string.phone_number_cant_be_empty));
             return false;
         }
-        if (username.length() > 16) {
-            phoneNumber.setError("Username too long.");
+        if (number.length() > 16) {
+            phoneNumber.setError(getResources().getString(R.string.phone_number_too_long));
             return false;
         }
         return true;
@@ -59,8 +65,8 @@ public class PhoneNumActivity extends SecumBaseActivity {
             intent.putExtra(Constants.PHONE_NUMBER, "12345");
             startActivity(intent);
         } else {
-            final String phoneNo = phoneNumber.getText().toString();
-            if (validatePhone(phoneNo)) {
+            final String phoneNo = getFullPhoneNumber();
+            if (validatePhone()) {
                 secumAPI.registerUser(new UserRequest(Constants.USER_NAME_PREVIX + phoneNo,
                         phoneNo))
                         .enqueue(
@@ -82,5 +88,12 @@ public class PhoneNumActivity extends SecumBaseActivity {
 
             }
         }
+    }
+
+    private String getFullPhoneNumber() {
+        Log.d(TAG, "country code: " + ccp.getSelectedCountryCode());
+        String countryCode = "+" + ccp.getSelectedCountryCode();
+        String number = phoneNumber.getText().toString();
+        return countryCode + number;
     }
 }

@@ -34,7 +34,8 @@
         <activity
             android:name="com.shanjingtech.secumchat.SecumChatActivity"/>
         <activity
-            android:name="com.shanjingtech.secumchat.onboarding.PhoneNumActivity">
+            android:name="com.shanjingtech.secumchat.onboarding.PhoneNumActivity"
+            android:windowSoftInputMode="stateVisible">
         </activity>
         <activity
             android:name="com.shanjingtech.secumchat.onboarding.AccessCodeActivity"

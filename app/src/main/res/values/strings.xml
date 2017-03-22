@@ -34,6 +34,10 @@
     <string name="cell">Input phone number</string>
     <string name="login_with_phone_number">Log in with phone number</string>
 
+    <!-- Phone number activity -->
+    <string name="phone_number_cant_be_empty">Phone number can\'t be empty</string>
+    <string name="phone_number_too_long">Phone number is too long</string>
+
     <string name="go">GO</string>
     <string name="get_code">Get code</string>
     <string name="send_code">Send code</string>

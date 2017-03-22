@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:ccp="http://schemas.android.com/apk/res-auto"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical">
@@ -25,28 +26,40 @@
         android:layout_marginTop="@dimen/onboarding_vertical_margin"
         android:text="@string/cell"/>
 
-    <ImageView
-        android:id="@+id/flags"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+    <GridLayout
+        android:id="@+id/phone_number_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_below="@+id/header"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="@dimen/onboarding_vertical_margin"
-        android:src="@drawable/coolcat"/>
+        android:layout_marginLeft="@dimen/onboarding_side_margin_thin"
+        android:layout_marginRight="@dimen/onboarding_side_margin_thin"
+        android:columnCount="2">
 
-    <EditText
-        android:id="@+id/phone_number"
-        style="@style/OnboardingInputText"
-        android:layout_below="@+id/flags"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="@dimen/onboarding_vertical_margin"
-        android:inputType="phone"/>
+        <com.shanjingtech.countrycodepicker.CountryCodePicker
+            android:id="@+id/country_code"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            ccp:ccpLanguage="ENGLISH"
+            ccp:defaultNameCode="us"
+            ccp:hideNameCode="true"/>
+
+        <EditText
+            android:id="@+id/phone_number"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/onboarding_side_margin_thin"
+            android:inputType="phone"
+            android:textSize="25dp"/>
+    </GridLayout>
 
     <Button
         style="@style/OnboardingButton"
         android:layout_width="120dp"
         android:layout_height="wrap_content"
-        android:layout_below="@id/phone_number"
+        android:layout_below="@+id/phone_number_bar"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="@dimen/onboarding_vertical_margin"
         android:onClick="clickGo"

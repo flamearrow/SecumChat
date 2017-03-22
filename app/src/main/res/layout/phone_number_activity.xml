@@ -32,9 +32,9 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/header"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="@dimen/onboarding_vertical_margin"
         android:layout_marginLeft="@dimen/onboarding_side_margin_thin"
         android:layout_marginRight="@dimen/onboarding_side_margin_thin"
+        android:layout_marginTop="@dimen/onboarding_vertical_margin"
         android:columnCount="2">
 
         <com.shanjingtech.countrycodepicker.CountryCodePicker
@@ -64,4 +64,13 @@
         android:layout_marginTop="@dimen/onboarding_vertical_margin"
         android:onClick="clickGo"
         android:text="@string/send_code"/>
+
+    <ImageView
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="@dimen/onboarding_vertical_margin"
+        android:scaleType="centerCrop"
+        android:src="@mipmap/ic_launcher"/>
 </RelativeLayout>

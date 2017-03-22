@@ -43,4 +43,13 @@
         android:text="@string/resend"
         android:textColor="@color/dark_purple"/>
 
+    <ImageView
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="@dimen/onboarding_vertical_margin"
+        android:scaleType="centerCrop"
+        android:src="@mipmap/ic_launcher"/>
+
 </RelativeLayout>

@@ -11,6 +11,7 @@ import com.shanjingtech.secumchat.SecumBaseActivity;
 import com.shanjingtech.secumchat.model.AccessCode;
 import com.shanjingtech.secumchat.model.AccessCodeRequest;
 import com.shanjingtech.secumchat.ui.AccessCodeLayout;
+import com.shanjingtech.secumchat.ui.AutoEnableTextView;
 import com.shanjingtech.secumchat.util.Constants;
 import com.shanjingtech.secumchat.util.SecumDebug;
 
@@ -30,6 +31,7 @@ public class AccessCodeActivity extends SecumBaseActivity
         implements AccessCodeLayout.OnTextChangedListener {
     public static final String TAG = "AccessCodeActivity";
     private AccessCodeLayout accessCode;
+    private AutoEnableTextView autoEnableTextView;
     private String phoneNo;
     private String correctAccessCode;
     private boolean isDebug;
@@ -42,16 +44,19 @@ public class AccessCodeActivity extends SecumBaseActivity
         accessCode = (AccessCodeLayout) findViewById(R.id.access_code);
         accessCode.setOnTextChangedListener(this);
         goButton = (Button) findViewById(R.id.go);
+        autoEnableTextView = (AutoEnableTextView) findViewById(R.id.resend);
         // Passed from PhoneNumActivity
         phoneNo = getIntent().getStringExtra(Constants.PHONE_NUMBER);
         isDebug = SecumDebug.isDebugMode(this);
+        autoEnableTextView.startCount();
         if (!isDebug) {
             requestAccessCodeFromServer();
         }
     }
 
     public void resend(View view) {
-        Log.d(TAG, "resend");
+        autoEnableTextView.setEnabled(false);
+        autoEnableTextView.startCount();
         if (!isDebug) {
             requestAccessCodeFromServer();
         }

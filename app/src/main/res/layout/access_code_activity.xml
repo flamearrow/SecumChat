@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:secum="http://schemas.android.com/apk/res-auto"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical">
@@ -33,7 +34,8 @@
         android:onClick="clickGo"
         android:text="@string/go"/>
 
-    <TextView
+    <com.shanjingtech.secumchat.ui.AutoEnableTextView
+        android:id="@+id/resend"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/go"
@@ -41,7 +43,8 @@
         android:layout_marginTop="15dp"
         android:onClick="resend"
         android:text="@string/resend"
-        android:textColor="@color/dark_purple"/>
+        android:textColor="@drawable/resend_text"
+        secum:timeout_in_sec="60"/>
 
     <ImageView
         android:layout_width="120dp"

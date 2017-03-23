@@ -57,4 +57,13 @@ public class Constants {
     // counter
     public static final int TORA = 9;
     public static final int SECONDS_TO_ADD = 30;
+
+    //xir
+    public static final String XIR_DOMAIN = "www.9miao.tv";
+    public static final String XIR_ROOM = "default";
+    public static final String XIR_APPLICATION = "9miao";
+    public static final String XIR_USER = "gavinxyang";
+    public static final String XIR_SECRET = "d4362d68-fbe9-11e6-a2ad-8345664c2cf3";
+
+
 }

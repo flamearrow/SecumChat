@@ -1,7 +1,9 @@
-package com.shanjingtech.secumchat.servers;
+package com.shanjingtech.secumchat.net;
 
 import android.os.AsyncTask;
 import android.util.Log;
+
+import com.shanjingtech.secumchat.util.Constants;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -23,23 +25,36 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 
 /**
- * Created by flamearrow on 2/26/17.
+ * Request XirSys for STUN and TURN servers.
+ * TODO: use OkHttp
  */
 public class XirSysRequest extends AsyncTask<Void, Void, List<PeerConnection.IceServer>> {
+    public static List<PeerConnection.IceServer> getIceServers() {
+        List<PeerConnection.IceServer> servers = new ArrayList<>();
+        try {
+            servers = new XirSysRequest().execute().get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        return servers;
+    }
 
     public List<PeerConnection.IceServer> doInBackground(Void... params) {
         List<PeerConnection.IceServer> servers = new ArrayList<PeerConnection.IceServer>();
         HttpClient httpClient = new DefaultHttpClient();
         HttpPost request = new HttpPost("https://service.xirsys.com/ice");
         List<NameValuePair> data = new ArrayList<NameValuePair>();
-        data.add(new BasicNameValuePair("room", "default"));
-        data.add(new BasicNameValuePair("application", "default"));
-        data.add(new BasicNameValuePair("domain", "kevingleason.me"));
-        data.add(new BasicNameValuePair("ident", "gleasonk"));
-        data.add(new BasicNameValuePair("secret", "b9066b5e-1f75-11e5-866a-c400956a1e19"));
+        data.add(new BasicNameValuePair("room", Constants.XIR_ROOM));
+        data.add(new BasicNameValuePair("application", Constants.XIR_APPLICATION));
+        data.add(new BasicNameValuePair("domain", Constants.XIR_DOMAIN));
+        data.add(new BasicNameValuePair("ident", Constants.XIR_USER));
+        data.add(new BasicNameValuePair("secret", Constants.XIR_SECRET));
         data.add(new BasicNameValuePair("secure", "1"));
         //Encoding POST data
         try {

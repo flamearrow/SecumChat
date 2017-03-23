@@ -17,7 +17,7 @@ import com.shanjingtech.secumchat.lifecycle.NonRTCMessageController;
 import com.shanjingtech.secumchat.lifecycle.SecumRTCListener;
 import com.shanjingtech.secumchat.model.GetMatch;
 import com.shanjingtech.secumchat.net.SecumNetworkRequester;
-import com.shanjingtech.secumchat.servers.XirSysRequest;
+import com.shanjingtech.secumchat.net.XirSysRequest;
 import com.shanjingtech.secumchat.ui.DialingReceivingWaitingLayout;
 import com.shanjingtech.secumchat.util.Constants;
 import com.shanjingtech.secumchat.util.SecumCounter;
@@ -35,9 +35,7 @@ import org.webrtc.VideoRendererGui;
 import org.webrtc.VideoSource;
 import org.webrtc.VideoTrack;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 /**
  * Activity to make you cum.
@@ -113,7 +111,7 @@ public class SecumChatActivity extends SecumBaseActivity implements
                 null); // Render EGL Context
 
         // init pubnubClient, order matters
-        List<PeerConnection.IceServer> servers = getXirSysIceServers();
+        List<PeerConnection.IceServer> servers = XirSysRequest.getIceServers();
         if (!servers.isEmpty()) {
             pnRTCClient = new PnRTCClient(Constants.PUB_KEY, Constants.SUB_KEY, Constants.SEC_KEY,
                     myName, new
@@ -166,18 +164,6 @@ public class SecumChatActivity extends SecumBaseActivity implements
         localStream.addTrack(localAudioTrack);
 
         pnRTCClient.attachLocalMediaStream(localStream);
-    }
-
-    public List<PeerConnection.IceServer> getXirSysIceServers() {
-        List<PeerConnection.IceServer> servers = new ArrayList<PeerConnection.IceServer>();
-        try {
-            servers = new XirSysRequest().execute().get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
-        return servers;
     }
 
     /**

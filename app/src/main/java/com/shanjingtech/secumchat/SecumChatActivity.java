@@ -2,6 +2,8 @@ package com.shanjingtech.secumchat;
 
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
@@ -48,15 +50,15 @@ public class SecumChatActivity extends SecumBaseActivity implements
         SecumCounter.SecumCounterListener {
 
     private GLSurfaceView videoView;
+    private String myName;
 
     // webRTC components
     private MediaStream localStream;
+
     SecumRTCListener secumRTCListener;
 
     // Pubhub components
     private PnRTCClient pnRTCClient;
-
-    private String myName;
 
     // UI
     // The button should be invisible until the user is being called
@@ -75,6 +77,44 @@ public class SecumChatActivity extends SecumBaseActivity implements
     private GetMatch getMatch;
     private SecumNetworkRequester networkRequester;
 
+    // timeout
+    private Handler handler = new Handler(Looper.getMainLooper());
+
+    /**
+     * An {@code Runnable} to hangup and switch back to waiting state if the current state is
+     * stateToError when fired.
+     */
+    class StateErrorRunnable implements Runnable {
+        private State stateToError;
+
+        StateErrorRunnable(State stateToError) {
+            this.stateToError = stateToError;
+        }
+
+        @Override
+        public void run() {
+            if (currentState == stateToError) {
+                showOtherSideRejected();
+                hangUp();
+            }
+        }
+    }
+
+    /**
+     * When get matched(caller switched to RECEIVING),
+     * caller has 9 secs to click accept before it switch back to MATCHING
+     */
+    private StateErrorRunnable dialingErrorRunnable = new StateErrorRunnable(State.DIALING);
+    /**
+     * After caller clicked accept(caller switched to WAITING, caller has 9+2 seconds to wait for
+     * caller's response before it switch back to MATCHING
+     */
+    private StateErrorRunnable waitingErrorRunnable = new StateErrorRunnable(State.WAITING);
+    /**
+     * When callee switched to RECEIVING, callee has 9 seconds to click accept before it switch
+     * back to MATCHING
+     */
+    private StateErrorRunnable receivingErrorRunnable = new StateErrorRunnable(State.RECEIVING);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -241,9 +281,15 @@ public class SecumChatActivity extends SecumBaseActivity implements
             }
             case DIALING: {
                 showDialingUI();
+                // after get matched, caller has 9 seconds to click the accept button
+                removeAllHandlerCallbacks();
+                handler.postDelayed(dialingErrorRunnable, Constants.TORA * Constants.MILLIS_IN_SEC);
                 return;
             }
             case RECEIVING: {
+                removeAllHandlerCallbacks();
+                handler.postDelayed(receivingErrorRunnable, Constants.TORA * Constants
+                        .MILLIS_IN_SEC);
                 showReceivingUI();
                 return;
             }
@@ -253,10 +299,14 @@ public class SecumChatActivity extends SecumBaseActivity implements
             }
             case WAITING: {
                 showWaitingUI();
+                // after caller accepts, wait 9 + 2 seconds before time out
+                removeAllHandlerCallbacks();
+                handler.postDelayed(waitingErrorRunnable, (Constants.TORA + Constants.GRACE) *
+                        Constants.MILLIS_IN_SEC);
                 return;
             }
             case ERROR: {
-                showErrorUI();
+                showOtherSideRejected();
                 switchState(State.MATCHING);
                 return;
             }
@@ -264,11 +314,17 @@ public class SecumChatActivity extends SecumBaseActivity implements
 
     }
 
+    private void removeAllHandlerCallbacks() {
+        handler.removeCallbacks(receivingErrorRunnable);
+        handler.removeCallbacks(dialingErrorRunnable);
+        handler.removeCallbacks(waitingErrorRunnable);
+    }
+
     private void showMatchingUI() {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                hidAllUI();
+                hideAllUI();
                 matchingView.setVisibility(View.VISIBLE);
                 secumRTCListener.resetLocalStream();
             }
@@ -279,7 +335,7 @@ public class SecumChatActivity extends SecumBaseActivity implements
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                hidAllUI();
+                hideAllUI();
                 dialingReceivingWaitingView.setMessage("matching you with " + getMatch.getCallee());
                 dialingReceivingWaitingView.setVisibility(View.VISIBLE);
                 dialingReceivingWaitingView.switchUIState(State.DIALING);
@@ -291,7 +347,7 @@ public class SecumChatActivity extends SecumBaseActivity implements
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                hidAllUI();
+                hideAllUI();
                 dialingReceivingWaitingView.setMessage("matching you with " + getMatch.getCaller());
                 dialingReceivingWaitingView.setVisibility(View.VISIBLE);
                 dialingReceivingWaitingView.switchUIState(State.RECEIVING);
@@ -303,7 +359,7 @@ public class SecumChatActivity extends SecumBaseActivity implements
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                hidAllUI();
+                hideAllUI();
                 secumCounter.setVisibility(View.VISIBLE);
                 addTimeButton.setVisibility(View.VISIBLE);
                 secumCounter.initialize();
@@ -315,7 +371,7 @@ public class SecumChatActivity extends SecumBaseActivity implements
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                hidAllUI();
+                hideAllUI();
                 dialingReceivingWaitingView.setMessage("matching you with " + getMatch.getCallee());
                 dialingReceivingWaitingView.setVisibility(View.VISIBLE);
                 dialingReceivingWaitingView.switchUIState(State.WAITING);
@@ -323,17 +379,17 @@ public class SecumChatActivity extends SecumBaseActivity implements
         });
     }
 
-    private void showErrorUI() {
+    private void showOtherSideRejected() {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                hidAllUI();
+                hideAllUI();
                 showToast("" + getPeerName() + " rejected");
             }
         });
     }
 
-    private void hidAllUI() {
+    private void hideAllUI() {
         dialingReceivingWaitingView.setVisibility(View.INVISIBLE);
         secumCounter.setVisibility(View.INVISIBLE);
         addTimeButton.setVisibility(View.INVISIBLE);
@@ -540,7 +596,7 @@ public class SecumChatActivity extends SecumBaseActivity implements
         DIALING, // I dial the other, call dial(callee)
         RECEIVING, // I'm about to receive the dial
         CHATTING, // chatting
-        WAITING, // When one side accept, waiting for the other side to accept
+        WAITING, // When one side accept, waiting for the other side to accept, time out after 9s
         ERROR //various, always show 'otherside rejected' and switch back to waiting
     }
 

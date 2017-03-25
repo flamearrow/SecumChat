@@ -56,7 +56,10 @@ public class Constants {
 
     // counter
     public static final int TORA = 9;
+    // grace time for caller to time out
+    public static final int GRACE = 2;
     public static final int SECONDS_TO_ADD = 30;
+    public static final long MILLIS_IN_SEC = 1000;
 
     //xir
     public static final String XIR_DOMAIN = "www.9miao.tv";

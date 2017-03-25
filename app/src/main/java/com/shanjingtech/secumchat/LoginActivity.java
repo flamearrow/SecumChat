@@ -84,12 +84,14 @@ public class LoginActivity extends SecumBaseActivity {
      * @param view
      */
     public void secumChat(View view) {
-        String username = mUsername.getText().toString();
-        if (!validUsername(username))
-            return;
-        Intent intent = new Intent(this, SecumChatActivity.class);
-        intent.putExtra(Constants.MY_NAME, username);
-        startActivity(intent);
+        if (requestSecumPermissions()) {
+            String username = mUsername.getText().toString();
+            if (!validUsername(username))
+                return;
+            Intent intent = new Intent(this, SecumChatActivity.class);
+            intent.putExtra(Constants.MY_NAME, username);
+            startActivity(intent);
+        }
     }
 
     /**

@@ -6,11 +6,13 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
 
+import com.shanjingtech.secumchat.ui.PulseImageView;
 import com.shanjingtech.secumchat.util.SecumCounter;
 
 public class DebugActivity extends Activity implements SecumCounter.SecumCounterListener {
     private final static String TAG = "DebugActivity";
     SecumCounter secumCounter;
+    PulseImageView catHead;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -18,16 +20,19 @@ public class DebugActivity extends Activity implements SecumCounter.SecumCounter
         setContentView(R.layout.debug_activity);
         secumCounter = (SecumCounter) findViewById(R.id.chronometer);
         secumCounter.setSecumCounterListener(this);
+        catHead = (PulseImageView) findViewById(R.id.cat_head);
 
     }
 
     public void start(View view) {
 //        secumCounter.start();
-        secumCounter.initialize();
+//        secumCounter.initialize();
+        catHead.startPulse();
     }
 
     public void meAdd(View view) {
-        secumCounter.meAdd();
+        catHead.stopPulse();
+//        secumCounter.meAdd();
     }
 
     public void peerAdd(View view) {

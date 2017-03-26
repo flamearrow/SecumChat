@@ -75,7 +75,8 @@ public class LoginActivity extends SecumBaseActivity {
 //                int j = 2;
 //            }
 //        });
-        requestSecumPermissions();
+//        requestSecumPermissions();
+        showBlockingPermissionDialog();
     }
 
     /**

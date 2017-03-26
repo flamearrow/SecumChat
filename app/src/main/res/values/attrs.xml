@@ -3,4 +3,13 @@
     <declare-styleable name="AutoEnableTextView">
         <attr name="timeout_in_sec" format="integer"/>
     </declare-styleable>
+
+    <declare-styleable name="PulseImageView">
+        <attr name="animation_scale_start" format="float"/>
+        <attr name="animation_scale_end" format="float"/>
+        <attr name="animation_duration" format="integer"/>
+        <attr name="animation_reverse" format="boolean"/>
+        <attr name="animation_auto_pulse" format="boolean"/>
+        <attr name="animation_time_interpolator" format="string"/>
+    </declare-styleable>
 </resources>

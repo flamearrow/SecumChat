@@ -51,7 +51,7 @@ public class SecumBaseActivity
                 .setMessage(resources.getString(R.string.permission_dialog_message))
                 .setPositiveButton(resources.getString(R.string.to_settings), this)
                 .setNegativeButton(resources.getString(R.string.cancel), this)
-                .setIcon(R.mipmap.ic_launcher)
+                .setIcon(R.drawable.cat_head)
                 .create();
     }
 
@@ -108,7 +108,7 @@ public class SecumBaseActivity
     /**
      * Show a dialog to direct user to app settings
      */
-    private void showBlockingPermissionDialog() {
+    protected void showBlockingPermissionDialog() {
         if (!permissionAlertDialog.isShowing()) {
             permissionAlertDialog.show();
         }

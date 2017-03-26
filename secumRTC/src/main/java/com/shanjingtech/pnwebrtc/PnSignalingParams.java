@@ -96,6 +96,11 @@ public class PnSignalingParams {
 
     private static MediaConstraints defaultAudioConstraints(){
         MediaConstraints audioConstraints = new MediaConstraints();
+        // TODO: try with others
+        // https://chromium.googlesource.com/external/webrtc/+/master/webrtc/api/mediaconstraintsinterface.cc
+//        audioConstraints.mandatory.add(new MediaConstraints.KeyValuePair("googNoiseSuppression", "true"));
+//        audioConstraints.mandatory.add(new MediaConstraints.KeyValuePair("googEchoCancellation", "true"));
+
         return audioConstraints;
     }
 

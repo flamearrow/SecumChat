@@ -30,14 +30,14 @@ public class NonRTCMessageController {
 
     public interface NonRTCMessageControllerCallbacks {
         /**
-         * When I successfully subscribed to standy channel - notify
+         * When I successfully subscribed to channel(s)
          */
-        void onStandbySuccess(List<String> channel, PNStatus message);
+        void onSubscribeSuccess(List<String> channel, PNStatus message);
 
         /**
-         * When I failed to subscribe to standy channel - notify
+         * When I failed to subscribe to channel(s)
          */
-        void onStandbyFail(List<String> channel, PNStatus error);
+        void onSubscribeFail(List<String> channel, PNStatus error);
 
         /**
          * When someone called my standby channel - show user someone is calling,
@@ -85,9 +85,9 @@ public class NonRTCMessageController {
             public void status(PubNub pubnub, PNStatus status) {
                 List<String> channelNames = pubnub.getSubscribedChannels();
                 if (status.isError()) {
-                    callbacks.onStandbyFail(channelNames, status);
+                    callbacks.onSubscribeFail(channelNames, status);
                 } else if (status.getCategory() == PNStatusCategory.PNConnectedCategory) {
-                    callbacks.onStandbySuccess(channelNames, status);
+                    callbacks.onSubscribeSuccess(channelNames, status);
                 } else if (status.getCategory() == PNStatusCategory.PNAcknowledgmentCategory) {
                     if (status.getOperation() == PNOperationType.PNUnsubscribeOperation) {
                         Log.d(TAG, "Unsubscribe success");

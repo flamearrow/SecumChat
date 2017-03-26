@@ -170,11 +170,6 @@ public class PnPeerConnectionClient {
      * Close connections (hangup) on all open connections.
      */
     public void closeAllConnections() {
-//        Iterator<String> peerIds = this.peers.keySet().iterator();
-//        while (peerIds.hasNext()) {
-//            closeConnection(peerIds.next());
-//        }
-
         Set<String> peerIds = new HashSet<>((this.peers.keySet()));
         for (String peerId : peerIds) {
             closeConnection(peerId);

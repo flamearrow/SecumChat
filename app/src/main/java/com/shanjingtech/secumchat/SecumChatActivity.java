@@ -50,12 +50,19 @@ public class SecumChatActivity extends SecumBaseActivity implements
         SecumCounter.SecumCounterListener {
 
     private GLSurfaceView videoView;
+    // my name, also used for regular channel name
     private String myName;
+    // my standby channel name
+    private String myNameStdy;
 
     // webRTC components
     private MediaStream localStream;
+    private VideoSource localVideoSource;
+    private VideoTrack localVideoTrack;
+    private AudioSource localAudioSource;
+    private AudioTrack localAudioTrack;
 
-    SecumRTCListener secumRTCListener;
+    private SecumRTCListener secumRTCListener;
 
     // Pubhub components
     private PnRTCClient pnRTCClient;
@@ -121,10 +128,12 @@ public class SecumChatActivity extends SecumBaseActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.secum_chat_activity);
         this.myName = getIntent().getStringExtra(Constants.MY_NAME);
+        myNameStdy = myName + Constants.STDBY_SUFFIX;
         setTitle(myName);
 
         initUI();
         initRTCComponents();
+        initializeMediaStream();
 
         nonRTCMessageController = new NonRTCMessageController(myName, pnRTCClient.getPubNub(),
                 this);
@@ -185,17 +194,16 @@ public class SecumChatActivity extends SecumBaseActivity implements
         VideoCapturer capturer = VideoCapturerAndroid.create(frontFacingCam);
 
         // First create a Video Source, then we can make a Video Track
-        VideoSource localVideoSource = pcFactory.createVideoSource(capturer, this.pnRTCClient
+        localVideoSource = pcFactory.createVideoSource(capturer, this.pnRTCClient
                 .videoConstraints());
-        VideoTrack localVideoTrack = pcFactory.createVideoTrack(Constants.VIDEO_TRACK_ID,
+        localVideoTrack = pcFactory.createVideoTrack(Constants.VIDEO_TRACK_ID,
                 localVideoSource);
 
         // First we create an AudioSource then we can create our AudioTrack
-        AudioSource localAudioSource = pcFactory.createAudioSource(this.pnRTCClient
+        localAudioSource = pcFactory.createAudioSource(this.pnRTCClient
                 .audioConstraints());
-        AudioTrack localAudioTrack = pcFactory.createAudioTrack(Constants.AUDIO_TRACK_ID,
+        localAudioTrack = pcFactory.createAudioTrack(Constants.AUDIO_TRACK_ID,
                 localAudioSource);
-
 
         localStream = pcFactory.createLocalMediaStream(Constants.LOCAL_MEDIA_STREAM_ID);
 
@@ -230,22 +238,18 @@ public class SecumChatActivity extends SecumBaseActivity implements
     @Override
     protected void onResume() {
         super.onResume();
-        initializeMediaStream();
-        switchState(State.MATCHING);
+        setUpChannels();
+        localVideoSource.restart();
+        switchState(State.WARMUP);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        // stop listening on standby channel
-        nonRTCMessageController.unStandby();
-        // stop all RTC connection
-        pnRTCClient.closeAllConnections();
-        // stop querying server
-        networkRequester.cancellAll();
+        hangUp();
+        tearDownChannels();
         // stop camera
-        // TODO: make sure this turns off camera
-        localStream.dispose();
+        localVideoSource.stop();
     }
 
     private void showToast(final String message) {
@@ -257,12 +261,24 @@ public class SecumChatActivity extends SecumBaseActivity implements
         });
     }
 
-    private void initializeChannels() {
+    private void setUpChannels() {
         // subscribe to standby channel and regular channel, hangup all possible RTC peers
         // note it's ok to subscribe to a pubnub channel multiple times
+
+        // subscribe to my standy channel
         nonRTCMessageController.standBy();
         pnRTCClient.closeAllConnections();
+        // subscribe to my regular channel
         pnRTCClient.listenOnForce(myName);
+    }
+
+    private void tearDownChannels() {
+        // stop listening on standby channel
+        nonRTCMessageController.unStandby();
+        // stop all RTC connection
+        pnRTCClient.closeAllConnections();
+        // stop querying server
+        networkRequester.cancellAll();
     }
 
     private void switchState(State state) {
@@ -272,10 +288,16 @@ public class SecumChatActivity extends SecumBaseActivity implements
         currentState = state;
         Log.d(Constants.MLGB, "switched to State: " + state.toString());
         switch (state) {
+            case WARMUP: {
+                // wait for subscribe success signal to switch to matching state
+                hideAllUI();
+                return;
+            }
             case MATCHING: {
                 getMatch = null;
+                pnRTCClient.closeAllConnections();
                 showMatchingUI();
-                initializeChannels();
+//                setUpChannels();
                 networkRequester.startMatch();
                 return;
             }
@@ -398,10 +420,12 @@ public class SecumChatActivity extends SecumBaseActivity implements
 
     public void toDial(View view) {
         // test, need to be switch from getMatch
+        localVideoSource.stop();
     }
 
     public void toReceive(View view) {
         // test, need to be switch from getMatch
+        localVideoSource.restart();
     }
 
     /**
@@ -434,7 +458,11 @@ public class SecumChatActivity extends SecumBaseActivity implements
             // I'm callee, caller already dialed my standby channel,
             //  I connect to caller through RTC
             // This will trigger caller's onAddRemoteStream()
-            pnRTCClient.connect(getMatch.getCaller());
+            if (getMatch == null) {
+                switchState(State.ERROR);
+            } else {
+                pnRTCClient.connect(getMatch.getCaller());
+            }
         }
     }
 
@@ -472,12 +500,15 @@ public class SecumChatActivity extends SecumBaseActivity implements
     private final static String TAG = "SecumChatCallbacks";
 
     @Override
-    public void onStandbySuccess(List<String> channels, PNStatus message) {
+    public void onSubscribeSuccess(List<String> channels, PNStatus message) {
         Log.d(TAG, "channel standby: " + message.toString());
+        if (channels.contains(myName) && channels.contains(myNameStdy)) {
+            switchState(State.MATCHING);
+        }
     }
 
     @Override
-    public void onStandbyFail(List<String> channels, PNStatus error) {
+    public void onSubscribeFail(List<String> channels, PNStatus error) {
         Log.d(TAG, "channel standby fail: " + error.toString());
     }
 
@@ -490,14 +521,17 @@ public class SecumChatActivity extends SecumBaseActivity implements
                 Log.d(JSONUtils.JSON_TAG, "empty json or json doesn't have call user");
                 return;     //Ignore Signaling messages.
             }
-            String user = jsonMsg.getString(Constants.JSON_CALL_USER);
+            String callerName = jsonMsg.getString(Constants.JSON_CALL_USER);
 
 
             // standby Channel called, verify if it's from the correct caller, if not ignore
             // it's possible callee hasn't receive getMatch yet
-
-            if (user.equals(getMatch.getCaller())) {
+            if (getMatch != null && callerName.equals(getMatch.getCaller())) {
                 switchState(State.RECEIVING);
+            } else {
+                // If callee hasn't receive getMatch yet, send a reject message to callerName
+                Log.d(TAG, "standby channel called but getMatch null");
+                nonRTCMessageController.hangUp(callerName);
             }
 
 
@@ -592,6 +626,7 @@ public class SecumChatActivity extends SecumBaseActivity implements
     }
 
     public enum State {
+        WARMUP, // sent subscribe message to my channel and my standby channel, wait for reply
         MATCHING, // wait for server to give me a match
         DIALING, // I dial the other, call dial(callee)
         RECEIVING, // I'm about to receive the dial

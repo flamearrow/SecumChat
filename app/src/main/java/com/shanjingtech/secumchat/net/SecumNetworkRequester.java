@@ -70,18 +70,55 @@ public class SecumNetworkRequester {
         handler = new Handler();
     }
 
+    /**
+     * Start polling server for getMatch
+     */
     public void startMatch() {
         handler.postDelayed(endMatchRunnable, GET_MATCH_DELAY);
     }
 
+    /**
+     * Cancel all pending getMatch and endMatch
+     */
     public void cancellAll() {
         handler.removeCallbacks(getMatchRunnable);
         handler.removeCallbacks(endMatchRunnable);
     }
 
+    /**
+     * Notify server to stop sending me getMatch
+     */
+    public void endMatch() {
+        handler.post(bestEffortEndMatchRunnable);
+    }
+
     private void postMatchRequest() {
         handler.postDelayed(getMatchRunnable, GET_MATCH_DELAY);
     }
+
+    private Runnable bestEffortEndMatchRunnable = new Runnable() {
+        @Override
+        public void run() {
+            secumAPI.endMatch(new EndMatchRequest(myName)).enqueue(
+                    new Callback<EndMatch>() {
+                        @Override
+                        public void onResponse(Call<EndMatch> call, Response<EndMatch> response) {
+                            EndMatch endMatch = response.body();
+                            if (endMatch != null && endMatch.isSuccess()) {
+                                Log.d(SecumAPI.TAG, "Single EndMatch(" + myName + ") Success.");
+                            } else {
+                                Log.d(SecumAPI.TAG, "Single EndMatch(" + myName + ") failed");
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<EndMatch> call, Throwable t) {
+                            Log.d(SecumAPI.TAG, "Single EndMatch(" + myName + ") failed");
+                        }
+                    }
+            );
+        }
+    };
 
     private Runnable getMatchRunnable = new Runnable() {
         @Override

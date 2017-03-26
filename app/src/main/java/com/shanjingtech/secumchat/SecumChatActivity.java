@@ -279,6 +279,7 @@ public class SecumChatActivity extends SecumBaseActivity implements
         pnRTCClient.closeAllConnections();
         // stop querying server
         networkRequester.cancellAll();
+        networkRequester.endMatch();
     }
 
     private void switchState(State state) {

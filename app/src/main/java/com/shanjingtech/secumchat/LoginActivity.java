@@ -10,10 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 
-import com.shanjingtech.secumchat.model.AccessToken;
-import com.shanjingtech.secumchat.model.PingRequest;
-import com.shanjingtech.secumchat.model.PingResponse;
-import com.shanjingtech.secumchat.model.User;
+import com.shanjingtech.secumchat.model.EndMatch;
 import com.shanjingtech.secumchat.util.Constants;
 
 import retrofit2.Call;
@@ -88,17 +85,83 @@ public class LoginActivity extends SecumBaseActivity {
 //                        int j = 2;
 //                    }
 //                });
-        secumAPI.getProfile().enqueue(new Callback<User>() {
+//        secumAPI.getProfile().enqueue(new Callback<User>() {
+//            @Override
+//            public void onResponse(Call<User> call, Response<User> response) {
+//                if (response.isSuccessful()) {
+//                    User user = response.body();
+//                    secumAPI.getMatch(new GetMatchRequest(null)).enqueue(new Callback<GetMatch>
+// () {
+//
+//                        @Override
+//                        public void onResponse(Call<GetMatch> call, Response<GetMatch> response) {
+//                            if (response.isSuccessful()) {
+//                                Log.d("MLGB", "abc");
+//                                int i = 1;
+//                            } else {
+//                                Log.d("MLGB", "def");
+//
+//                                int j = 2;
+//                            }
+//                        }
+//
+//                        @Override
+//                        public void onFailure(Call<GetMatch> call, Throwable t) {
+//                            Log.d("MLGB", "ghl");
+//
+//                            int j = 2;
+//                        }
+//                    });
+//                }
+//
+//            }
+//
+//            @Override
+//            public void onFailure(Call<User> call, Throwable t) {
+//                int j = 2;
+//            }
+//        });
+
+//        secumAPI.getMatch(new GetMatchRequest()).enqueue(new Callback<GetMatch>() {
+//
+//            @Override
+//            public void onResponse(Call<GetMatch> call, Response<GetMatch> response) {
+//                if (response.isSuccessful()) {
+//                    Log.d("MLGB", "abc");
+//                    int i = 1;
+//                } else {
+//                    Log.d("MLGB", "def");
+//
+//                    int j = 2;
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<GetMatch> call, Throwable t) {
+//                Log.d("MLGB", "ghl");
+//
+//                int j = 2;
+//            }
+//        });
+
+        secumAPI.endMatch().enqueue(new Callback<EndMatch>() {
             @Override
-            public void onResponse(Call<User> call, Response<User> response) {
-                int i = 1;
+            public void onResponse(Call<EndMatch> call, Response<EndMatch> response) {
+                if (response.isSuccessful()) {
+                    Log.d("MLGB", "abc");
+                    int i = 1;
+                } else {
+                    Log.d("MLGB", "def");
+                    int j = 2;
+                }
             }
 
             @Override
-            public void onFailure(Call<User> call, Throwable t) {
-                int j = 2;
+            public void onFailure(Call<EndMatch> call, Throwable t) {
+                Log.d("MLGB", "def");
             }
         });
+
 
         // use oauth token
 //        secumAPI.ping(new PingRequest()).enqueue(new Callback<PingResponse>() {

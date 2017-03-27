@@ -11,7 +11,6 @@ import com.shanjingtech.secumchat.log.EndMatchSentFactory;
 import com.shanjingtech.secumchat.log.GetMatchSentFactory;
 import com.shanjingtech.secumchat.log.GetMatchSuccessFactory;
 import com.shanjingtech.secumchat.model.EndMatch;
-import com.shanjingtech.secumchat.model.EndMatchRequest;
 import com.shanjingtech.secumchat.model.GetMatch;
 import com.shanjingtech.secumchat.model.GetMatchRequest;
 
@@ -99,7 +98,7 @@ public class SecumNetworkRequester {
     private Runnable bestEffortEndMatchRunnable = new Runnable() {
         @Override
         public void run() {
-            secumAPI.endMatch(new EndMatchRequest(myName)).enqueue(
+            secumAPI.endMatch().enqueue(
                     new Callback<EndMatch>() {
                         @Override
                         public void onResponse(Call<EndMatch> call, Response<EndMatch> response) {
@@ -125,7 +124,7 @@ public class SecumNetworkRequester {
         public void run() {
             Log.d(SecumAPI.TAG, "Posting GetMatch(" + myName + ")");
             answers.logCustom(getMatchSentFactory.create(myName));
-            secumAPI.getMatch(new GetMatchRequest(myName)).enqueue(new Callback<GetMatch>() {
+            secumAPI.getMatch(new GetMatchRequest()).enqueue(new Callback<GetMatch>() {
                 @Override
                 public void onResponse(Call<GetMatch> call, Response<GetMatch> response) {
                     GetMatch getMatch = response.body();
@@ -165,7 +164,7 @@ public class SecumNetworkRequester {
         public void run() {
             Log.d(SecumAPI.TAG, "Posting EndMatch(" + myName + ")");
             answers.logCustom(endMatchSentFactory.create(myName));
-            secumAPI.endMatch(new EndMatchRequest(myName)).enqueue(
+            secumAPI.endMatch().enqueue(
                     new Callback<EndMatch>() {
                         @Override
                         public void onResponse(Call<EndMatch> call, Response<EndMatch> response) {

@@ -1,19 +1,11 @@
 package com.shanjingtech.secumchat.model;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-
 /**
- * Created by flamearrow on 2/26/17.
+ * {@link com.shanjingtech.secumchat.net.SecumAPI#getMatch(GetMatchRequest)}
  */
 
 public class GetMatchRequest {
-    public GetMatchRequest(String username) {
-        this.username = username;
+    // TODO: update location
+    public GetMatchRequest() {
     }
-
-    @Expose
-    @SerializedName("username")
-    String username;
-
 }

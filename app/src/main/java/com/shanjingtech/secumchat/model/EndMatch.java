@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName;
 import com.shanjingtech.secumchat.net.SecumAPI;
 
 /**
- * {@link com.shanjingtech.secumchat.net.SecumAPI#endMatch(EndMatchRequest)}
+ * {@link com.shanjingtech.secumchat.net.SecumAPI#endMatch()}
  */
 
 public class EndMatch {

@@ -78,4 +78,9 @@ public class Constants {
     public static final String PATH_END_MATCH = "/api/matches/end_match/";
     public static final String PATH_PING = "/api/posts/";
     public static final String PATH_GET_PROFILE = "/api/users/get_profile/";
+    public static final String PATH_UPDATE_USER = "/api/users/update_user/";
+
+    // mydetails activity
+    public static final String MALE = "male";
+    public static final String FEMALE = "female";
 }

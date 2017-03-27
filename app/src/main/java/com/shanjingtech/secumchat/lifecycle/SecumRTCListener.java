@@ -28,6 +28,8 @@ public class SecumRTCListener extends PnRTCListener {
         void onRTCPeerConnected();
 
         void onRTCPeerDisconnected();
+
+        void onRemoteStreamAdded();
     }
 
     private static final String TAG = "SecumRTCListener";
@@ -111,6 +113,9 @@ public class SecumRTCListener extends PnRTCListener {
                             .ScalingType.SCALE_ASPECT_FILL, false);
                     VideoRendererGui.update(localCallbacks, 72, 65, 25, 25, VideoRendererGui
                             .ScalingType.SCALE_ASPECT_FIT, true);
+                    for (RTCPeerListener listener : rTCPeerListeners) {
+                        listener.onRemoteStreamAdded();
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

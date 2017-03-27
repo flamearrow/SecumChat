@@ -5,6 +5,7 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * OAuth2 token
+ * {@link com.shanjingtech.secumchat.net.SecumAPI#getAccessCode(AccessCodeRequest)}
  */
 public class AccessToken {
 

@@ -7,6 +7,7 @@ import android.util.Log;
 import com.shanjingtech.secumchat.SecumBaseActivity;
 import com.shanjingtech.secumchat.SecumChatActivity;
 import com.shanjingtech.secumchat.model.PingResponse;
+import com.shanjingtech.secumchat.model.User;
 import com.shanjingtech.secumchat.util.Constants;
 
 import retrofit2.Call;
@@ -21,9 +22,6 @@ public class SplashActivity extends SecumBaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        Intent intent = new Intent(this, PhoneNumActivity.class);
-//        try {
-//        finish();
         // use existing oauth token to ping server, if it's valid, go to chat,
         // otherwise go onboarding
         try {
@@ -52,15 +50,24 @@ public class SplashActivity extends SecumBaseActivity {
     }
 
     private void startSecum() {
-        // TODO: get user details
-        Intent intent = new Intent(this, SecumChatActivity.class);
-        String age = "23";
-        String name = "mlgb";
+        secumAPI.getProfile().enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(Call<User> call, Response<User> response) {
+                if (response.isSuccessful()) {
+                    // TODO: pass in User
+                    User user = response.body();
+                    Intent intent = new Intent(SplashActivity.this, SecumChatActivity.class);
+                    intent.putExtra(Constants.MY_NAME, user.getUsername());
+                    startActivity(intent);
 
-        intent.putExtra(Constants.MY_NAME, name);
-        intent.putExtra(Constants.MY_AGE, age);
-        intent.putExtra(Constants.ME_MALE, false);
-        startActivity(intent);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<User> call, Throwable t) {
+
+            }
+        });
     }
 
     private void startOnboarding() {

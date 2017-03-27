@@ -42,6 +42,8 @@
     <string name="incorrect_code">Incorrect code, please try again</string>
     <string name="fail_to_send_code">Fail to send code, please try again</string>
 
+    <string name="general_error">Something went wrong, please try again</string>
+
     <string name="resend_code">Didn\'t get it? Resend code</string>
     <string name="go">GO</string>
     <string name="get_code">Get code</string>

@@ -2,10 +2,9 @@ package com.shanjingtech.secumchat.model;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import com.shanjingtech.secumchat.net.SecumAPI;
 
 /**
- * {@link SecumAPI#getAccessCode(AccessCodeRequest)}
+ * {@link com.shanjingtech.secumchat.net.SecumAPI#getAccessCode(AccessCodeRequest)}
  */
 
 public class AccessCodeRequest {

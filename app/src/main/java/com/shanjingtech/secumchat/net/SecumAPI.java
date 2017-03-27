@@ -4,15 +4,13 @@ import com.shanjingtech.secumchat.model.AccessCode;
 import com.shanjingtech.secumchat.model.AccessCodeRequest;
 import com.shanjingtech.secumchat.model.AccessToken;
 import com.shanjingtech.secumchat.model.EndMatch;
-import com.shanjingtech.secumchat.model.EndMatchRequest;
 import com.shanjingtech.secumchat.model.GetMatch;
 import com.shanjingtech.secumchat.model.GetMatchRequest;
-import com.shanjingtech.secumchat.model.PingRequest;
 import com.shanjingtech.secumchat.model.PingResponse;
+import com.shanjingtech.secumchat.model.UpdateUserRequest;
 import com.shanjingtech.secumchat.model.User;
 import com.shanjingtech.secumchat.model.UserRequest;
 import com.shanjingtech.secumchat.util.Constants;
-import com.shanjingtech.secumchat.util.SecumCounter;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -72,7 +70,7 @@ public interface SecumAPI {
      */
     @Headers("Content-Type: application/json")
     @POST(Constants.PATH_END_MATCH)
-    Call<EndMatch> endMatch(@Body EndMatchRequest request);
+    Call<EndMatch> endMatch();
 
     @Headers("Content-Type: application/json")
     @POST(Constants.PATH_PING)
@@ -82,4 +80,8 @@ public interface SecumAPI {
     @Headers("Content-Type: application/json")
     @POST(Constants.PATH_GET_PROFILE)
     Call<User> getProfile();
+
+    @Headers("Content-Type: application/json")
+    @POST(Constants.PATH_UPDATE_USER)
+    Call<User> updateUser(@Body UpdateUserRequest request);
 }

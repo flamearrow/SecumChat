@@ -5,9 +5,8 @@ import com.google.gson.annotations.SerializedName;
 import com.shanjingtech.secumchat.net.SecumAPI;
 
 /**
- * Created by flamearrow on 2/26/17.
+ * {@link com.shanjingtech.secumchat.net.SecumAPI#getMatch(GetMatchRequest)}
  */
-
 public class GetMatch {
     public boolean isValid() {
         return callerName != null && calleeName != null;

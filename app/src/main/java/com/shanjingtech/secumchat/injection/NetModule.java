@@ -87,6 +87,7 @@ public class NetModule {
                     credential = "Bearer " + bearer;
                     Log.d(TAG, "Bearer: " + bearer);
                 }
+                // TODO: when token expires, fail fast
                 return response.request().newBuilder()
                         .header("Authorization", credential)
                         .build();

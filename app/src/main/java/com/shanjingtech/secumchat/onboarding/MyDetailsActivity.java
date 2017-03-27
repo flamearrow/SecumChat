@@ -10,8 +10,15 @@ import android.widget.RadioButton;
 import com.shanjingtech.secumchat.R;
 import com.shanjingtech.secumchat.SecumBaseActivity;
 import com.shanjingtech.secumchat.SecumChatActivity;
+import com.shanjingtech.secumchat.model.UpdateUserRequest;
+import com.shanjingtech.secumchat.model.UpdateUserResponse;
+import com.shanjingtech.secumchat.model.User;
 import com.shanjingtech.secumchat.util.Constants;
 import com.wefika.horizontalpicker.HorizontalPicker;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Input you name, age and gender
@@ -55,16 +62,42 @@ public class MyDetailsActivity extends SecumBaseActivity {
     }
 
     public void clickGo(View view) {
-        // TODO: need another api call to link userinfo to phone number
-        // pass name, age and gender
         if (requestSecumPermissions()) {
             if (validateInfo()) {
-                Intent intent = new Intent(this, SecumChatActivity.class);
+//                Intent intent = new Intent(this, SecumChatActivity.class);
+//                String age = agesArray[agePicker.getSelectedItem()];
+//                intent.putExtra(Constants.MY_NAME, name.getText().toString());
+//                intent.putExtra(Constants.MY_AGE, age);
+//                intent.putExtra(Constants.ME_MALE, isMale);
+//                startActivity(intent);
+                final String nickname = name.getText().toString();
                 String age = agesArray[agePicker.getSelectedItem()];
-                intent.putExtra(Constants.MY_NAME, name.getText().toString());
-                intent.putExtra(Constants.MY_AGE, age);
-                intent.putExtra(Constants.ME_MALE, isMale);
-                startActivity(intent);
+                String gender = isMale ? Constants.MALE : Constants.FEMALE;
+                secumAPI.updateUser(
+                        new UpdateUserRequest.Builder()
+                                .setNickname(nickname)
+                                .setAge(age)
+                                .setGender(gender)
+                                .build()
+                ).enqueue(new Callback<User>() {
+                    @Override
+                    public void onResponse(Call<User> call, Response<User> response) {
+                        if (response.isSuccessful()) {
+                            // TODO: pass in user
+                            User user = response.body();
+                            Intent intent = new Intent(MyDetailsActivity.this, SecumChatActivity
+                                    .class);
+                            intent.putExtra(Constants.MY_NAME, user.getUsername());
+                            startActivity(intent);
+
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<User> call, Throwable t) {
+                        showToast(getResources().getString(R.string.general_error));
+                    }
+                });
             }
         }
     }

@@ -5,10 +5,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.Nullable;
+import android.support.annotation.UiThread;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.pubnub.api.models.consumer.PNStatus;
 import com.pubnub.api.models.consumer.pubsub.PNMessageResult;
@@ -376,7 +376,6 @@ public class SecumChatActivity extends SecumBaseActivity implements
                 hideAllUI();
                 secumCounter.setVisibility(View.VISIBLE);
                 addTimeButton.setVisibility(View.VISIBLE);
-                secumCounter.initialize();
             }
         });
     }
@@ -473,6 +472,14 @@ public class SecumChatActivity extends SecumBaseActivity implements
     public void onRTCPeerConnected() {
         // connection established, switch to chatting
         switchState(State.CHATTING);
+    }
+
+    @UiThread
+    @Override
+    public void onRemoteStreamAdded() {
+        if (currentState == State.CHATTING) {
+            secumCounter.initialize();
+        }
     }
 
     @Override

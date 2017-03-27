@@ -252,15 +252,6 @@ public class SecumChatActivity extends SecumBaseActivity implements
         localVideoSource.stop();
     }
 
-    private void showToast(final String message) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(SecumChatActivity.this, message, Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
     private void setUpChannels() {
         // subscribe to standby channel and regular channel, hangup all possible RTC peers
         // note it's ok to subscribe to a pubnub channel multiple times

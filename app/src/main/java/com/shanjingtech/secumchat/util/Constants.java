@@ -49,7 +49,7 @@ public class Constants {
     public static final String MY_AGE = "USER_AGE";
     public static final String ME_MALE = "USER_IS_MALE";
 
-    public static final String USER_NAME_PREVIX = "phone";
+    public static final String USER_NAME_PREVIX = "phone_";
 
     // shared preference
     public static final String PREF_FILE = "com.shanjingtech.secumchat.PREF_FILE";
@@ -68,5 +68,14 @@ public class Constants {
     public static final String XIR_USER = "gavinxyang";
     public static final String XIR_SECRET = "d4362d68-fbe9-11e6-a2ad-8345664c2cf3";
 
-
+    // SecumAPI
+    public static final String PASSWORD = "password";
+    public static final String SHARED_PREF_ACCESS_TOKEN = "secumOAuth2Token";
+    public static final String PATH_REGISTER_USER = "/api/users/";
+    public static final String PATH_GET_ACCESS_CODE = "/api/users/get_access_code/";
+    public static final String PATH_GET_ACCESS_TOKEN = "/api/o/token/";
+    public static final String PATH_GET_MATCH = "/api/matches/get_match/";
+    public static final String PATH_END_MATCH = "/api/matches/end_match/";
+    public static final String PATH_PING = "/api/posts/";
+    public static final String PATH_GET_PROFILE = "/api/users/get_profile/";
 }

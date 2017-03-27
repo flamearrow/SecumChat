@@ -65,10 +65,10 @@ public class PhoneNumActivity extends SecumBaseActivity {
             intent.putExtra(Constants.PHONE_NUMBER, "12345");
             startActivity(intent);
         } else {
+            SecumDebug.disableDebugMode(this);
             final String phoneNo = getFullPhoneNumber();
             if (validatePhone()) {
-                secumAPI.registerUser(new UserRequest(Constants.USER_NAME_PREVIX + phoneNo,
-                        phoneNo))
+                secumAPI.registerUser(new UserRequest(phoneNo))
                         .enqueue(
                                 new Callback<User>() {
                                     @Override

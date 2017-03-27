@@ -2,6 +2,7 @@ package com.shanjingtech.secumchat;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.net.Uri;
@@ -15,6 +16,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.crashlytics.android.answers.Answers;
 import com.shanjingtech.secumchat.log.AddTimePairedFactory;
@@ -37,6 +39,8 @@ public class SecumBaseActivity
     protected Answers answers;
     @Inject
     AddTimePairedFactory addTimePairedFactory;
+    @Inject
+    protected SharedPreferences sharedPreferences;
 
     private static final String PERMISSION_TAG = "SecumPermission";
     private AlertDialog permissionAlertDialog;
@@ -53,6 +57,15 @@ public class SecumBaseActivity
                 .setNegativeButton(resources.getString(R.string.cancel), this)
                 .setIcon(R.drawable.cat_head)
                 .create();
+    }
+
+    protected void showToast(final String message) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(SecumBaseActivity.this, message, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     /**

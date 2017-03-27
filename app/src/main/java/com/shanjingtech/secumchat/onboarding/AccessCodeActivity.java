@@ -1,6 +1,7 @@
 package com.shanjingtech.secumchat.onboarding;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -10,6 +11,7 @@ import com.shanjingtech.secumchat.R;
 import com.shanjingtech.secumchat.SecumBaseActivity;
 import com.shanjingtech.secumchat.model.AccessCode;
 import com.shanjingtech.secumchat.model.AccessCodeRequest;
+import com.shanjingtech.secumchat.model.AccessToken;
 import com.shanjingtech.secumchat.ui.AccessCodeLayout;
 import com.shanjingtech.secumchat.ui.AutoEnableTextView;
 import com.shanjingtech.secumchat.util.Constants;
@@ -33,9 +35,9 @@ public class AccessCodeActivity extends SecumBaseActivity
     private AccessCodeLayout accessCode;
     private AutoEnableTextView autoEnableTextView;
     private String phoneNo;
-    private String correctAccessCode;
     private boolean isDebug;
     private Button goButton;
+    private String correctAccessCode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,13 +69,17 @@ public class AccessCodeActivity extends SecumBaseActivity
                 new Callback<AccessCode>() {
                     @Override
                     public void onResponse(Call<AccessCode> call, Response<AccessCode> response) {
-                        AccessCode code = response.body();
-                        correctAccessCode = code.getAccess_code();
+                        Log.d(TAG, "send code success");
+                        // TODO: buffer it locally, vaidate before send getAccessToken
+                        correctAccessCode = response.body().getAccess_code();
                     }
 
                     @Override
                     public void onFailure(Call<AccessCode> call, Throwable t) {
-
+                        // failed to send code, show error and enable resend
+                        showToast(getResources().getString(R.string.fail_to_send_code));
+                        Log.d(TAG, "send code failed");
+                        autoEnableTextView.setEnabled(true);
                     }
                 });
     }
@@ -84,17 +90,43 @@ public class AccessCodeActivity extends SecumBaseActivity
 
     public void clickGo(View view) {
         String code = accessCode.getAccessCode();
-        if (isDebug || validateAccessCode(code)) {
-            Intent intent = new Intent(this, MyDetailsActivty.class);
-            String username = Constants.USER_NAME_PREVIX + phoneNo;
-            intent.putExtra(Constants.MY_NAME, username);
-            startActivity(intent);
+        if (isDebug) {
+            toDetailsActivity();
         }
+        if (validateAccessCode(code)) {
+            requestAccessTokenAndContinue(code);
+        } else {
+            showToast(getResources().getString(R.string.incorrect_code));
+        }
+    }
+
+    private void requestAccessTokenAndContinue(String accessCode) {
+        secumAPI.getAccessToken(Constants.PASSWORD, phoneNo, accessCode).enqueue(
+                new Callback<AccessToken>() {
+                    @Override
+                    public void onResponse(Call<AccessToken> call, Response<AccessToken> response) {
+                        // save access token
+                        String accessToken = response.body().getAccess_token();
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.putString(Constants.SHARED_PREF_ACCESS_TOKEN, accessToken);
+                        editor.commit();
+                        toDetailsActivity();
+                    }
+
+                    @Override
+                    public void onFailure(Call<AccessToken> call, Throwable t) {
+                        // incorrect access code, try again
+                        showToast(getResources().getString(R.string.incorrect_code));
+                    }
+                });
+    }
+
+    private void toDetailsActivity() {
+        startActivity(new Intent(AccessCodeActivity.this, MyDetailsActivity.class));
     }
 
     @Override
     public void onTextChanged(boolean valid) {
-        Log.d(TAG, "onTextChanged, validation: " + valid);
         goButton.setEnabled(valid);
     }
 }

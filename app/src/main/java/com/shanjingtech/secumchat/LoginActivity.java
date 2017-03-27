@@ -1,13 +1,24 @@
 package com.shanjingtech.secumchat;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.telephony.TelephonyManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 
+import com.shanjingtech.secumchat.model.AccessToken;
+import com.shanjingtech.secumchat.model.PingRequest;
+import com.shanjingtech.secumchat.model.PingResponse;
+import com.shanjingtech.secumchat.model.User;
 import com.shanjingtech.secumchat.util.Constants;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Legacy login activity, direct access to SecumChat and debug api
@@ -60,23 +71,67 @@ public class LoginActivity extends SecumBaseActivity {
      * @param view Button clicked to trigger call to joinChat
      */
     public void testButton(View view) {
-        // get access token - this works
-//        secumAPI.getAccessToken("password", "+16503181659", "851927").enqueue(new
-// Callback<AccessToken>() {
+        // use basic credential
+//        secumAPI.getAccessToken("password", "+16503181659", "8048").enqueue(
+//                new Callback<AccessToken>() {
+//                    @Override
+//                    public void
+//                    onResponse(Call<AccessToken> call, Response<AccessToken> response) {
+//                        int i = 1;
+//                        int j = 2;
+//                    }
+//
+//                    @Override
+//                    public void
+//                    onFailure(Call<AccessToken> call, Throwable t) {
+//                        int i = 1;
+//                        int j = 2;
+//                    }
+//                });
+        secumAPI.getProfile().enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(Call<User> call, Response<User> response) {
+                int i = 1;
+            }
+
+            @Override
+            public void onFailure(Call<User> call, Throwable t) {
+                int j = 2;
+            }
+        });
+
+        // use oauth token
+//        secumAPI.ping(new PingRequest()).enqueue(new Callback<PingResponse>() {
 //            @Override
-//            public void onResponse(Call<AccessToken> call, Response<AccessToken> response) {
+//            public void onResponse(Call<PingResponse> call, Response<PingResponse> response) {
+//                if (response.isSuccessful()) {
+//                    Log.d("MLGB", "success");
+//                } else {
+//                    Log.d("MLGB", "fail");
+//                }
 //                int i = 1;
-//                int j = 2;
 //            }
 //
 //            @Override
-//            public void onFailure(Call<AccessToken> call, Throwable t) {
-//                int i = 1;
-//                int j = 2;
+//            public void onFailure(Call<PingResponse> call, Throwable t) {
+//                Log.d("MLGB", "fail");
+//                int j = 1;
 //            }
 //        });
-//        requestSecumPermissions();
-        showBlockingPermissionDialog();
+//        Log.d("MLGB", getPhoneNumber());
+
+    }
+
+    /**
+     * TODO udpate this
+     *
+     * @return
+     */
+    String getPhoneNumber() {
+        TelephonyManager manager = (TelephonyManager) getApplicationContext().getSystemService
+                (Context.TELEPHONY_SERVICE);
+        String s = manager.getNetworkCountryIso();
+        return manager.getLine1Number();
     }
 
     /**

@@ -38,6 +38,10 @@
     <string name="phone_number_cant_be_empty">Phone number can\'t be empty</string>
     <string name="phone_number_too_long">Phone number is too long</string>
 
+    <!-- Access code activity -->
+    <string name="incorrect_code">Incorrect code, please try again</string>
+    <string name="fail_to_send_code">Fail to send code, please try again</string>
+
     <string name="resend_code">Didn\'t get it? Resend code</string>
     <string name="go">GO</string>
     <string name="get_code">Get code</string>

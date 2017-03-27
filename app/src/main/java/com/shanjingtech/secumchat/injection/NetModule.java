@@ -3,11 +3,13 @@ package com.shanjingtech.secumchat.injection;
 import android.app.Application;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.shanjingtech.secumchat.net.SecumAPI;
+import com.shanjingtech.secumchat.util.Constants;
 
 import java.io.IOException;
 
@@ -31,6 +33,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 @Module
 public class NetModule {
+    private static final String TAG = "NetModule";
     private final String apiBaseUrl;
 
     public NetModule(String apiBaseUrl) {
@@ -68,18 +71,42 @@ public class NetModule {
 
     @Provides
     @Singleton
-    Authenticator provideAuthenticator() {
+    Authenticator provideAuthenticator(final SharedPreferences sharedPreferences) {
         return new Authenticator() {
             @Override
             public Request authenticate(Route route, Response response) throws IOException {
-                System.out.println("Authenticating for response: " + response);
-                System.out.println("Challenges: " + response.challenges());
-                String credential = Credentials.basic(SecumAPI.USER_NAME, SecumAPI.PASSWORD);
+                String credential;
+                if (shouldUseBasicCredential(response)) {
+                    credential = Credentials.basic(SecumAPI.USER_NAME, SecumAPI.PASSWORD);
+                } else {
+                    // if request is ping/getMatch/endMatch/updateUser
+                    //  pull a new accessToken
+//                    String bearer = "TB4tb8BMS0YmshVUcdiRf2IGVf3OkY";
+                    String bearer = sharedPreferences.getString(Constants
+                            .SHARED_PREF_ACCESS_TOKEN, "mlgb");
+                    credential = "Bearer " + bearer;
+                    Log.d(TAG, "Bearer: " + bearer);
+                }
                 return response.request().newBuilder()
                         .header("Authorization", credential)
                         .build();
             }
         };
+    }
+
+    /**
+     * Check if we should use basic credential(-u"user:password") or oauth token
+     * For register/getAccessCode/getAccessToken, use basic
+     * For others(ping/getMatch/endMatch/updateUser), use oauth
+     * @param response
+     * @return
+     */
+    private boolean shouldUseBasicCredential(Response response) {
+        String url = response.request().url().toString();
+        // basic register/getAccessCode/getAccessToken
+        return url.endsWith(Constants.PATH_REGISTER_USER) || url.endsWith(Constants
+                .PATH_GET_ACCESS_CODE) || url.endsWith(Constants.PATH_GET_ACCESS_TOKEN);
+        // (otherwise) oauth ping/getMatch/endMatch/updateUser
     }
 
     @Provides

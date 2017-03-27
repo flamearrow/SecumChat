@@ -7,8 +7,12 @@ import com.shanjingtech.secumchat.model.EndMatch;
 import com.shanjingtech.secumchat.model.EndMatchRequest;
 import com.shanjingtech.secumchat.model.GetMatch;
 import com.shanjingtech.secumchat.model.GetMatchRequest;
+import com.shanjingtech.secumchat.model.PingRequest;
+import com.shanjingtech.secumchat.model.PingResponse;
 import com.shanjingtech.secumchat.model.User;
 import com.shanjingtech.secumchat.model.UserRequest;
+import com.shanjingtech.secumchat.util.Constants;
+import com.shanjingtech.secumchat.util.SecumCounter;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -40,18 +44,18 @@ public interface SecumAPI {
      * @return
      */
     @Headers("Content-Type: application/json")
-    @POST("/api/users/")
+    @POST(Constants.PATH_REGISTER_USER)
     Call<User> registerUser(@Body UserRequest request);
 
     /**
      * Send access code to user's phone through sms, confirm ownership
      */
     @Headers("Content-Type: application/json")
-    @POST("/api/users/get_access_code/")
+    @POST(Constants.PATH_GET_ACCESS_CODE)
     Call<AccessCode> getAccessCode(@Body AccessCodeRequest request);
 
 
-    @POST("/api/o/token/")
+    @POST(Constants.PATH_GET_ACCESS_TOKEN)
     @FormUrlEncoded
     Call<AccessToken> getAccessToken(@Field("grant_type") String grantType, @Field("username")
             String userName, @Field("password") String password);
@@ -59,23 +63,23 @@ public interface SecumAPI {
     /**
      * Request a match and make me happy
      */
-    @Headers({
-            "Content-Type: application/json",
-            // TODO: pass in this programmatically
-            "Authorization: Bearer RWmsVIZr46RFQ1j3mDDPa9DMS7YiLs"
-    })
-    @POST("/api/matches/get_match/")
+    @Headers("Content-Type: application/json")
+    @POST(Constants.PATH_GET_MATCH)
     Call<GetMatch> getMatch(@Body GetMatchRequest request);
 
     /**
      * Inform server a match is end
      */
-    @Headers({
-            "Content-Type: application/json",
-            // TODO: pass in this programmatically
-            "Authorization: Bearer RWmsVIZr46RFQ1j3mDDPa9DMS7YiLs"
-    })
-    @POST("/api/matches/end_match/")
+    @Headers("Content-Type: application/json")
+    @POST(Constants.PATH_END_MATCH)
     Call<EndMatch> endMatch(@Body EndMatchRequest request);
 
+    @Headers("Content-Type: application/json")
+    @POST(Constants.PATH_PING)
+    Call<PingResponse> ping();
+
+
+    @Headers("Content-Type: application/json")
+    @POST(Constants.PATH_GET_PROFILE)
+    Call<User> getProfile();
 }

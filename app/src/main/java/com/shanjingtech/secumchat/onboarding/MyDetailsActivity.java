@@ -17,7 +17,7 @@ import com.wefika.horizontalpicker.HorizontalPicker;
  * Input you name, age and gender
  */
 
-public class MyDetailsActivty extends SecumBaseActivity {
+public class MyDetailsActivity extends SecumBaseActivity {
     private EditText name;
     private HorizontalPicker agePicker;
     private boolean isMale;
@@ -47,7 +47,6 @@ public class MyDetailsActivty extends SecumBaseActivity {
     }
 
     private boolean validateInfo() {
-
         if (name.length() == 0) {
             name.setError("name cannot be empty.");
             return false;

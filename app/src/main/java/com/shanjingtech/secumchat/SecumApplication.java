@@ -23,8 +23,8 @@ public class SecumApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        Fabric.with(this, new Crashlytics());
-        Fabric.with(this, new Answers());
+        Fabric.with(this, new Crashlytics(), new Answers());
+//        Fabric.with(this, new Answers());
         netComponent = DaggerNetComponent.builder()
                 .appModule(new AppModule(this))
                 .netModule(new NetModule(SecumAPI.BASE_URL))

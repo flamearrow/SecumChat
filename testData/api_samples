@@ -35,7 +35,7 @@
 3. Get OAuth Token:
     what is -u here?
   Request:(username is phone number, password is access_code)
-    curl -X POST  -d "grant_type=password&username=1595005019&password=966468"  -u"A7H5tpb2JQ7H66gPxbs6AAAVZgwtU12VPGoZpYUB:uVVN0JPW5piZf7nZglh92gleVJWnfAZguILU1Z25UR52yZa2lLFPjOtYJj42PiNF0GTQ32OdP8bQyHAbaHwkRArvhzDZDNVuBZqheflBVACDBjHrbedilUfon5JPIm6R" https://www.shanjingtech.com/api/o/token/
+    curl -X POST -d "grant_type=password&username=%2B16503181659&password=8048" -u"A7H5tpb2JQ7H66gPxbs6AAAVZgwtU12VPGoZpYUB:uVVN0JPW5piZf7nZglh92gleVJWnfAZguILU1Z25UR52yZa2lLFPjOtYJj42PiNF0GTQ32OdP8bQyHAbaHwkRArvhzDZDNVuBZqheflBVACDBjHrbedilUfon5JPIm6R" https://www.shanjingtech.com/api/o/token/
 
   Response:
     {
@@ -85,3 +85,10 @@
 
 6. Update user
   curl -X POST -H "Content-Type: application/json" -u superuser:superuser -d '{"phone": "+16503181659","age": 200, "gender": "male",  "lat": "37.37073050000001", "lng": "-122.01352050000001"}'  http://127.0.0.1:8000/api/users/update_user/
+
+7. Ping
+  curl -X POST  -H "Authorization: Bearer ePDqvWydnbT2YqTyoPLYQ92ERaxfw6"  https://www.shanjingtech.com/api/posts/
+
+8. Get profile
+curl -X POST -H "Content-Type: application/json" -H "Authorization: Bearer CIEDnKgErYlwmJKTWxFSgsijnDCuoc"  https://www.shanjingtech.com/api/users/get_profile/
+{"username":"phone_+16503181659","third_party_uid":null,"third_party_auth":null,"email":"","phone":"+16503181659","profile_image_url":null,"age":null,"gender":null,"lat":null,"lng":null,"nickname":null,"access_code":null,"num_comments":0,"num_posts":19,"num_following":0,"num_followed":0,"time_created":"2017-03-22T07:07:58.750586Z","time_updated":"2017-03-27T00:19:58.919426Z"}

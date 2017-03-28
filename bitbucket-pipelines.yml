@@ -5,7 +5,7 @@
 # You can specify a custom docker image from Docker Hub as your build environment.
 image: java:8
 # using gradle as build tool ..
-image: qlik/gradle
+image: niaquinto/gradle
   
 pipelines:
   default:

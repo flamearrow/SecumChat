@@ -57,7 +57,7 @@ public class SplashActivity extends SecumBaseActivity {
                     // TODO: pass in User
                     User user = response.body();
                     Intent intent = new Intent(SplashActivity.this, SecumChatActivity.class);
-                    intent.putExtra(Constants.MY_NAME, user.getUsername());
+                    intent.putExtra(Constants.CURRENT_USER, user);
                     startActivity(intent);
 
                 }

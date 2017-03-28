@@ -64,12 +64,6 @@ public class MyDetailsActivity extends SecumBaseActivity {
     public void clickGo(View view) {
         if (requestSecumPermissions()) {
             if (validateInfo()) {
-//                Intent intent = new Intent(this, SecumChatActivity.class);
-//                String age = agesArray[agePicker.getSelectedItem()];
-//                intent.putExtra(Constants.MY_NAME, name.getText().toString());
-//                intent.putExtra(Constants.MY_AGE, age);
-//                intent.putExtra(Constants.ME_MALE, isMale);
-//                startActivity(intent);
                 final String nickname = name.getText().toString();
                 String age = agesArray[agePicker.getSelectedItem()];
                 String gender = isMale ? Constants.MALE : Constants.FEMALE;
@@ -83,11 +77,10 @@ public class MyDetailsActivity extends SecumBaseActivity {
                     @Override
                     public void onResponse(Call<User> call, Response<User> response) {
                         if (response.isSuccessful()) {
-                            // TODO: pass in user
                             User user = response.body();
                             Intent intent = new Intent(MyDetailsActivity.this, SecumChatActivity
                                     .class);
-                            intent.putExtra(Constants.MY_NAME, user.getUsername());
+                            intent.putExtra(Constants.CURRENT_USER, user);
                             startActivity(intent);
 
                         }

@@ -3,10 +3,12 @@ package com.shanjingtech.secumchat.model;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
+
 /**
  * {@link com.shanjingtech.secumchat.net.SecumAPI#registerUser(UserRequest)}
  */
-public class User {
+public class User implements Serializable {
     @SerializedName("username")
     @Expose
     String username;

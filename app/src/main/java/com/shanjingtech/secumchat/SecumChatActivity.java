@@ -18,6 +18,7 @@ import com.shanjingtech.pnwebrtc.utils.JSONUtils;
 import com.shanjingtech.secumchat.lifecycle.NonRTCMessageController;
 import com.shanjingtech.secumchat.lifecycle.SecumRTCListener;
 import com.shanjingtech.secumchat.model.GetMatch;
+import com.shanjingtech.secumchat.model.User;
 import com.shanjingtech.secumchat.net.SecumNetworkRequester;
 import com.shanjingtech.secumchat.net.XirSysRequest;
 import com.shanjingtech.secumchat.ui.DialingReceivingWaitingLayout;
@@ -52,6 +53,7 @@ public class SecumChatActivity extends SecumBaseActivity implements
     private GLSurfaceView videoView;
     // my name, also used for regular channel name
     private String myName;
+    private User currentUser;
     // my standby channel name
     private String myNameStdy;
 
@@ -127,7 +129,8 @@ public class SecumChatActivity extends SecumBaseActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.secum_chat_activity);
-        this.myName = getIntent().getStringExtra(Constants.MY_NAME);
+        this.currentUser = (User) getIntent().getSerializableExtra(Constants.CURRENT_USER);
+        this.myName = currentUser.getUsername();
         myNameStdy = myName + Constants.STDBY_SUFFIX;
         setTitle(myName);
 

@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("shanjingtech.com.secumchat", appContext.getPackageName());
+        assertEquals("com.shanjingtech.secumchat", appContext.getPackageName());
     }
 }

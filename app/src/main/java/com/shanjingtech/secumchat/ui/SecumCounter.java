@@ -1,7 +1,13 @@
-package com.shanjingtech.secumchat.util;
+package com.shanjingtech.secumchat.ui;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.Gravity;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+
+import com.shanjingtech.secumchat.R;
+import com.shanjingtech.secumchat.util.Constants;
 
 /**
  * A counter with customized shape for back counting, stealing some ideas from
@@ -9,6 +15,8 @@ import android.util.AttributeSet;
  */
 public class SecumCounter extends android.support.v7.widget.AppCompatTextView {
     private static final long MILLIS_IN_SECOND = 1000;
+
+    private Animation shakeAnimation;
 
     public interface SecumCounterListener {
         void onCounterStart();
@@ -41,18 +49,31 @@ public class SecumCounter extends android.support.v7.widget.AppCompatTextView {
 
     public SecumCounter(Context context) {
         super(context);
+        initializeUI();
     }
 
     public SecumCounter(Context context, AttributeSet attrs) {
         super(context, attrs, 0);
+        initializeUI();
     }
 
     public SecumCounter(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        initializeUI();
     }
 
     public void setSecumCounterListener(SecumCounterListener listener) {
         this.listener = listener;
+    }
+
+    private void initializeUI() {
+        // set background to cat head
+        // center text
+        shakeAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.shake);
+        setText("" + Constants.TORA);
+        setGravity(Gravity.CENTER);
+        setBackground(getResources().getDrawable(R.drawable.cat_timer));
+        setTextSize(30);
     }
 
     /**
@@ -81,11 +102,25 @@ public class SecumCounter extends android.support.v7.widget.AppCompatTextView {
         }
     }
 
+    /**
+     * Start shaking!
+     */
+    public void shake() {
+        startAnimation(shakeAnimation);
+    }
+
+    /**
+     * Freeze, don't move!
+     */
+    public void freeze() {
+        clearAnimation();
+    }
 
     private void checkAddTime() {
         if (meAdd && peerAdd) {
             secondsLeft += Constants.SECONDS_TO_ADD;
             if (listener != null) {
+                clearAnimation();
                 listener.onAddTimePaired(secondsLeft);
             }
             meAdd = false;
@@ -95,6 +130,7 @@ public class SecumCounter extends android.support.v7.widget.AppCompatTextView {
 
     public void initialize() {
         stop();
+        freeze();
         // (TODO)race condition
         secondsLeft = Constants.TORA;
         start();
@@ -110,6 +146,7 @@ public class SecumCounter extends android.support.v7.widget.AppCompatTextView {
 
     private void stop() {
         running = false;
+        freeze();
         updateRunning();
     }
 
@@ -131,6 +168,9 @@ public class SecumCounter extends android.support.v7.widget.AppCompatTextView {
                 stop();
             }
         } else {
+            if (secondsLeft < Constants.HANG_UP_TIME) {
+                shake();
+            }
             setText("" + secondsLeft);
             secondsLeft--;
         }

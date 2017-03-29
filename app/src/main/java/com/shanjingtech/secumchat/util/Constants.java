@@ -58,6 +58,9 @@ public class Constants {
 
     // counter
     public static final int TORA = 9;
+    // after this point, notify user it's about to expire
+    public static final int HANG_UP_TIME = 5;
+
     // grace time for caller to time out
     public static final int GRACE = 2;
     public static final int SECONDS_TO_ADD = 30;

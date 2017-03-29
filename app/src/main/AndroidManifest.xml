@@ -62,13 +62,13 @@
             android:configChanges="orientation|keyboardHidden"
             android:screenOrientation="portrait"
             android:theme="@style/SplashTheme">
+        </activity>
+
+        <activity android:name=".DebugActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
-        </activity>
-
-        <activity android:name=".DebugActivity">
         </activity>
 
         <meta-data

@@ -4,7 +4,7 @@
               android:layout_height="wrap_content"
               android:orientation="horizontal">
 
-    <com.shanjingtech.secumchat.util.SecumCounter
+    <com.shanjingtech.secumchat.ui.SecumCounter
         android:id="@+id/secum_counter"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

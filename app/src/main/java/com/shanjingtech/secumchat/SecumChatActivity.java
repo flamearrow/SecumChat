@@ -23,7 +23,7 @@ import com.shanjingtech.secumchat.net.SecumNetworkRequester;
 import com.shanjingtech.secumchat.net.XirSysRequest;
 import com.shanjingtech.secumchat.ui.DialingReceivingWaitingLayout;
 import com.shanjingtech.secumchat.util.Constants;
-import com.shanjingtech.secumchat.util.SecumCounter;
+import com.shanjingtech.secumchat.ui.SecumCounter;
 
 import org.json.JSONException;
 import org.json.JSONObject;

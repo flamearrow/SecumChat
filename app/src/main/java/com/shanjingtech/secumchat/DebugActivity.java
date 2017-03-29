@@ -7,7 +7,7 @@ import android.util.Log;
 import android.view.View;
 
 import com.shanjingtech.secumchat.ui.PulseImageView;
-import com.shanjingtech.secumchat.util.SecumCounter;
+import com.shanjingtech.secumchat.ui.SecumCounter;
 
 public class DebugActivity extends Activity implements SecumCounter.SecumCounterListener {
     private final static String TAG = "DebugActivity";
@@ -25,18 +25,19 @@ public class DebugActivity extends Activity implements SecumCounter.SecumCounter
     }
 
     public void start(View view) {
-//        secumCounter.start();
-//        secumCounter.initialize();
-        catHead.startPulse();
+        secumCounter.initialize();
+//        catHead.startPulse();
     }
 
     public void meAdd(View view) {
-        catHead.stopPulse();
-//        secumCounter.meAdd();
+//        secumCounter.shake();
+//        catHead.stopPulse();
+        secumCounter.meAdd();
     }
 
     public void peerAdd(View view) {
         secumCounter.peerAdd();
+//        secumCounter.freeze();
     }
 
     @Override

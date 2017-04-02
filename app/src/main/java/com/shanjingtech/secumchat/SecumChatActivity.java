@@ -1,5 +1,7 @@
 package com.shanjingtech.secumchat;
 
+import android.content.Context;
+import android.media.AudioManager;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.os.Handler;
@@ -203,6 +205,11 @@ public class SecumChatActivity extends SecumBaseActivity implements
                 localVideoSource);
 
         // First we create an AudioSource then we can create our AudioTrack
+        AudioManager audioManager = (AudioManager) getApplicationContext().getSystemService
+                (Context.AUDIO_SERVICE);
+        if (!audioManager.isSpeakerphoneOn()) {
+            audioManager.setSpeakerphoneOn(true);
+        }
         localAudioSource = pcFactory.createAudioSource(this.pnRTCClient
                 .audioConstraints());
         localAudioTrack = pcFactory.createAudioTrack(Constants.AUDIO_TRACK_ID,
@@ -272,8 +279,7 @@ public class SecumChatActivity extends SecumBaseActivity implements
         // stop all RTC connection
         pnRTCClient.closeAllConnections();
         // stop querying server
-        networkRequester.cancellAll();
-        networkRequester.endMatch();
+        networkRequester.stopMatch();
     }
 
     private void switchState(State state) {
@@ -310,6 +316,7 @@ public class SecumChatActivity extends SecumBaseActivity implements
                 return;
             }
             case CHATTING: {
+                networkRequester.stopMatch();
                 showChattingUI();
                 return;
             }

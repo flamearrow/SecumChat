@@ -76,6 +76,10 @@ public class SecumNetworkRequester {
         handler.postDelayed(endMatchRunnable, GET_MATCH_DELAY);
     }
 
+    public void stopMatch() {
+        cancellAll();
+        endMatch();
+    }
     /**
      * Cancel all pending getMatch and endMatch
      */

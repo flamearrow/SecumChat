@@ -91,6 +91,9 @@ public class PnSignalingParams {
         videoConstraints.mandatory.add(new MediaConstraints.KeyValuePair("maxHeight","720"));
         videoConstraints.mandatory.add(new MediaConstraints.KeyValuePair("minWidth", "640"));
         videoConstraints.mandatory.add(new MediaConstraints.KeyValuePair("minHeight","480"));
+
+        //const char MediaConstraintsInterface::kMaxFrameRate[] = "maxFrameRate";
+        //const char MediaConstraintsInterface::kMinFrameRate[] = "minFrameRate";
         return videoConstraints;
     }
 
@@ -98,8 +101,10 @@ public class PnSignalingParams {
         MediaConstraints audioConstraints = new MediaConstraints();
         // TODO: try with others
         // https://chromium.googlesource.com/external/webrtc/+/master/webrtc/api/mediaconstraintsinterface.cc
-//        audioConstraints.mandatory.add(new MediaConstraints.KeyValuePair("googNoiseSuppression", "true"));
-//        audioConstraints.mandatory.add(new MediaConstraints.KeyValuePair("googEchoCancellation", "true"));
+        audioConstraints.mandatory.add(new MediaConstraints.KeyValuePair("googEchoCancellation2", "true"));
+        audioConstraints.mandatory.add(new MediaConstraints.KeyValuePair("googNoiseSuppression2", "true"));
+//        audioConstraints.mandatory.add(new MediaConstraints.KeyValuePair("googDAEchoCancellation", "true"));
+//        audioConstraints.mandatory.add(new MediaConstraints.KeyValuePair("googAutoGainControl2", "true"));
 
         return audioConstraints;
     }

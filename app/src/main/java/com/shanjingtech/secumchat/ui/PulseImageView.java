@@ -32,9 +32,9 @@ public class PulseImageView extends android.support.v7.widget.AppCompatImageView
     private boolean animationReverse;
     private boolean autoPulse;
 
-    private static final float DEFAULT_SCALE_START = 0.2f;
+    private static final float DEFAULT_SCALE_START = 0.9f;
     private static final float DEFAULT_SCALE_END = 1f;
-    private static final int DEFAULT_SCALE_DURATION = 350;
+    private static final int DEFAULT_SCALE_DURATION = 500;
 
     public PulseImageView(Context context) {
         super(context);
@@ -65,7 +65,7 @@ public class PulseImageView extends android.support.v7.widget.AppCompatImageView
                 DEFAULT_SCALE_END);
         animationDuration = a.getInt(R.styleable.PulseImageView_animation_duration,
                 DEFAULT_SCALE_DURATION);
-        animationReverse = a.getBoolean(R.styleable.PulseImageView_animation_reverse, false);
+        animationReverse = a.getBoolean(R.styleable.PulseImageView_animation_reverse, true);
         autoPulse = a.getBoolean(R.styleable.PulseImageView_animation_auto_pulse, true);
         String interpolator = a.getString(R.styleable.PulseImageView_animation_time_interpolator);
         if (interpolator == null) {
@@ -100,6 +100,7 @@ public class PulseImageView extends android.support.v7.widget.AppCompatImageView
         scaleYAnimator.setDuration(animationDuration);
         scaleYAnimator.setInterpolator(animationInterpolator);
 
+
         scaleXAnimator = ObjectAnimator.ofFloat(
                 this,
                 ImageView.SCALE_X,
@@ -109,8 +110,8 @@ public class PulseImageView extends android.support.v7.widget.AppCompatImageView
                 animationReverse ? ValueAnimator.REVERSE : ValueAnimator.RESTART);
         scaleXAnimator.setRepeatCount(ValueAnimator.INFINITE);
         scaleXAnimator.setDuration(animationDuration);
-
         scaleXAnimator.setInterpolator(animationInterpolator);
+
         animatorSet.playTogether(scaleXAnimator, scaleYAnimator);
         if (autoPulse) {
             startPulse();

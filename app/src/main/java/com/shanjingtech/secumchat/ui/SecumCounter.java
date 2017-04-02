@@ -1,5 +1,6 @@
 package com.shanjingtech.secumchat.ui;
 
+import android.animation.AnimatorSet;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.Gravity;
@@ -17,6 +18,8 @@ public class SecumCounter extends android.support.v7.widget.AppCompatTextView {
     private static final long MILLIS_IN_SECOND = 1000;
 
     private Animation shakeAnimation;
+
+    private Animation bounceAnimation;
 
     public interface SecumCounterListener {
         void onCounterStart();
@@ -70,6 +73,7 @@ public class SecumCounter extends android.support.v7.widget.AppCompatTextView {
         // set background to cat head
         // center text
         shakeAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.shake);
+        bounceAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.bounce);
         setText("" + Constants.TORA);
         setGravity(Gravity.CENTER);
         setBackground(getResources().getDrawable(R.drawable.cat_timer));
@@ -110,6 +114,13 @@ public class SecumCounter extends android.support.v7.widget.AppCompatTextView {
     }
 
     /**
+     * bounce once
+     */
+    public void bounce() {
+        startAnimation(bounceAnimation);
+    }
+
+    /**
      * Freeze, don't move!
      */
     public void freeze() {
@@ -121,6 +132,7 @@ public class SecumCounter extends android.support.v7.widget.AppCompatTextView {
             secondsLeft += Constants.SECONDS_TO_ADD;
             if (listener != null) {
                 clearAnimation();
+                bounce();
                 listener.onAddTimePaired(secondsLeft);
             }
             meAdd = false;

@@ -1,44 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:app="http://schemas.android.com/apk/res-auto"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:background="@color/white"
               android:orientation="vertical">
 
-    <com.shanjingtech.secumchat.ui.SecumCounter
-        android:id="@+id/chronometer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="30sp"/>
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="start"
-        android:text="@string/start"/>
+        android:onClick="b1"
+        android:text="b1"/>
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="meAdd"
-        android:text="@string/meAdd"/>
+        android:onClick="b2"
+        android:text="b2"/>
 
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="peerAdd"
-        android:text="@string/peerAdd"/>
+        android:onClick="b3"
+        android:text="b3"/>
 
-    <com.shanjingtech.secumchat.ui.PulseImageView
-        android:id="@+id/cat_head"
+    <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/cat_head_big"
-        app:animation_duration="500"
-        app:animation_reverse="true"
-        app:animation_scale_end="1.0"
-        app:animation_scale_start="0.9"
-        app:animation_time_interpolator="overshoot"/>
+        android:onClick="b4"
+        android:text="b4"/>
+
+    <!--<com.shanjingtech.secumchat.ui.PulseImageView-->
+        <!--android:id="@+id/cat_head"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:src="@drawable/cat_head_big"/>-->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <com.shanjingtech.secumchat.ui.SecumCounter
+            android:id="@+id/chronometer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="40dp"
+            android:layout_marginTop="60dp"/>
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+
+        <com.shanjingtech.secumchat.ui.HeartMagicLayout
+            android:id="@+id/heart"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="clickHeart"/>
+    </LinearLayout>
 </LinearLayout>

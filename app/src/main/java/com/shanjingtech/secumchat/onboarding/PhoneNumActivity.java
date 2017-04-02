@@ -59,13 +59,13 @@ public class PhoneNumActivity extends SecumBaseActivity {
 
     public void clickGo(View view) {
         if (debugCheckbox.isChecked()) {
-            SecumDebug.enableDebugMode(this);
+            SecumDebug.enableDebugMode(sharedPreferences);
             Intent intent = new Intent(PhoneNumActivity.this,
                     AccessCodeActivity.class);
             intent.putExtra(Constants.PHONE_NUMBER, "12345");
             startActivity(intent);
         } else {
-            SecumDebug.disableDebugMode(this);
+            SecumDebug.disableDebugMode(sharedPreferences);
             final String phoneNo = getFullPhoneNumber();
             if (validatePhone()) {
                 secumAPI.registerUser(new UserRequest(phoneNo))

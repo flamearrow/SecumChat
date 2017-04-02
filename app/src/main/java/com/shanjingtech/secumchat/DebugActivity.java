@@ -6,20 +6,22 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
 
+import com.shanjingtech.secumchat.ui.DialingReceivingWaitingLayout;
 import com.shanjingtech.secumchat.ui.HeartMagicLayout;
-import com.shanjingtech.secumchat.ui.PulseImageView;
 import com.shanjingtech.secumchat.ui.SecumCounter;
 
 public class DebugActivity extends Activity implements SecumCounter.SecumCounterListener {
     private final static String TAG = "DebugActivity";
     SecumCounter secumCounter;
-//    PulseImageView catHead;
+    //    PulseImageView catHead;
     HeartMagicLayout heart;
+    DialingReceivingWaitingLayout dialingReceivingWaitingLayout;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.debug_activity);
+        dialingReceivingWaitingLayout = (DialingReceivingWaitingLayout) findViewById(R.id.drw);
         secumCounter = (SecumCounter) findViewById(R.id.chronometer);
         secumCounter.setSecumCounterListener(this);
 //        catHead = (PulseImageView) findViewById(R.id.cat_head);
@@ -31,20 +33,22 @@ public class DebugActivity extends Activity implements SecumCounter.SecumCounter
     }
 
     public void b1(View view) {
-        secumCounter.initialize();
+//        secumCounter.initialize();
 //        heart.switchState(PairLikeImageView.LikeState.ME_LIKE);
 //        secumCounter.initialize();
 //        catHead.startPulse();
+        dialingReceivingWaitingLayout.switchUIState(SecumChatActivity.State.DIALING);
     }
 
     public void b2(View view) {
 //        heart.switchState(PairLikeImageView.LikeState.PEER_LIKE);
-        heart.peerLike();
-        secumCounter.peerAdd();
+//        heart.peerLike();
+//        secumCounter.peerAdd();
 //        secumCounter.shake();
 //        catHead.stopPulse();
 //        secumCounter.zoom();
 //        secumCounter.meAdd();
+        dialingReceivingWaitingLayout.switchUIState(SecumChatActivity.State.WAITING);
     }
 
     public void b3(View view) {
@@ -57,7 +61,7 @@ public class DebugActivity extends Activity implements SecumCounter.SecumCounter
 
     public void b4(View view) {
 //        heart.switchState(HeartMagicLayout.LikeState.BOTH_LIKE);
-        secumCounter.bounce();
+//        secumCounter.bounce();
     }
 
     @Override
@@ -87,5 +91,13 @@ public class DebugActivity extends Activity implements SecumCounter.SecumCounter
     @Override
     public void onPeerAdd() {
         Log.d(TAG, "onPeerAdd");
+    }
+
+    public void acceptChat(View view) {
+        Log.d(TAG, "acceptChat");
+    }
+
+    public void rejectChat(View view) {
+        Log.d(TAG, "rejectChat");
     }
 }

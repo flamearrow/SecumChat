@@ -58,6 +58,13 @@ public class HeartMagicLayout extends FrameLayout {
         }
     };
 
+    private Runnable updateUIRunnable = new Runnable() {
+        @Override
+        public void run() {
+            updateUI();
+        }
+    };
+
     public HeartMagicLayout(@NonNull Context context) {
         super(context);
         initialize();
@@ -81,13 +88,17 @@ public class HeartMagicLayout extends FrameLayout {
         initialize();
     }
 
+    public void reset() {
+        switchState(LikeState.NO_LIKE);
+    }
+
     private void initialize() {
         LayoutInflater.from(getContext()).inflate(R.layout.pair_like_image, this, true);
         heartView = (PulseImageView) findViewById(R.id.heart_view);
         vDotsView = (DotsView) findViewById(R.id.dots);
         vCircleView = (CircleView) findViewById(R.id.circle);
         initliazeAnimators();
-        switchState(LikeState.NO_LIKE);
+        reset();
     }
 
     private void initliazeAnimators() {
@@ -153,7 +164,7 @@ public class HeartMagicLayout extends FrameLayout {
             return;
         }
         currentLikeState = likeState;
-        updateUI();
+        post(updateUIRunnable);
     }
 
     private void updateUI() {
@@ -222,7 +233,9 @@ public class HeartMagicLayout extends FrameLayout {
                 break;
             case MotionEvent.ACTION_UP:
                 animate().scaleX(1).scaleY(1).setInterpolator(DECELERATE_INTERPOLATOR);
-                performClick();
+                if (currentLikeState != LikeState.BOTH_LIKE) {
+                    performClick();
+                }
                 break;
         }
         return true;

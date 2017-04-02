@@ -9,6 +9,11 @@ import java.io.Serializable;
  * {@link com.shanjingtech.secumchat.net.SecumAPI#registerUser(UserRequest)}
  */
 public class User implements Serializable {
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
     @SerializedName("username")
     @Expose
     String username;

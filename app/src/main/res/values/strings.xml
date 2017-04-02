@@ -7,7 +7,7 @@
     <string name="title_activity_incoming_call">Incoming Call</string>
 
     <string name="title_activity_login">Login</string>
-    <string name="login">输入你的大名</string>
+    <string name="login">hola</string>
     <string name="username">username</string>
     <string name="login_submit">debugAPI</string>
     <string name="logo_text">welcome!</string>
@@ -19,6 +19,7 @@
 
 
     <string name="mlgb">mlgb</string>
+    <string name="mlgb2">mlgb2</string>
     <string name="phone11">phone_11</string>
     <string name="connect">connect</string>
 

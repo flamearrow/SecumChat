@@ -24,7 +24,6 @@ public class SecumApplication extends Application {
     public void onCreate() {
         super.onCreate();
         Fabric.with(this, new Crashlytics(), new Answers());
-//        Fabric.with(this, new Answers());
         netComponent = DaggerNetComponent.builder()
                 .appModule(new AppModule(this))
                 .netModule(new NetModule(SecumAPI.BASE_URL))

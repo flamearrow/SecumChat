@@ -10,6 +10,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.shanjingtech.secumchat.net.SecumAPI;
 import com.shanjingtech.secumchat.util.Constants;
+import com.shanjingtech.secumchat.util.SecumDebug;
 
 import java.io.IOException;
 
@@ -79,13 +80,24 @@ public class NetModule {
                 if (shouldUseBasicCredential(response)) {
                     credential = Credentials.basic(SecumAPI.USER_NAME, SecumAPI.PASSWORD);
                 } else {
-                    // if request is ping/getMatch/endMatch/updateUser
-                    //  pull a new accessToken
-//                    String bearer = "TB4tb8BMS0YmshVUcdiRf2IGVf3OkY";
-                    String bearer = sharedPreferences.getString(Constants
-                            .SHARED_PREF_ACCESS_TOKEN, "mlgb");
-                    credential = "Bearer " + bearer;
-                    Log.d(TAG, "Bearer: " + bearer);
+                    if (SecumDebug.isDebugMode(sharedPreferences)) {
+                        // if it's debug mode, hardcode 11 or 22's credential
+                        switch (SecumDebug.getCurrentDebugUser(sharedPreferences)) {
+                            case SecumDebug.USER_11:
+                                credential = "Bearer " + SecumDebug.TOKEN_11;
+                                break;
+                            case SecumDebug.USER_22:
+                                credential = "Bearer " + SecumDebug.TOKEN_22;
+                                break;
+                            default:
+                                throw new RuntimeException("incorrect debug user");
+                        }
+                    } else {
+                        String bearer = sharedPreferences.getString(Constants
+                                .SHARED_PREF_ACCESS_TOKEN, "mlgb");
+                        credential = "Bearer " + bearer;
+                        Log.d(TAG, "Bearer: " + bearer);
+                    }
                 }
                 // TODO: when token expires, fail fast
                 return response.request().newBuilder()
@@ -99,6 +111,7 @@ public class NetModule {
      * Check if we should use basic credential(-u"user:password") or oauth token
      * For register/getAccessCode/getAccessToken, use basic
      * For others(ping/getMatch/endMatch/updateUser), use oauth
+     *
      * @param response
      * @return
      */

@@ -11,7 +11,9 @@ import android.view.View;
 import android.widget.EditText;
 
 import com.shanjingtech.secumchat.model.EndMatch;
+import com.shanjingtech.secumchat.model.User;
 import com.shanjingtech.secumchat.util.Constants;
+import com.shanjingtech.secumchat.util.SecumDebug;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -29,9 +31,8 @@ public class LoginActivity extends SecumBaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
+        SecumDebug.enableDebugMode(sharedPreferences);
         mUsername = (EditText) findViewById(R.id.login_username);
-
     }
 
     @Override
@@ -61,128 +62,31 @@ public class LoginActivity extends SecumBaseActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    /**
-     * Takes the username from the EditText, check its validity and saves it if valid.
-     * Then, redirects to the MainActivity.
-     *
-     * @param view Button clicked to trigger call to joinChat
-     */
-    public void testButton(View view) {
-        // use basic credential
-//        secumAPI.getAccessToken("password", "+16503181659", "8048").enqueue(
-//                new Callback<AccessToken>() {
-//                    @Override
-//                    public void
-//                    onResponse(Call<AccessToken> call, Response<AccessToken> response) {
-//                        int i = 1;
-//                        int j = 2;
-//                    }
-//
-//                    @Override
-//                    public void
-//                    onFailure(Call<AccessToken> call, Throwable t) {
-//                        int i = 1;
-//                        int j = 2;
-//                    }
-//                });
-//        secumAPI.getProfile().enqueue(new Callback<User>() {
-//            @Override
-//            public void onResponse(Call<User> call, Response<User> response) {
-//                if (response.isSuccessful()) {
-//                    User user = response.body();
-//                    secumAPI.getMatch(new GetMatchRequest(null)).enqueue(new Callback<GetMatch>
-// () {
-//
-//                        @Override
-//                        public void onResponse(Call<GetMatch> call, Response<GetMatch> response) {
-//                            if (response.isSuccessful()) {
-//                                Log.d("MLGB", "abc");
-//                                int i = 1;
-//                            } else {
-//                                Log.d("MLGB", "def");
-//
-//                                int j = 2;
-//                            }
-//                        }
-//
-//                        @Override
-//                        public void onFailure(Call<GetMatch> call, Throwable t) {
-//                            Log.d("MLGB", "ghl");
-//
-//                            int j = 2;
-//                        }
-//                    });
-//                }
-//
-//            }
-//
-//            @Override
-//            public void onFailure(Call<User> call, Throwable t) {
-//                int j = 2;
-//            }
-//        });
+    public void button1(View view) {
+        if (requestSecumPermissions()) {
+            // login as phone_11
+            SecumDebug.setDebugUser(sharedPreferences, SecumDebug.USER_11);
+            User user = new User();
+            user.setUsername("phone_11");
+            // accesstoken: "vUXSNoPy3XLb3oh51zrhrYqQoDaVGd"
+            Intent intent = new Intent(this, SecumChatActivity.class);
+            intent.putExtra(Constants.CURRENT_USER, user);
+            startActivity(intent);
+        }
 
-//        secumAPI.getMatch(new GetMatchRequest()).enqueue(new Callback<GetMatch>() {
-//
-//            @Override
-//            public void onResponse(Call<GetMatch> call, Response<GetMatch> response) {
-//                if (response.isSuccessful()) {
-//                    Log.d("MLGB", "abc");
-//                    int i = 1;
-//                } else {
-//                    Log.d("MLGB", "def");
-//
-//                    int j = 2;
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<GetMatch> call, Throwable t) {
-//                Log.d("MLGB", "ghl");
-//
-//                int j = 2;
-//            }
-//        });
+    }
 
-        secumAPI.endMatch().enqueue(new Callback<EndMatch>() {
-            @Override
-            public void onResponse(Call<EndMatch> call, Response<EndMatch> response) {
-                if (response.isSuccessful()) {
-                    Log.d("MLGB", "abc");
-                    int i = 1;
-                } else {
-                    Log.d("MLGB", "def");
-                    int j = 2;
-                }
-            }
-
-            @Override
-            public void onFailure(Call<EndMatch> call, Throwable t) {
-                Log.d("MLGB", "def");
-            }
-        });
-
-
-        // use oauth token
-//        secumAPI.ping(new PingRequest()).enqueue(new Callback<PingResponse>() {
-//            @Override
-//            public void onResponse(Call<PingResponse> call, Response<PingResponse> response) {
-//                if (response.isSuccessful()) {
-//                    Log.d("MLGB", "success");
-//                } else {
-//                    Log.d("MLGB", "fail");
-//                }
-//                int i = 1;
-//            }
-//
-//            @Override
-//            public void onFailure(Call<PingResponse> call, Throwable t) {
-//                Log.d("MLGB", "fail");
-//                int j = 1;
-//            }
-//        });
-//        Log.d("MLGB", getPhoneNumber());
-
+    public void button2(View view) {
+        if (requestSecumPermissions()) {
+            // login as phone_22
+            SecumDebug.setDebugUser(sharedPreferences, SecumDebug.USER_22);
+            User user = new User();
+            user.setUsername("phone_22");
+            // accesstoken: "zhvG2zIf4xXFzzFfTJjnfOycXTjBZn"
+            Intent intent = new Intent(this, SecumChatActivity.class);
+            intent.putExtra(Constants.CURRENT_USER, user);
+            startActivity(intent);
+        }
     }
 
     /**
@@ -195,22 +99,6 @@ public class LoginActivity extends SecumBaseActivity {
                 (Context.TELEPHONY_SERVICE);
         String s = manager.getNetworkCountryIso();
         return manager.getLine1Number();
-    }
-
-    /**
-     * Start secumChat activity
-     *
-     * @param view
-     */
-    public void secumChat(View view) {
-        if (requestSecumPermissions()) {
-            String username = mUsername.getText().toString();
-            if (!validUsername(username))
-                return;
-            Intent intent = new Intent(this, SecumChatActivity.class);
-            intent.putExtra(Constants.MY_NAME, username);
-            startActivity(intent);
-        }
     }
 
     /**

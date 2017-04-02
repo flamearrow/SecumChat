@@ -8,7 +8,6 @@ import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 
 import com.pubnub.api.models.consumer.PNStatus;
 import com.pubnub.api.models.consumer.pubsub.PNMessageResult;
@@ -22,8 +21,9 @@ import com.shanjingtech.secumchat.model.User;
 import com.shanjingtech.secumchat.net.SecumNetworkRequester;
 import com.shanjingtech.secumchat.net.XirSysRequest;
 import com.shanjingtech.secumchat.ui.DialingReceivingWaitingLayout;
-import com.shanjingtech.secumchat.util.Constants;
+import com.shanjingtech.secumchat.ui.HeartMagicLayout;
 import com.shanjingtech.secumchat.ui.SecumCounter;
+import com.shanjingtech.secumchat.util.Constants;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -73,7 +73,7 @@ public class SecumChatActivity extends SecumBaseActivity implements
     // The button should be invisible until the user is being called
     private DialingReceivingWaitingLayout dialingReceivingWaitingView;
     private View matchingView;
-    private Button addTimeButton;
+    private HeartMagicLayout heartToAddTime;
     private SecumCounter secumCounter;
 
     // pubnub
@@ -144,7 +144,7 @@ public class SecumChatActivity extends SecumBaseActivity implements
     }
 
     private void initUI() {
-        addTimeButton = (Button) findViewById(R.id.add_time_button);
+        heartToAddTime = (HeartMagicLayout) findViewById(R.id.heart);
         secumCounter = (SecumCounter) findViewById(R.id.secum_counter);
         secumCounter.setSecumCounterListener(this);
         dialingReceivingWaitingView = (DialingReceivingWaitingLayout) findViewById(R.id
@@ -292,7 +292,6 @@ public class SecumChatActivity extends SecumBaseActivity implements
                 getMatch = null;
                 pnRTCClient.closeAllConnections();
                 showMatchingUI();
-//                setUpChannels();
                 networkRequester.startMatch();
                 return;
             }
@@ -353,8 +352,9 @@ public class SecumChatActivity extends SecumBaseActivity implements
             @Override
             public void run() {
                 hideAllUI();
+                matchingView.setVisibility(View.VISIBLE);
                 dialingReceivingWaitingView.setMessage("matching you with " + getMatch.getCallee());
-                dialingReceivingWaitingView.setVisibility(View.VISIBLE);
+//                dialingReceivingWaitingView.setVisibility(View.VISIBLE);
                 dialingReceivingWaitingView.switchUIState(State.DIALING);
             }
         });
@@ -365,8 +365,8 @@ public class SecumChatActivity extends SecumBaseActivity implements
             @Override
             public void run() {
                 hideAllUI();
+                matchingView.setVisibility(View.VISIBLE);
                 dialingReceivingWaitingView.setMessage("matching you with " + getMatch.getCaller());
-                dialingReceivingWaitingView.setVisibility(View.VISIBLE);
                 dialingReceivingWaitingView.switchUIState(State.RECEIVING);
             }
         });
@@ -378,7 +378,7 @@ public class SecumChatActivity extends SecumBaseActivity implements
             public void run() {
                 hideAllUI();
                 secumCounter.setVisibility(View.VISIBLE);
-                addTimeButton.setVisibility(View.VISIBLE);
+                heartToAddTime.setVisibility(View.VISIBLE);
             }
         });
     }
@@ -388,8 +388,8 @@ public class SecumChatActivity extends SecumBaseActivity implements
             @Override
             public void run() {
                 hideAllUI();
+                matchingView.setVisibility(View.VISIBLE);
                 dialingReceivingWaitingView.setMessage("matching you with " + getMatch.getCallee());
-                dialingReceivingWaitingView.setVisibility(View.VISIBLE);
                 dialingReceivingWaitingView.switchUIState(State.WAITING);
             }
         });
@@ -406,20 +406,13 @@ public class SecumChatActivity extends SecumBaseActivity implements
     }
 
     private void hideAllUI() {
-        dialingReceivingWaitingView.setVisibility(View.INVISIBLE);
+        dialingReceivingWaitingView.switchUIState(State.MATCHING);
+        secumCounter.clearAnimation();
         secumCounter.setVisibility(View.INVISIBLE);
-        addTimeButton.setVisibility(View.INVISIBLE);
+        secumCounter.stop();
+        heartToAddTime.setVisibility(View.INVISIBLE);
+        heartToAddTime.reset();
         matchingView.setVisibility(View.INVISIBLE);
-    }
-
-    public void toDial(View view) {
-        // test, need to be switch from getMatch
-        localVideoSource.stop();
-    }
-
-    public void toReceive(View view) {
-        // test, need to be switch from getMatch
-        localVideoSource.restart();
     }
 
     /**
@@ -429,6 +422,7 @@ public class SecumChatActivity extends SecumBaseActivity implements
      */
     public void addTime(View view) {
         secumCounter.meAdd();
+        heartToAddTime.meLike();
         // send a addTime packet
         nonRTCMessageController.addTime(getPeerName());
     }
@@ -438,6 +432,7 @@ public class SecumChatActivity extends SecumBaseActivity implements
      */
     public void peerAddTime() {
         secumCounter.peerAdd();
+        heartToAddTime.peerLike();
     }
 
     public void acceptChat(View view) {
@@ -465,8 +460,10 @@ public class SecumChatActivity extends SecumBaseActivity implements
         if (currentState == State.DIALING) {
             // dialer clicked reject
             // just don't dial and continue waiting
+//            dialingReceivingWaitingView.switchUIState(State.MATCHING);
             switchState(State.MATCHING);
         } else if (currentState == State.RECEIVING) {
+//            dialingReceivingWaitingView.switchUIState(State.MATCHING);
             hangUp();
         }
     }
@@ -618,7 +615,6 @@ public class SecumChatActivity extends SecumBaseActivity implements
     @Override
     public void onPeerAdd() {
         Log.d(SECUMCOUNTER, "onPeerAdd");
-        showToast(getPeerName() + " wants to add time!");
     }
 
     @Override

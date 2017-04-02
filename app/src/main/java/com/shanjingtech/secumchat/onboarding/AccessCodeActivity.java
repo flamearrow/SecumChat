@@ -49,7 +49,7 @@ public class AccessCodeActivity extends SecumBaseActivity
         autoEnableTextView = (AutoEnableTextView) findViewById(R.id.resend);
         // Passed from PhoneNumActivity
         phoneNo = getIntent().getStringExtra(Constants.PHONE_NUMBER);
-        isDebug = SecumDebug.isDebugMode(this);
+        isDebug = SecumDebug.isDebugMode(sharedPreferences);
         autoEnableTextView.startCount();
         if (!isDebug) {
             requestAccessCodeFromServer();

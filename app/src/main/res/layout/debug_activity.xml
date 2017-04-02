@@ -31,12 +31,6 @@
         android:onClick="b4"
         android:text="b4"/>
 
-    <!--<com.shanjingtech.secumchat.ui.PulseImageView-->
-        <!--android:id="@+id/cat_head"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:src="@drawable/cat_head_big"/>-->
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -59,5 +53,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="clickHeart"/>
+
     </LinearLayout>
+
+    <com.shanjingtech.secumchat.ui.DialingReceivingWaitingLayout
+        android:id="@+id/drw"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
 </LinearLayout>

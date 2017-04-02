@@ -1,34 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge xmlns:android="http://schemas.android.com/apk/res/android"
-       android:layout_width="match_parent"
-       android:layout_height="match_parent"
-       android:orientation="vertical">
+<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:columnCount="2"
+            android:orientation="vertical"
+            android:rowCount="2">
 
     <TextView
         android:id="@+id/message_field"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_columnSpan="2"
+        android:gravity="center"
         android:text="@string/matched"
-        android:textColor="@color/pn_blue"
-        android:textSize="25sp"/>
+        android:textColor="@color/lemon_yellow"
+        android:textSize="25sp"
+        android:layout_marginBottom="20dp"
+        android:visibility="invisible"/>
 
-    <Button
-        android:id="@+id/accept_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/white"
-        android:onClick="acceptChat"
-        android:text="@string/accept"
-        android:textColor="@color/pn_blue"
-        android:textSize="25sp"/>
-
-    <Button
+    <ImageView
         android:id="@+id/reject_button"
-        android:layout_width="match_parent"
+        android:layout_width="100dp"
         android:layout_height="wrap_content"
-        android:background="@color/white"
+        android:layout_gravity="left"
+        android:layout_marginLeft="40dp"
         android:onClick="rejectChat"
-        android:text="@string/reject"
-        android:textColor="@color/pn_blue"
-        android:textSize="25sp"/>
-</merge>
+        android:src="@drawable/reject_red"
+        android:visibility="invisible"/>
+
+    <ImageView
+        android:id="@+id/accept_button"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:layout_marginRight="40dp"
+        android:onClick="acceptChat"
+        android:src="@drawable/accept_green"
+        android:visibility="invisible"/>
+</GridLayout>

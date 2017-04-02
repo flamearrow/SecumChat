@@ -111,7 +111,7 @@ public class SecumRTCListener extends PnRTCListener {
 
                     VideoRendererGui.update(remoteCallbacks, 0, 0, 100, 100, VideoRendererGui
                             .ScalingType.SCALE_ASPECT_FILL, false);
-                    VideoRendererGui.update(localCallbacks, 72, 65, 25, 25, VideoRendererGui
+                    VideoRendererGui.update(localCallbacks, 5, 5, 25, 25, VideoRendererGui
                             .ScalingType.SCALE_ASPECT_FIT, true);
                     for (RTCPeerListener listener : rTCPeerListeners) {
                         listener.onRemoteStreamAdded();

@@ -5,7 +5,6 @@ package com.shanjingtech.secumchat.util;
  */
 
 public class Constants {
-    public static final String SHARED_PREFS = "me.kg.androidrtc.SHARED_PREFS";
     public static final String IS_CALLER = "isCaller";
     public static final String IS_RECEIVER = "isReceiver";
     public static final String USER_NAME = "me.kg.androidrtc.SHARED_PREFS.USER_NAME";

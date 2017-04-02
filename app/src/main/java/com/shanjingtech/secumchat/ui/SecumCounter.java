@@ -1,11 +1,12 @@
 package com.shanjingtech.secumchat.ui;
 
-import android.animation.AnimatorSet;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.animation.DecelerateInterpolator;
 
 import com.shanjingtech.secumchat.R;
 import com.shanjingtech.secumchat.util.Constants;
@@ -15,11 +16,13 @@ import com.shanjingtech.secumchat.util.Constants;
  * {@link android.widget.Chronometer}
  */
 public class SecumCounter extends android.support.v7.widget.AppCompatTextView {
+
     private static final long MILLIS_IN_SECOND = 1000;
 
     private Animation shakeAnimation;
 
     private Animation bounceAnimation;
+
 
     public interface SecumCounterListener {
         void onCounterStart();
@@ -109,14 +112,14 @@ public class SecumCounter extends android.support.v7.widget.AppCompatTextView {
     /**
      * Start shaking!
      */
-    public void shake() {
+    private void shake() {
         startAnimation(shakeAnimation);
     }
 
     /**
      * bounce once
      */
-    public void bounce() {
+    private void bounce() {
         startAnimation(bounceAnimation);
     }
 
@@ -131,8 +134,7 @@ public class SecumCounter extends android.support.v7.widget.AppCompatTextView {
         if (meAdd && peerAdd) {
             secondsLeft += Constants.SECONDS_TO_ADD;
             if (listener != null) {
-                clearAnimation();
-                bounce();
+                post(clearAndBounceRunnable);
                 listener.onAddTimePaired(secondsLeft);
             }
             meAdd = false;
@@ -143,7 +145,6 @@ public class SecumCounter extends android.support.v7.widget.AppCompatTextView {
     public void initialize() {
         stop();
         freeze();
-        // (TODO)race condition
         secondsLeft = Constants.TORA;
         start();
     }
@@ -156,7 +157,7 @@ public class SecumCounter extends android.support.v7.widget.AppCompatTextView {
         updateRunning();
     }
 
-    private void stop() {
+    public void stop() {
         running = false;
         freeze();
         updateRunning();
@@ -198,4 +199,30 @@ public class SecumCounter extends android.support.v7.widget.AppCompatTextView {
         }
     };
 
+    private final Runnable clearAndBounceRunnable = new Runnable() {
+        @Override
+        public void run() {
+            clearAnimation();
+            bounce();
+        }
+    };
+
+    private static final DecelerateInterpolator DECELERATE_INTERPOLATOR = new
+            DecelerateInterpolator();
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                animate().scaleX(0.7f).scaleY(0.7f).setDuration(150).setInterpolator
+                        (DECELERATE_INTERPOLATOR);
+                break;
+            case MotionEvent.ACTION_UP:
+                animate().scaleX(1).scaleY(1).setInterpolator(DECELERATE_INTERPOLATOR);
+                performClick();
+                break;
+        }
+        return true;
+
+    }
 }

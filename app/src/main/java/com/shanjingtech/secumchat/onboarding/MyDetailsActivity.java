@@ -115,7 +115,7 @@ public class MyDetailsActivity extends SecumBaseActivity {
 
     private boolean validateInfo() {
         if (name.length() == 0) {
-            name.setError("name cannot be empty.");
+            name.setError(getResources().getString(R.string.name_error));
             return false;
         }
         return true;

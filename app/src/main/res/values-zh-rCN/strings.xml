@@ -1,0 +1,47 @@
+<resources>
+    <string name="app_name">9喵</string>
+
+    <string name="hello_world">你好世界!</string>
+    <string name="action_settings">设置</string>
+    <string name="action_update_profile">设置帐号</string>
+    <string name="action_logout">退出</string>
+
+    <string name="login">雷猴</string>
+    <string name="username">用户名</string>
+    <string name="logo_text">欢迎!</string>
+
+    <string name="matched">找到了</string>
+
+    <string name="cell">输入手机号</string>
+
+    <!-- Phone number activity -->
+    <string name="phone_number_cant_be_empty">手机号不能为空</string>
+    <string name="phone_number_too_long">手机号太长</string>
+
+    <!-- Access code activity -->
+    <string name="incorrect_code">验证码错误</string>
+    <string name="fail_to_send_code">验证码发送失败，请重试</string>
+
+    <string name="general_error">出错啦，请重试</string>
+
+    <!-- MyDtailsActivity -->
+    <string name="name_error">名字不能为空</string>
+
+    <string name="send_code">发验证码</string>
+    <string name="resend">没收到？重发</string>
+
+    <string name="confirm_access_code">输入验证码</string>
+
+    <string name="name">名字</string>
+    <string name="age">年龄</string>
+    <string name="gender">性别</string>
+    <string name="male">男</string>
+    <string name="female">女</string>
+
+    <!-- permissions -->
+    <string name="permission_dialog_header">权限</string>
+    <string name="permission_dialog_message">9喵需要使用你的摄像头和麦克风</string>
+    <string name="to_settings">去设置</string>
+    <string name="cancel">取消</string>
+
+</resources>

@@ -21,6 +21,7 @@ import android.widget.Toast;
 import com.crashlytics.android.answers.Answers;
 import com.shanjingtech.secumchat.log.AddTimePairedFactory;
 import com.shanjingtech.secumchat.net.SecumAPI;
+import com.shanjingtech.secumchat.onboarding.SplashActivity;
 import com.shanjingtech.secumchat.util.Constants;
 
 import javax.inject.Inject;
@@ -173,5 +174,12 @@ public class SecumBaseActivity
         } else if (which == DialogInterface.BUTTON_NEGATIVE) {
             Log.d(PERMISSION_TAG, "You clicked cancel");
         }
+    }
+
+    protected void logOut() {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.remove(Constants.SHARED_PREF_ACCESS_TOKEN);
+        editor.commit();
+        startActivity(new Intent(this, SplashActivity.class));
     }
 }

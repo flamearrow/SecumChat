@@ -2,18 +2,20 @@ package com.shanjingtech.secumchat.onboarding;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.NumberPicker;
 import android.widget.RadioButton;
 
 import com.shanjingtech.secumchat.R;
 import com.shanjingtech.secumchat.SecumBaseActivity;
 import com.shanjingtech.secumchat.SecumChatActivity;
 import com.shanjingtech.secumchat.model.UpdateUserRequest;
-import com.shanjingtech.secumchat.model.UpdateUserResponse;
 import com.shanjingtech.secumchat.model.User;
 import com.shanjingtech.secumchat.util.Constants;
+import com.shanjingtech.secumchat.util.SecumDebug;
 import com.wefika.horizontalpicker.HorizontalPicker;
 
 import retrofit2.Call;
@@ -26,9 +28,13 @@ import retrofit2.Response;
 
 public class MyDetailsActivity extends SecumBaseActivity {
     private EditText name;
+    private User currentUser;
     private HorizontalPicker agePicker;
     private boolean isMale;
     private String[] agesArray;
+    private RadioButton maleButton;
+    private RadioButton femaleButton;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +43,34 @@ public class MyDetailsActivity extends SecumBaseActivity {
         name = (EditText) findViewById(R.id.my_name);
         agePicker = (HorizontalPicker) findViewById(R.id.my_age);
         agesArray = getResources().getStringArray(R.array.ages);
+        maleButton = (RadioButton) findViewById(R.id.male);
+        femaleButton = (RadioButton) findViewById(R.id.female);
         isMale = false;
+        currentUser = (User) getIntent().getSerializableExtra(Constants.CURRENT_USER);
+        if (currentUser != null) {
+            prefill();
+        }
+    }
+
+    private void prefill() {
+        name.setText(currentUser.getNickname());
+        int age = currentUser.getAge() == null ? 0 : Integer.parseInt(currentUser.getAge());
+        if (age >= 13) {
+            agePicker.setSelectedItem(age - 13);
+        }
+        String gender = currentUser.getGender();
+        if (gender != null) {
+            if (gender.equals(Constants.MALE)) {
+                isMale = true;
+                maleButton.setChecked(true);
+                femaleButton.setChecked(false);
+
+            } else if (gender.equals(Constants.FEMALE)) {
+                isMale = false;
+                maleButton.setChecked(false);
+                femaleButton.setChecked(true);
+            }
+        }
     }
 
     public void clickGender(View view) {
@@ -51,6 +84,33 @@ public class MyDetailsActivity extends SecumBaseActivity {
                 isMale = !checked;
                 break;
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_profile, menu);
+        menu.findItem(R.id.action_debug).setChecked(SecumDebug.isDebugMode(sharedPreferences));
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_logout:
+                finish();
+                logOut();
+                break;
+            case R.id.action_debug:
+                if (item.isChecked()) {
+                    item.setChecked(false);
+                    SecumDebug.disableDebugMode(sharedPreferences);
+                } else {
+                    item.setChecked(true);
+                    SecumDebug.enableDebugMode(sharedPreferences);
+                }
+        }
+        return true;
     }
 
     private boolean validateInfo() {
@@ -82,7 +142,7 @@ public class MyDetailsActivity extends SecumBaseActivity {
                                     .class);
                             intent.putExtra(Constants.CURRENT_USER, user);
                             startActivity(intent);
-
+                            finish();
                         }
                     }
 
@@ -93,5 +153,10 @@ public class MyDetailsActivity extends SecumBaseActivity {
                 });
             }
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        // don't go back
     }
 }

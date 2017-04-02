@@ -1,6 +1,7 @@
 package com.shanjingtech.secumchat;
 
 import android.content.Context;
+import android.content.Intent;
 import android.media.AudioManager;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
@@ -8,7 +9,11 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.pubnub.api.models.consumer.PNStatus;
@@ -22,10 +27,13 @@ import com.shanjingtech.secumchat.model.GetMatch;
 import com.shanjingtech.secumchat.model.User;
 import com.shanjingtech.secumchat.net.SecumNetworkRequester;
 import com.shanjingtech.secumchat.net.XirSysRequest;
+import com.shanjingtech.secumchat.onboarding.MyDetailsActivity;
+import com.shanjingtech.secumchat.onboarding.SplashActivity;
 import com.shanjingtech.secumchat.ui.DialingReceivingWaitingLayout;
 import com.shanjingtech.secumchat.ui.HeartMagicLayout;
 import com.shanjingtech.secumchat.ui.SecumCounter;
 import com.shanjingtech.secumchat.util.Constants;
+import com.shanjingtech.secumchat.util.SecumDebug;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -134,7 +142,7 @@ public class SecumChatActivity extends SecumBaseActivity implements
         this.currentUser = (User) getIntent().getSerializableExtra(Constants.CURRENT_USER);
         this.myName = currentUser.getUsername();
         myNameStdy = myName + Constants.STDBY_SUFFIX;
-        setTitle(myName);
+        setTitle(currentUser.getNickname());
 
         initUI();
         initRTCComponents();
@@ -145,7 +153,42 @@ public class SecumChatActivity extends SecumBaseActivity implements
         networkRequester = new SecumNetworkRequester(this, myName, this);
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_chat, menu);
+        menu.findItem(R.id.action_debug).setChecked(SecumDebug.isDebugMode(sharedPreferences));
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_update_profile:
+                finish();
+                Intent intent = new Intent(this, MyDetailsActivity.class);
+                intent.putExtra(Constants.CURRENT_USER, currentUser);
+                startActivity(intent);
+                break;
+            case R.id.action_logout:
+                finish();
+                logOut();
+                startActivity(new Intent(this, SplashActivity.class));
+                break;
+            case R.id.action_debug:
+                if (item.isChecked()) {
+                    item.setChecked(false);
+                    SecumDebug.disableDebugMode(sharedPreferences);
+                } else {
+                    item.setChecked(true);
+                    SecumDebug.enableDebugMode(sharedPreferences);
+                }
+        }
+        return true;
+    }
+
     private void initUI() {
+        setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
         heartToAddTime = (HeartMagicLayout) findViewById(R.id.heart);
         secumCounter = (SecumCounter) findViewById(R.id.secum_counter);
         secumCounter.setSecumCounterListener(this);

@@ -74,9 +74,11 @@ public class PhoneNumActivity extends SecumBaseActivity {
                                     @Override
                                     public void onResponse(Call<User> call, Response<User>
                                             response) {
+                                        User user = response.body();
                                         Intent intent = new Intent(PhoneNumActivity.this,
                                                 AccessCodeActivity.class);
                                         intent.putExtra(Constants.PHONE_NUMBER, phoneNo);
+                                        intent.putExtra(Constants.CURRENT_USER, user);
                                         startActivity(intent);
                                     }
 

@@ -44,7 +44,7 @@
         android:onClick="resend"
         android:text="@string/resend"
         android:textColor="@drawable/resend_text"
-        secum:timeout_in_sec="2"/>
+        secum:timeout_in_sec="60"/>
 
     <ImageView
         android:layout_width="120dp"

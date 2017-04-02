@@ -60,6 +60,7 @@
         <activity
             android:name=".onboarding.SplashActivity"
             android:configChanges="orientation|keyboardHidden"
+            android:noHistory="true"
             android:screenOrientation="portrait"
             android:theme="@style/SplashTheme">
             <intent-filter>

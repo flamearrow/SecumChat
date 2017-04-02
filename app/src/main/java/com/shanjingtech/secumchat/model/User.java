@@ -157,6 +157,7 @@ public class User implements Serializable {
     public String getTime_updated() {
         return time_updated;
     }
+
 /* sample json response
     {
        "username":"phone_+16503181659",

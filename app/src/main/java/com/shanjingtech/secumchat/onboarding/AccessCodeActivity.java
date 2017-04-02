@@ -12,6 +12,7 @@ import com.shanjingtech.secumchat.SecumBaseActivity;
 import com.shanjingtech.secumchat.model.AccessCode;
 import com.shanjingtech.secumchat.model.AccessCodeRequest;
 import com.shanjingtech.secumchat.model.AccessToken;
+import com.shanjingtech.secumchat.model.User;
 import com.shanjingtech.secumchat.ui.AccessCodeLayout;
 import com.shanjingtech.secumchat.ui.AutoEnableTextView;
 import com.shanjingtech.secumchat.util.Constants;
@@ -38,6 +39,7 @@ public class AccessCodeActivity extends SecumBaseActivity
     private boolean isDebug;
     private Button goButton;
     private String correctAccessCode;
+    private User currentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,10 +52,11 @@ public class AccessCodeActivity extends SecumBaseActivity
         // Passed from PhoneNumActivity
         phoneNo = getIntent().getStringExtra(Constants.PHONE_NUMBER);
         isDebug = SecumDebug.isDebugMode(sharedPreferences);
-        autoEnableTextView.startCount();
         if (!isDebug) {
-            requestAccessCodeFromServer();
+            currentUser = (User) getIntent().getSerializableExtra(Constants.CURRENT_USER);
+            correctAccessCode = currentUser.getAccess_code();
         }
+        autoEnableTextView.startCount();
     }
 
     public void resend(View view) {
@@ -92,11 +95,12 @@ public class AccessCodeActivity extends SecumBaseActivity
         String code = accessCode.getAccessCode();
         if (isDebug) {
             toDetailsActivity();
-        }
-        if (validateAccessCode(code)) {
-            requestAccessTokenAndContinue(code);
         } else {
-            showToast(getResources().getString(R.string.incorrect_code));
+            if (validateAccessCode(code)) {
+                requestAccessTokenAndContinue(code);
+            } else {
+                showToast(getResources().getString(R.string.incorrect_code));
+            }
         }
     }
 
@@ -122,7 +126,10 @@ public class AccessCodeActivity extends SecumBaseActivity
     }
 
     private void toDetailsActivity() {
-        startActivity(new Intent(AccessCodeActivity.this, MyDetailsActivity.class));
+        Intent intent = new Intent(AccessCodeActivity.this, MyDetailsActivity.class);
+        intent.putExtra(Constants.CURRENT_USER, currentUser);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
     }
 
     @Override

@@ -260,6 +260,7 @@ public class SecumChatActivity extends SecumBaseActivity implements
         tearDownChannels();
         // stop camera
         localVideoSource.stop();
+        removeAllHandlerCallbacks();
     }
 
     private void setUpChannels() {

@@ -12,6 +12,7 @@ import org.webrtc.VideoTrack;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.shanjingtech.pnwebrtc.PnPeer;
@@ -146,7 +147,17 @@ public class SecumRTCListener extends PnRTCListener {
     @Override
     public void onAddTime(PnPeer peer) {
         super.onAddTime(peer);
-        secumChatActivity.peerAddTime();
+        secumChatActivity.onPeerAddTime();
+    }
+
+    @Override
+    public void onDialed(String callerId) {
+        secumChatActivity.onDialed(callerId);
+    }
+
+    @Override
+    public void onChannelSubscribed(List<String> channels) {
+        secumChatActivity.onChannelSubscribed(channels);
     }
 
     @Override

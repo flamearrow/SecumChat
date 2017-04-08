@@ -15,7 +15,7 @@ public abstract class PnRTCListener {
      *
      * @param channels The channels you are subscribed to, the userId you may be called on.
      */
-    public void onConnected(List<String> channels) {
+    public void onChannelSubscribed(List<String> channels) {
     }
 
     /**
@@ -76,11 +76,20 @@ public abstract class PnRTCListener {
     }
 
     /**
-     * Called when a addtime message is send via {@link com.pubnub.api.PubNub} object.
+     * Called when a addtime message is sent via {@link com.pubnub.api.PubNub} object.
      *
-     * @param peer    The peer who sent the message
+     * @param peer The peer who sent the message
      */
     public void onAddTime(PnPeer peer) {
+    }
+
+
+    /**
+     * Called when a dial message is sent, tell me who dialed
+     * @param callerId Id of the caller/dialer
+     */
+    public void onDialed(String callerId) {
+
     }
 
     /**

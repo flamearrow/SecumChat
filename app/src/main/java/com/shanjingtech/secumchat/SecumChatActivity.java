@@ -16,11 +16,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.pubnub.api.models.consumer.PNStatus;
-import com.pubnub.api.models.consumer.pubsub.PNMessageResult;
 import com.shanjingtech.pnwebrtc.PnRTCClient;
 import com.shanjingtech.pnwebrtc.PnSignalingParams;
-import com.shanjingtech.pnwebrtc.utils.JSONUtils;
 import com.shanjingtech.secumchat.lifecycle.NonRTCMessageController;
 import com.shanjingtech.secumchat.lifecycle.SecumRTCListener;
 import com.shanjingtech.secumchat.model.GetMatch;
@@ -35,8 +32,6 @@ import com.shanjingtech.secumchat.ui.SecumCounter;
 import com.shanjingtech.secumchat.util.Constants;
 import com.shanjingtech.secumchat.util.SecumDebug;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.webrtc.AudioSource;
 import org.webrtc.AudioTrack;
 import org.webrtc.MediaStream;
@@ -64,8 +59,6 @@ public class SecumChatActivity extends SecumBaseActivity implements
     // my name, also used for regular channel name
     private String myName;
     private User currentUser;
-    // my standby channel name
-    private String myNameStdy;
 
     // webRTC components
     private MediaStream localStream;
@@ -141,7 +134,6 @@ public class SecumChatActivity extends SecumBaseActivity implements
         setContentView(R.layout.secum_chat_activity);
         this.currentUser = (User) getIntent().getSerializableExtra(Constants.CURRENT_USER);
         this.myName = currentUser.getUsername();
-        myNameStdy = myName + Constants.STDBY_SUFFIX;
         setTitle(currentUser.getNickname());
 
         initUI();
@@ -307,19 +299,15 @@ public class SecumChatActivity extends SecumBaseActivity implements
     }
 
     private void setUpChannels() {
-        // subscribe to standby channel and regular channel, hangup all possible RTC peers
+        // subscribe to my channel, hangup all possible RTC peers
         // note it's ok to subscribe to a pubnub channel multiple times
 
-        // subscribe to my standy channel
-        nonRTCMessageController.standBy();
         pnRTCClient.closeAllConnections();
         // subscribe to my regular channel
         pnRTCClient.listenOnForce(myName);
     }
 
     private void tearDownChannels() {
-        // stop listening on standby channel
-        nonRTCMessageController.unStandby();
         // stop all RTC connection
         pnRTCClient.closeAllConnections();
         // stop querying server
@@ -479,11 +467,39 @@ public class SecumChatActivity extends SecumBaseActivity implements
     }
 
     /**
+     * When channel subscription succeed, good to receive call
+     *
+     * @param channels
+     */
+    public void onChannelSubscribed(List<String> channels) {
+        if (channels.contains(myName)) {
+            switchState(State.MATCHING);
+        }
+    }
+
+    /**
      * When peer clicked addTime
      */
-    public void peerAddTime() {
+    public void onPeerAddTime() {
         secumCounter.peerAdd();
         heartToAddTime.peerLike();
+    }
+
+    /**
+     * When someone dialed me
+     *
+     * @param callerName
+     */
+    public void onDialed(String callerName) {
+        // verify if it's from the correct caller, if not ignore
+        // it's possible callee hasn't receive getMatch yet
+        if (getMatch != null && callerName.equals(getMatch.getCaller())) {
+            switchState(State.RECEIVING);
+        } else {
+            // If callee hasn't receive getMatch yet, send a reject message to callerName
+            Log.d(TAG, "getMatch null");
+            nonRTCMessageController.hangUp(callerName);
+        }
     }
 
     public void acceptChat(View view) {
@@ -491,11 +507,13 @@ public class SecumChatActivity extends SecumBaseActivity implements
         // me yet, switch to CHATTING when onAddRemoteStream() is called
         if (currentState == State.DIALING) {
             // I'm caller, I dial callee
+//            nonRTCMessageController.dial(getMatch.getCallee());
+
             nonRTCMessageController.dial(getMatch.getCallee());
             // when callee accepted, onAddRemoteStream() will be called
             switchState(State.WAITING);
         } else if (currentState == State.RECEIVING) {
-            // I'm callee, caller already dialed my standby channel,
+            // I'm callee, caller already dialed me,
             //  I connect to caller through RTC
             // This will trigger caller's onAddRemoteStream()
             if (getMatch == null) {
@@ -550,47 +568,6 @@ public class SecumChatActivity extends SecumBaseActivity implements
     private final static String TAG = "SecumChatCallbacks";
 
     @Override
-    public void onSubscribeSuccess(List<String> channels, PNStatus message) {
-        Log.d(TAG, "channel standby: " + message.toString());
-        if (channels.contains(myName) && channels.contains(myNameStdy)) {
-            switchState(State.MATCHING);
-        }
-    }
-
-    @Override
-    public void onSubscribeFail(List<String> channels, PNStatus error) {
-        Log.d(TAG, "channel standby fail: " + error.toString());
-    }
-
-    @Override
-    public void onStandbyCalled(String channel, PNMessageResult message) {
-        Log.d(TAG, "standby channel called: " + message.toString());
-        JSONObject jsonMsg = JSONUtils.convertFrom(message.getMessage());
-        try {
-            if (jsonMsg == null || !jsonMsg.has(Constants.JSON_CALL_USER)) {
-                Log.d(JSONUtils.JSON_TAG, "empty json or json doesn't have call user");
-                return;     //Ignore Signaling messages.
-            }
-            String callerName = jsonMsg.getString(Constants.JSON_CALL_USER);
-
-
-            // standby Channel called, verify if it's from the correct caller, if not ignore
-            // it's possible callee hasn't receive getMatch yet
-            if (getMatch != null && callerName.equals(getMatch.getCaller())) {
-                switchState(State.RECEIVING);
-            } else {
-                // If callee hasn't receive getMatch yet, send a reject message to callerName
-                Log.d(TAG, "standby channel called but getMatch null");
-                nonRTCMessageController.hangUp(callerName);
-            }
-
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
     public void onCalleeOnline(String calleeName) {
         Log.d(TAG, "callee " + calleeName + " is online");
     }
@@ -599,17 +576,6 @@ public class SecumChatActivity extends SecumBaseActivity implements
     public void onCalleeOffline(String calleeName) {
         Log.d(TAG, "callee " + calleeName + " is offline");
         switchState(State.ERROR);
-    }
-
-    @Override
-    public void onCallingStandbyFailed(String channel, PNStatus error) {
-        Log.d(TAG, "Failed to call standby channel: " + channel);
-    }
-
-    @Override
-    public void onCalleeStandbyCalled(String channel, PNStatus message) {
-        // TODO: show a loading status icon
-        Log.d(TAG, "callee's phone is ringing: " + message.toString());
     }
 
     @Override
@@ -675,7 +641,7 @@ public class SecumChatActivity extends SecumBaseActivity implements
     }
 
     public enum State {
-        WARMUP, // sent subscribe message to my channel and my standby channel, wait for reply
+        WARMUP, // sent subscribe message to my channel, wait for reply
         MATCHING, // wait for server to give me a match
         DIALING, // I dial the other, call dial(callee)
         RECEIVING, // I'm about to receive the dial

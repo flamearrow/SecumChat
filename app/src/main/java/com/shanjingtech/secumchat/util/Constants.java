@@ -9,7 +9,6 @@ public class Constants {
     public static final String IS_RECEIVER = "isReceiver";
     public static final String USER_NAME = "me.kg.androidrtc.SHARED_PREFS.USER_NAME";
     public static final String CALL_USER = "me.kg.androidrtc.SHARED_PREFS.CALL_USER";
-    public static final String STDBY_SUFFIX = "-stdby";
 
     // ours
     public static final String PUB_KEY = "pub-c-f8c4ff9c-5f67-4e3f-8500-2ba2c5f783f0";

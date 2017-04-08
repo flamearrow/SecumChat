@@ -4,22 +4,14 @@ import android.util.Log;
 
 import com.pubnub.api.PubNub;
 import com.pubnub.api.callbacks.PNCallback;
-import com.pubnub.api.callbacks.SubscribeCallback;
-import com.pubnub.api.enums.PNOperationType;
-import com.pubnub.api.enums.PNStatusCategory;
 import com.pubnub.api.models.consumer.PNPublishResult;
 import com.pubnub.api.models.consumer.PNStatus;
 import com.pubnub.api.models.consumer.presence.PNHereNowResult;
-import com.pubnub.api.models.consumer.pubsub.PNMessageResult;
-import com.pubnub.api.models.consumer.pubsub.PNPresenceEventResult;
 import com.shanjingtech.pnwebrtc.PnPeerConnectionClient;
-import com.shanjingtech.secumchat.util.Constants;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Arrays;
-import java.util.List;
 
 /**
  * Handle Pubnub messages
@@ -30,41 +22,14 @@ public class NonRTCMessageController {
 
     public interface NonRTCMessageControllerCallbacks {
         /**
-         * When I successfully subscribed to channel(s)
-         */
-        void onSubscribeSuccess(List<String> channel, PNStatus message);
-
-        /**
-         * When I failed to subscribe to channel(s)
-         */
-        void onSubscribeFail(List<String> channel, PNStatus error);
-
-        /**
-         * When someone called my standby channel - show user someone is calling,
-         * turn on the accept button
-         */
-        void onStandbyCalled(String channel, PNMessageResult message);
-
-        /**
-         * When callee's standby channel is online
+         * When callee's is online
          */
         void onCalleeOnline(String calleeName);
 
         /**
-         * When callee's standby channel is offline
+         * When callee's is offline
          */
         void onCalleeOffline(String calleeName);
-
-        /**
-         * When I failed to call someone's standby channel - notify
-         */
-        void onCallingStandbyFailed(String channel, PNStatus error);
-
-        /**
-         * When callee's stand by channel receives my call - notify so that I know he sees accept
-         * button
-         */
-        void onCalleeStandbyCalled(String channel, PNStatus message);
     }
 
     private String username;
@@ -79,95 +44,6 @@ public class NonRTCMessageController {
         this.username = myName;
         this.callbacks = lifeCycleCallbacks;
         this.pubnub = pubnub;
-        // listens to message to stand by channel
-        pubnub.addListener(new SubscribeCallback() {
-            @Override
-            public void status(PubNub pubnub, PNStatus status) {
-                List<String> channelNames = pubnub.getSubscribedChannels();
-                if (status.isError()) {
-                    callbacks.onSubscribeFail(channelNames, status);
-                } else if (status.getCategory() == PNStatusCategory.PNConnectedCategory) {
-                    callbacks.onSubscribeSuccess(channelNames, status);
-                } else if (status.getCategory() == PNStatusCategory.PNAcknowledgmentCategory) {
-                    if (status.getOperation() == PNOperationType.PNUnsubscribeOperation) {
-                        Log.d(TAG, "Unsubscribe success");
-                    }
-                }
-            }
-
-            @Override
-            public void message(PubNub pubnub, PNMessageResult message) {
-                String channel = message.getChannel();
-                if (channel.endsWith(Constants.STDBY_SUFFIX)) {
-                    callbacks.onStandbyCalled(message.getChannel(), message);
-                }
-            }
-
-            @Override
-            public void presence(PubNub pubnub, PNPresenceEventResult presence) {
-            }
-        });
-    }
-
-    /**
-     * Subscribe to my standby by channel so that I'm online, others can call me
-     */
-    public void standBy() {
-        String clientStdby = this.username + Constants.STDBY_SUFFIX;
-        pubnub.subscribe().channels(Arrays.asList(clientStdby)).execute();
-    }
-
-    /**
-     * Unsubscirbe to my standby channel
-     */
-    public void unStandby() {
-        pubnub.unsubscribeAll();
-    }
-
-    /**
-     * Dial a peer, they'll be notified someone is calling
-     *
-     * @param peerName
-     */
-    public void dial(final String peerName) {
-        // dial through their standy channel
-        final String calleeStdBy = peerName + Constants.STDBY_SUFFIX;
-        pubnub.hereNow().channels(Arrays.asList(calleeStdBy)).includeUUIDs(true).async(new PNCallback<PNHereNowResult>() {
-            @Override
-            public void onResponse(PNHereNowResult result, PNStatus status) {
-                // this callback tells us if callee is online
-                try {
-                    int occupancy = result.getTotalOccupancy();
-                    // if callee is offline we just don't try to call him
-                    if (occupancy == 0) {
-                        callbacks.onCalleeOffline(peerName);
-                        return;
-                    }
-                    // otherwise go ahead call callee
-                    else {
-                        callbacks.onCalleeOnline(peerName);
-                    }
-
-                    JSONObject jsonCall = new JSONObject();
-                    jsonCall.put(Constants.JSON_CALL_USER, username);
-                    jsonCall.put(Constants.JSON_CALL_TIME, System.currentTimeMillis());
-
-                    pubnub.publish().channel(calleeStdBy).message(jsonCall).async(new PNCallback<PNPublishResult>() {
-                        @Override
-                        public void onResponse(PNPublishResult result, PNStatus status) {
-                            if (status.isError()) {
-                                callbacks.onCallingStandbyFailed(calleeStdBy, status);
-                            } else {
-                                callbacks.onCalleeStandbyCalled(calleeStdBy, status);
-                            }
-                        }
-                    });
-                } catch (JSONException e) {
-                    Log.d(TAG, "Json error happened when trying to dial");
-                }
-            }
-        });
-
     }
 
     /**
@@ -206,6 +82,47 @@ public class NonRTCMessageController {
                 }
             }
         });
+    }
+
+    /**
+     * Dial peer's pubnub channel so that they knwo someone is calling
+     *
+     * @param peerName
+     */
+    public void dial(final String peerName) {
+        pubnub.hereNow().channels(Arrays.asList(peerName)).includeUUIDs(true).async(
+                new PNCallback<PNHereNowResult>() {
+                    @Override
+                    public void onResponse(PNHereNowResult result, PNStatus status) {
+                        // this callback tells us if callee is online
+                        int occupancy = result.getTotalOccupancy();
+                        // if callee is offline we just don't try to call him
+                        if (occupancy == 0) {
+                            callbacks.onCalleeOffline(peerName);
+                            return;
+                        }
+                        // otherwise go ahead call callee
+                        else {
+                            callbacks.onCalleeOnline(peerName);
+                        }
+                        JSONObject dialMsg = PnPeerConnectionClient.generateDialPacket(
+                                username,
+                                peerName);
+                        pubnub.publish().channel(peerName).message(dialMsg).async(
+                                new PNCallback<PNPublishResult>() {
+                                    @Override
+                                    public void onResponse(PNPublishResult result, PNStatus
+                                            status) {
+                                        if (status.isError()) {
+                                            Log.d(TAG, "dial failed!");
+                                        } else {
+                                            Log.d(TAG, "dial succeeded!");
+                                        }
+                                    }
+                                });
+                    }
+                });
+
 
     }
 }

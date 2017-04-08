@@ -122,37 +122,44 @@ public class MyDetailsActivity extends SecumBaseActivity {
     }
 
     public void clickGo(View view) {
-        if (requestSecumPermissions()) {
-            if (validateInfo()) {
-                final String nickname = name.getText().toString();
-                String age = agesArray[agePicker.getSelectedItem()];
-                String gender = isMale ? Constants.MALE : Constants.FEMALE;
-                secumAPI.updateUser(
-                        new UpdateUserRequest.Builder()
-                                .setNickname(nickname)
-                                .setAge(age)
-                                .setGender(gender)
-                                .build()
-                ).enqueue(new Callback<User>() {
-                    @Override
-                    public void onResponse(Call<User> call, Response<User> response) {
-                        if (response.isSuccessful()) {
-                            User user = response.body();
-                            Intent intent = new Intent(MyDetailsActivity.this, SecumChatActivity
-                                    .class);
-                            intent.putExtra(Constants.CURRENT_USER, user);
-                            startActivity(intent);
-                            finish();
-                        }
-                    }
+        requestCameraAudioPermissions();
+    }
 
-                    @Override
-                    public void onFailure(Call<User> call, Throwable t) {
-                        showToast(getResources().getString(R.string.general_error));
+    private void startSecumChat() {
+        if (validateInfo()) {
+            final String nickname = name.getText().toString();
+            String age = agesArray[agePicker.getSelectedItem()];
+            String gender = isMale ? Constants.MALE : Constants.FEMALE;
+            secumAPI.updateUser(
+                    new UpdateUserRequest.Builder()
+                            .setNickname(nickname)
+                            .setAge(age)
+                            .setGender(gender)
+                            .build()
+            ).enqueue(new Callback<User>() {
+                @Override
+                public void onResponse(Call<User> call, Response<User> response) {
+                    if (response.isSuccessful()) {
+                        User user = response.body();
+                        Intent intent = new Intent(MyDetailsActivity.this, SecumChatActivity
+                                .class);
+                        intent.putExtra(Constants.CURRENT_USER, user);
+                        startActivity(intent);
+                        finish();
                     }
-                });
-            }
+                }
+
+                @Override
+                public void onFailure(Call<User> call, Throwable t) {
+                    showToast(getResources().getString(R.string.general_error));
+                }
+            });
         }
+    }
+
+    @Override
+    protected void onAudioCameraPermissionGranted() {
+        startSecumChat();
     }
 
     @Override

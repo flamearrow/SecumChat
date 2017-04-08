@@ -77,20 +77,25 @@ public class SecumBaseActivity
     }
 
     /**
-     * Request permissions SecumChat requires.
-     * Camera and Microphone
-     *
-     * @return success or not - true to go ahead
+     * Sequentially request audio and camera permissions, if user already has both or granted both,
+     * callback {@link #onAudioCameraPermissionGranted()}, otherwise bring user to settings page.
      */
-    protected boolean requestSecumPermissions() {
+    protected void requestCameraAudioPermissions() {
         // 你说前半生就这样吧还有明天
         if (needToRequestPermission()) {
-            return requestPermission(
-                    android.Manifest.permission.CAMERA, Constants.PERMISSION_CAMERA) &&
-                    requestPermission(android.Manifest.permission.RECORD_AUDIO, Constants
-                            .PERMISSION_CAMERARECORD_AUDIO);
-        } else {
-            return true;
+            if (hasPermission(android.Manifest.permission.RECORD_AUDIO)) {
+                if (hasPermission(android.Manifest.permission.CAMERA)) {
+                    onAudioCameraPermissionGranted();
+                } else {
+                    requestPermission(
+                            android.Manifest.permission.CAMERA,
+                            Constants.PERMISSION_CAMERA);
+                }
+            } else {
+                requestPermission(
+                        android.Manifest.permission.RECORD_AUDIO,
+                        Constants.PERMISSION_RECORD_AUDIO);
+            }
         }
     }
 
@@ -102,8 +107,7 @@ public class SecumBaseActivity
      */
     @RequiresApi(api = Build.VERSION_CODES.M)
     private boolean requestPermission(String permission, int code) {
-        if (ContextCompat.checkSelfPermission(this, permission) !=
-                PackageManager.PERMISSION_GRANTED) {
+        if (!hasPermission(permission)) {
             boolean shouldRequestPermission = ActivityCompat
                     .shouldShowRequestPermissionRationale(this, permission);
             Log.d(PERMISSION_TAG, "shouldRequestPermission: " + shouldRequestPermission);
@@ -117,6 +121,11 @@ public class SecumBaseActivity
         } else {
             return true;
         }
+    }
+
+    private boolean hasPermission(String permission) {
+        return ContextCompat.checkSelfPermission(this, permission) == PackageManager
+                .PERMISSION_GRANTED;
     }
 
     /**
@@ -142,6 +151,7 @@ public class SecumBaseActivity
         this.startActivity(i);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
@@ -152,18 +162,37 @@ public class SecumBaseActivity
                 if (grantResults.length <= 0
                         || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                     showBlockingPermissionDialog();
+                } else {
+                    if (hasPermission(android.Manifest.permission.RECORD_AUDIO)) {
+                        onAudioCameraPermissionGranted();
+                    } else {
+                        requestPermission(
+                                android.Manifest.permission.RECORD_AUDIO,
+                                Constants.PERMISSION_RECORD_AUDIO);
+                    }
                 }
                 break;
             }
-            case Constants.PERMISSION_CAMERARECORD_AUDIO: {
+            case Constants.PERMISSION_RECORD_AUDIO: {
                 // user denied audio permission
                 if (grantResults.length <= 0
                         || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                     showBlockingPermissionDialog();
+                } else {
+                    if (hasPermission(android.Manifest.permission.CAMERA)) {
+                        onAudioCameraPermissionGranted();
+                    } else {
+                        requestPermission(
+                                android.Manifest.permission.CAMERA,
+                                Constants.PERMISSION_CAMERA);
+                    }
                 }
                 break;
             }
         }
+    }
+
+    protected void onAudioCameraPermissionGranted() {
     }
 
     @Override

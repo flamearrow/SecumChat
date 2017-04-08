@@ -41,7 +41,7 @@ public class Constants {
 
     // permission
     public static final int PERMISSION_CAMERA = 1;
-    public static final int PERMISSION_CAMERARECORD_AUDIO = 2;
+    public static final int PERMISSION_RECORD_AUDIO = 2;
 
     // intents
     public static final String PHONE_NUMBER = "PHONE_NUMBER";

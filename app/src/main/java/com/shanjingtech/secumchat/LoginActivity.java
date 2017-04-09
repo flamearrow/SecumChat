@@ -4,8 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.telephony.TelephonyManager;
+import android.util.Log;
 import android.view.View;
-import android.widget.EditText;
 
 import com.shanjingtech.secumchat.model.User;
 import com.shanjingtech.secumchat.util.Constants;
@@ -30,6 +30,10 @@ public class LoginActivity extends SecumBaseActivity {
     }
 
     private boolean useUser11;
+
+    public void button0(View view) {
+        Log.d("MLGB", "mlgb");
+    }
 
     public void button1(View view) {
         useUser11 = true;

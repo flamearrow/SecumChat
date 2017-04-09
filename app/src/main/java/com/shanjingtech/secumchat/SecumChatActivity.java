@@ -93,6 +93,9 @@ public class SecumChatActivity extends SecumBaseActivity implements
     // timeout
     private Handler handler = new Handler(Looper.getMainLooper());
 
+    // uber guard
+    private boolean paused;
+
     /**
      * An {@code Runnable} to hangup and switch back to waiting state if the current state is
      * stateToError when fired.
@@ -276,6 +279,7 @@ public class SecumChatActivity extends SecumBaseActivity implements
     @Override
     protected void onResume() {
         super.onResume();
+        paused = false;
         setUpChannels();
         localVideoSource.restart();
         switchState(State.WARMUP);
@@ -284,6 +288,7 @@ public class SecumChatActivity extends SecumBaseActivity implements
     @Override
     protected void onPause() {
         super.onPause();
+        paused = true;
         hangUp();
         tearDownChannels();
         // stop camera
@@ -309,7 +314,7 @@ public class SecumChatActivity extends SecumBaseActivity implements
     }
 
     private void switchState(State state) {
-        if (currentState == state) {
+        if (paused && currentState == state) {
             return;
         }
         currentState = state;
@@ -649,7 +654,11 @@ public class SecumChatActivity extends SecumBaseActivity implements
     @Override
     public void onAddTimePaired(int secondsLeft) {
         Log.d(SECUMCOUNTER, "onAddTimePaired: " + secondsLeft);
-        answers.logCustom(addTimePairedFactory.create(getMatch.getCaller(), getMatch.getCallee()));
+        if (getMatch != null) {
+            answers.logCustom(addTimePairedFactory.create(getMatch.getCaller(), getMatch
+                    .getCallee()));
+
+        }
     }
 
     public enum State {

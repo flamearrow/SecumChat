@@ -18,6 +18,16 @@
         android:textColor="@color/pn_blue"
         android:textSize="35sp"/>
 
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_above="@+id/testButton"
+        android:layout_marginBottom="35dp"
+        android:background="@color/pn_red"
+        android:onClick="button0"
+        android:text="@string/hola"
+        android:textColor="#FFF"
+        android:textSize="25sp"/>
 
     <Button
         android:id="@+id/testButton"

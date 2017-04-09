@@ -7,10 +7,7 @@ import com.shanjingtech.pnwebrtc.PnPeer;
 import com.shanjingtech.pnwebrtc.PnRTCListener;
 import com.shanjingtech.secumchat.R;
 import com.shanjingtech.secumchat.SecumChatActivity;
-import com.shanjingtech.secumchat.util.Constants;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.webrtc.MediaStream;
 import org.webrtc.VideoRenderer;
 import org.webrtc.VideoRendererGui;
@@ -131,20 +128,6 @@ public class SecumRTCListener extends PnRTCListener {
     public void onRemoveRemoteStream(MediaStream remoteStream, PnPeer peer) {
         super.onRemoveRemoteStream(remoteStream, peer);
         Log.d(TAG, "onRemoveRemoteStream");
-    }
-
-    @Override
-    public void onMessage(PnPeer peer, Object message) {
-        super.onMessage(peer, message);  // Will log values
-        if (!(message instanceof JSONObject)) return; //Ignore if not JSONObject
-        JSONObject jsonMsg = (JSONObject) message;
-        try {
-            String uuid = jsonMsg.getString(Constants.JSON_MSG_UUID);
-            String msg = jsonMsg.getString(Constants.JSON_MSG);
-            long time = jsonMsg.getLong(Constants.JSON_TIME);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
     }
 
     @Override

@@ -150,7 +150,8 @@ public class PnPeer implements SdpObserver, PeerConnection.Observer {
             JSONObject payload = new JSONObject();
             payload.put("sdpMLineIndex", candidate.sdpMLineIndex);
             payload.put("sdpMid", candidate.sdpMid);
-            payload.put("candidate", candidate.sdp);
+            payload.put(PnRTCMessage.JSON_ICE, candidate.sdp);
+            payload.put(PnRTCMessage.JSON_TYPE, PnRTCMessage.JSON_ICE);
             pcClient.transmitMessage(id, payload);
         } catch (JSONException e) {
             e.printStackTrace();

@@ -53,6 +53,6 @@
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="@dimen/onboarding_vertical_margin"
         android:scaleType="centerCrop"
-        android:src="@mipmap/ic_launcher"/>
+        android:src="@drawable/cat_head"/>
 
 </RelativeLayout>

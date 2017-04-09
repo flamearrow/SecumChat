@@ -34,16 +34,13 @@ public class SplashActivity extends SecumBaseActivity {
             public void onResponse(Call<PingResponse> call, Response<PingResponse> response) {
                 if (response.isSuccessful()) {
                     startSecum();
-                    Log.d("MLGB", "success");
                 } else {
                     startOnboarding();
-                    Log.d("MLGB", "fail");
                 }
             }
 
             @Override
             public void onFailure(Call<PingResponse> call, Throwable t) {
-                Log.d("MLGB", "fail");
                 startOnboarding();
             }
         });

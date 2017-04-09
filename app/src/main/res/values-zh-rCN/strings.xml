@@ -43,5 +43,6 @@
     <string name="permission_dialog_message">9喵需要使用你的摄像头和麦克风</string>
     <string name="to_settings">去设置</string>
     <string name="cancel">取消</string>
+    <string name="rejected">挂断了</string>
 
 </resources>

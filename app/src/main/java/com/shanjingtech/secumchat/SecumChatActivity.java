@@ -319,7 +319,6 @@ public class SecumChatActivity extends SecumBaseActivity implements
             return;
         }
         currentState = state;
-        Log.d(Constants.MLGB, "switched to State: " + state.toString());
         switch (state) {
             case WARMUP: {
                 // wait for subscribe success signal to switch to matching state
@@ -439,7 +438,7 @@ public class SecumChatActivity extends SecumBaseActivity implements
             @Override
             public void run() {
                 hideAllUI();
-                showToast("" + getPeerName() + " rejected");
+                showToast("" + getPeerName() + getResources().getString(R.string.rejected));
             }
         });
     }
@@ -497,7 +496,7 @@ public class SecumChatActivity extends SecumBaseActivity implements
             switchState(State.RECEIVING);
         } else {
             // If callee hasn't receive getMatch yet, send a reject message to callerName
-            Log.d(TAG, "getMatch null");
+            Log.d(Constants.RACE_CONDITION_TAG, "getMatch null");
             nonRTCMessageController.hangUp(callerName);
         }
     }
@@ -529,10 +528,8 @@ public class SecumChatActivity extends SecumBaseActivity implements
         if (currentState == State.DIALING) {
             // dialer clicked reject
             // just don't dial and continue waiting
-//            dialingReceivingWaitingView.switchUIState(State.MATCHING);
             switchState(State.MATCHING);
         } else if (currentState == State.RECEIVING) {
-//            dialingReceivingWaitingView.switchUIState(State.MATCHING);
             hangUp();
         }
     }
@@ -555,7 +552,7 @@ public class SecumChatActivity extends SecumBaseActivity implements
     public void onRTCPeerDisconnected() {
         if (currentState == State.WAITING) {
             // callee rejected me by generating a hangup message and triggersPnPeer.hangup()
-            showToast("" + getMatch.getCallee() + " rejected");
+            showOtherSideRejected();
             switchState(State.MATCHING);
         } else if (currentState == State.RECEIVING) {
             // TODO: mlgb is it possible to reach here?

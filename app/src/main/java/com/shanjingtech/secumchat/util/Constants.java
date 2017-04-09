@@ -37,6 +37,7 @@ public class Constants {
 
     // logcat
     public static final String MLGB = "MLGB";
+    public static final String RACE_CONDITION_TAG = "SECUM_RACE";
 
     // permission
     public static final int PERMISSION_CAMERA = 1;
@@ -87,4 +88,5 @@ public class Constants {
     // mydetails activity
     public static final String MALE = "male";
     public static final String FEMALE = "female";
+
 }

@@ -420,6 +420,7 @@ public class PnPeerConnectionClient {
             try {
                 String peerId = jsonMessage.getString(PnRTCMessage.JSON_NUMBER);
                 JSONObject packet = jsonMessage.getJSONObject(PnRTCMessage.JSON_PACKET);
+                Log.d("MLGB", "received message: " + packet.toString());
                 // Initial dial message, we don't need to register a peer at this time
                 if (packet.has(PnRTCMessage.JSON_DIAL)) {
                     String callerId = jsonMessage.getString(PnRTCMessage.JSON_CALLER_ID);

@@ -73,6 +73,7 @@ public class SecumNetworkRequester {
      * Start polling server for getMatch
      */
     public void startMatch() {
+        handler.removeCallbacks(bestEffortEndMatchRunnable);
         handler.postDelayed(endMatchRunnable, GET_MATCH_DELAY);
     }
 

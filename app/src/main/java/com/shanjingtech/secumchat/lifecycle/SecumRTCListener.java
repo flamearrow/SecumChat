@@ -3,6 +3,12 @@ package com.shanjingtech.secumchat.lifecycle;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.shanjingtech.pnwebrtc.PnPeer;
+import com.shanjingtech.pnwebrtc.PnRTCListener;
+import com.shanjingtech.secumchat.R;
+import com.shanjingtech.secumchat.SecumChatActivity;
+import com.shanjingtech.secumchat.util.Constants;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.webrtc.MediaStream;
@@ -14,11 +20,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import com.shanjingtech.pnwebrtc.PnPeer;
-import com.shanjingtech.pnwebrtc.PnRTCListener;
-import com.shanjingtech.secumchat.SecumChatActivity;
-import com.shanjingtech.secumchat.util.Constants;
 
 /**
  * Created by flamearrow on 2/26/17.
@@ -98,8 +99,10 @@ public class SecumRTCListener extends PnRTCListener {
         secumChatActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(secumChatActivity, "Connected to " + peer.getId(), Toast
-                        .LENGTH_SHORT).show();
+                Toast.makeText(secumChatActivity,
+                        secumChatActivity.getResources().getString(
+                                R.string.connected_to) + peer.getId(),
+                        Toast.LENGTH_SHORT).show();
                 try {
                     if (remoteStream.audioTracks.size() == 0 || remoteStream.videoTracks.size
                             () == 0) {

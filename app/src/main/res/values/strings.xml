@@ -52,5 +52,7 @@
     <string name="to_settings">To Settings</string>
     <string name="cancel">Cancel</string>
 
-    <string name="rejected"> rejected</string>
+    <string name="rejected">&#160;rejected</string>
+    <string name="matching_you_with">matching you with </string>
+    <string name="connected_to">Connected to </string>
 </resources>

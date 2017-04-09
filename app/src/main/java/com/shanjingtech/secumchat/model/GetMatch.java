@@ -39,7 +39,6 @@ public class GetMatch {
     @SerializedName("status")
     String status;
 
-    // TODO: make sure camel case works
     @Expose
     @SerializedName("match_id")
     int matchId;
@@ -47,6 +46,10 @@ public class GetMatch {
     @Expose
     @SerializedName("chat_uri")
     String chatURI;
+
+    public void setCaller(boolean caller) {
+        isCaller = caller;
+    }
 
     @Expose
     @SerializedName("is_caller")

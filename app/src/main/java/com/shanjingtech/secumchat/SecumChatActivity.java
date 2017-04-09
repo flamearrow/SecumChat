@@ -45,6 +45,8 @@ import org.webrtc.VideoTrack;
 
 import java.util.List;
 
+import static com.shanjingtech.secumchat.util.Constants.MLGB;
+
 /**
  * Activity to make you cum.
  */
@@ -106,7 +108,8 @@ public class SecumChatActivity extends SecumBaseActivity implements
         @Override
         public void run() {
             if (currentState == stateToError) {
-                showOtherSideRejected();
+                Log.d(MLGB, "Error Runnable rejected, stateToError: " + stateToError.toString());
+                showRejected(getPeerName());
                 hangUp();
             }
         }
@@ -296,6 +299,7 @@ public class SecumChatActivity extends SecumBaseActivity implements
         // stop camera
         localVideoSource.stop();
         removeAllHandlerCallbacks();
+        currentState = null;
     }
 
     private void setUpChannels() {
@@ -360,7 +364,8 @@ public class SecumChatActivity extends SecumBaseActivity implements
                 return;
             }
             case ERROR: {
-                showOtherSideRejected();
+                Log.d(MLGB, "Error rejected");
+                showRejected(getPeerName());
                 switchState(State.MATCHING);
                 return;
             }
@@ -391,8 +396,9 @@ public class SecumChatActivity extends SecumBaseActivity implements
             public void run() {
                 hideAllUI();
                 matchingView.setVisibility(View.VISIBLE);
-                dialingReceivingWaitingView.setMessage("matching you with " + getMatch.getCallee());
-//                dialingReceivingWaitingView.setVisibility(View.VISIBLE);
+                dialingReceivingWaitingView.setMessage(
+                        getResources().getString(R.string.matching_you_with) +
+                                getMatch.getCallee());
                 dialingReceivingWaitingView.switchUIState(State.DIALING);
             }
         });
@@ -404,7 +410,9 @@ public class SecumChatActivity extends SecumBaseActivity implements
             public void run() {
                 hideAllUI();
                 matchingView.setVisibility(View.VISIBLE);
-                dialingReceivingWaitingView.setMessage("matching you with " + getMatch.getCaller());
+                dialingReceivingWaitingView.setMessage(
+                        getResources().getString(R.string.matching_you_with) +
+                                getMatch.getCaller());
                 dialingReceivingWaitingView.switchUIState(State.RECEIVING);
             }
         });
@@ -427,18 +435,19 @@ public class SecumChatActivity extends SecumBaseActivity implements
             public void run() {
                 hideAllUI();
                 matchingView.setVisibility(View.VISIBLE);
-                dialingReceivingWaitingView.setMessage("matching you with " + getMatch.getCallee());
+                dialingReceivingWaitingView.setMessage(
+                        getResources().getString(R.string.matching_you_with) +
+                                getMatch.getCallee());
                 dialingReceivingWaitingView.switchUIState(State.WAITING);
             }
         });
     }
 
-    private void showOtherSideRejected() {
+    private void showRejected(final String otherSideName) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                hideAllUI();
-                showToast("" + getPeerName() + getResources().getString(R.string.rejected));
+                showToast("" + otherSideName + getResources().getString(R.string.rejected));
             }
         });
     }
@@ -486,19 +495,30 @@ public class SecumChatActivity extends SecumBaseActivity implements
 
     /**
      * When someone dialed me
+     * <p>
+     * Note: this might be called multiple times by pubnub
      *
      * @param callerName
      */
     public void onDialed(String callerName) {
-        // verify if it's from the correct caller, if not ignore
-        // it's possible callee hasn't receive getMatch yet
-        if (getMatch != null && callerName.equals(getMatch.getCaller())) {
-            switchState(State.RECEIVING);
-        } else {
-            // If callee hasn't receive getMatch yet, send a reject message to callerName
-            Log.d(Constants.RACE_CONDITION_TAG, "getMatch null");
-            nonRTCMessageController.hangUp(callerName);
-        }
+        if (currentState == State.MATCHING)
+            // verify if it's from the correct caller, if not ignore
+            // it's possible callee hasn't receive getMatch yet
+            if (getMatch != null && callerName.equals(getMatch.getCaller())) {
+                switchState(State.RECEIVING);
+            } else {
+                // If getMatch is still null, I'm callee and I have not received the getMatch yet,
+                // manually create getMatch
+                Log.d(Constants.RACE_CONDITION_TAG, "getMatch null");
+                GetMatch calleGetMatch = new GetMatch();
+                calleGetMatch.setCallerName(callerName);
+                calleGetMatch.setMatchedUsername(callerName);
+                calleGetMatch.setCalleeName(myName);
+                calleGetMatch.setCaller(false);
+                this.getMatch = calleGetMatch;
+                // TODO: mlgb would need to set more fields like location/age etc. for caller
+                switchState(State.RECEIVING);
+            }
     }
 
     public void acceptChat(View view) {
@@ -524,7 +544,6 @@ public class SecumChatActivity extends SecumBaseActivity implements
     }
 
     public void rejectChat(View view) {
-        // TODO: mlgb notify server this pair needs to be recycled to matching pool?
         if (currentState == State.DIALING) {
             // dialer clicked reject
             // just don't dial and continue waiting
@@ -552,7 +571,8 @@ public class SecumChatActivity extends SecumBaseActivity implements
     public void onRTCPeerDisconnected() {
         if (currentState == State.WAITING) {
             // callee rejected me by generating a hangup message and triggersPnPeer.hangup()
-            showOtherSideRejected();
+            Log.d(MLGB, "onRTCPeerDisconnected rejected");
+            showRejected(getPeerName());
             switchState(State.MATCHING);
         } else if (currentState == State.RECEIVING) {
             // TODO: mlgb is it possible to reach here?
@@ -588,9 +608,14 @@ public class SecumChatActivity extends SecumBaseActivity implements
 
     @Override
     public void onGetMatchSucceed(final GetMatch getMatch, boolean isCaller) {
-        this.getMatch = getMatch;
-        if (isCaller) {
-            switchState(State.DIALING);
+        Log.d(MLGB, "onGetMatchSucceed, isCaller: " + isCaller);
+        if (currentState == State.MATCHING) {
+            this.getMatch = getMatch;
+            if (isCaller) {
+                switchState(State.DIALING);
+            }
+        } else {
+            networkRequester.cancellAll();
         }
     }
 

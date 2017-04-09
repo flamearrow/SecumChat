@@ -1,12 +1,16 @@
 package com.shanjingtech.secumchat.onboarding;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
 
+import com.google.i18n.phonenumbers.PhoneNumberUtil;
+import com.google.i18n.phonenumbers.Phonenumber;
 import com.shanjingtech.countrycodepicker.CountryCodePicker;
 import com.shanjingtech.secumchat.LoginActivity;
 import com.shanjingtech.secumchat.R;
@@ -48,6 +52,7 @@ public class PhoneNumActivity extends SecumBaseActivity {
             SecumDebug.disableDebugMode(sharedPreferences);
         }
         ccp = (CountryCodePicker) findViewById(R.id.country_code);
+        tryPrefillPhoneNumber();
     }
 
     public void debugCheckClicked(View view) {
@@ -55,6 +60,28 @@ public class PhoneNumActivity extends SecumBaseActivity {
             SecumDebug.enableDebugMode(sharedPreferences);
         } else {
             SecumDebug.disableDebugMode(sharedPreferences);
+        }
+    }
+
+    private void tryPrefillPhoneNumber() {
+        requestPhoneStatePermissions();
+    }
+
+    @Override
+    protected void onPhoneStatePermissionGranted() {
+        try {
+            TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+            String countryCode = tm.getSimCountryIso();
+            String number = tm.getLine1Number();
+            if (!number.startsWith("+")) {
+                number = "+" + number;
+            }
+            ccp.setCountryForNameCode(countryCode);
+            PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
+            Phonenumber.PhoneNumber numberProto = phoneUtil.parse(number, "");
+            phoneNumber.setText("" + numberProto.getNationalNumber());
+        } catch (Exception e) {
+            Log.d(TAG, "Prefill phone number failed");
         }
     }
 

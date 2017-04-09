@@ -1,5 +1,6 @@
 package com.shanjingtech.secumchat;
 
+import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -44,16 +45,25 @@ public class SecumBaseActivity
     protected SharedPreferences sharedPreferences;
 
     private static final String PERMISSION_TAG = "SecumPermission";
-    private AlertDialog permissionAlertDialog;
+    private AlertDialog audioCameraPermissionAlertDialog;
+    private AlertDialog phoneStatePermissionAlertDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ((SecumApplication) getApplication()).getNetComponet().inject(this);
         Resources resources = getResources();
-        permissionAlertDialog = new AlertDialog.Builder(this)
+        audioCameraPermissionAlertDialog = new AlertDialog.Builder(this)
                 .setTitle(resources.getString(R.string.permission_dialog_header))
-                .setMessage(resources.getString(R.string.permission_dialog_message))
+                .setMessage(resources.getString(R.string.permission_dialog_message_audio_camera))
+                .setPositiveButton(resources.getString(R.string.to_settings), this)
+                .setNegativeButton(resources.getString(R.string.cancel), this)
+                .setIcon(R.drawable.cat_head)
+                .create();
+
+        phoneStatePermissionAlertDialog = new AlertDialog.Builder(this)
+                .setTitle(resources.getString(R.string.permission_dialog_header))
+                .setMessage(resources.getString(R.string.permission_dialog_message_phone))
                 .setPositiveButton(resources.getString(R.string.to_settings), this)
                 .setNegativeButton(resources.getString(R.string.cancel), this)
                 .setIcon(R.drawable.cat_head)
@@ -100,6 +110,22 @@ public class SecumBaseActivity
     }
 
     /**
+     * Request read phone state permission, if user already has it granted,
+     * callback {@link #onPhoneStatePermissionGranted()}, otherwise bring user to settings page.
+     */
+    protected void requestPhoneStatePermissions() {
+        if (needToRequestPermission()) {
+            if (hasPermission(android.Manifest.permission.READ_PHONE_STATE)) {
+                onPhoneStatePermissionGranted();
+            } else {
+                requestPermission(
+                        Manifest.permission.READ_PHONE_STATE,
+                        Constants.PERMISSION_PHONE_STATE);
+            }
+        }
+    }
+
+    /**
      * Request the permission if we don't have it yet.
      *
      * @param permission to request
@@ -113,7 +139,8 @@ public class SecumBaseActivity
             Log.d(PERMISSION_TAG, "shouldRequestPermission: " + shouldRequestPermission);
 
             if (shouldRequestPermission) {
-                showBlockingPermissionDialog();
+                showBlockingPermissionDialog(
+                        permission.equals(Manifest.permission.READ_PHONE_STATE));
             } else {
                 ActivityCompat.requestPermissions(this, new String[]{permission}, code);
             }
@@ -131,9 +158,15 @@ public class SecumBaseActivity
     /**
      * Show a dialog to direct user to app settings
      */
-    protected void showBlockingPermissionDialog() {
-        if (!permissionAlertDialog.isShowing()) {
-            permissionAlertDialog.show();
+    protected void showBlockingPermissionDialog(boolean isPhoneState) {
+        if (isPhoneState) {
+            if (!phoneStatePermissionAlertDialog.isShowing()) {
+                phoneStatePermissionAlertDialog.show();
+            }
+        } else {
+            if (!audioCameraPermissionAlertDialog.isShowing()) {
+                audioCameraPermissionAlertDialog.show();
+            }
         }
     }
 
@@ -161,7 +194,7 @@ public class SecumBaseActivity
                 // user denied camera permission
                 if (grantResults.length <= 0
                         || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                    showBlockingPermissionDialog();
+                    showBlockingPermissionDialog(false);
                 } else {
                     if (hasPermission(android.Manifest.permission.RECORD_AUDIO)) {
                         onAudioCameraPermissionGranted();
@@ -177,7 +210,7 @@ public class SecumBaseActivity
                 // user denied audio permission
                 if (grantResults.length <= 0
                         || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                    showBlockingPermissionDialog();
+                    showBlockingPermissionDialog(false);
                 } else {
                     if (hasPermission(android.Manifest.permission.CAMERA)) {
                         onAudioCameraPermissionGranted();
@@ -189,10 +222,23 @@ public class SecumBaseActivity
                 }
                 break;
             }
+            case Constants.PERMISSION_PHONE_STATE: {
+                // user denied phone state permission
+                if (grantResults.length <= 0
+                        || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                    showBlockingPermissionDialog(true);
+                } else {
+                    onPhoneStatePermissionGranted();
+                }
+                break;
+            }
         }
     }
 
     protected void onAudioCameraPermissionGranted() {
+    }
+
+    protected void onPhoneStatePermissionGranted() {
     }
 
     @Override

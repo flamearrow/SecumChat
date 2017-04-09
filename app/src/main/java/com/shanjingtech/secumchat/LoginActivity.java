@@ -32,7 +32,13 @@ public class LoginActivity extends SecumBaseActivity {
     private boolean useUser11;
 
     public void button0(View view) {
-        Log.d("MLGB", "mlgb");
+        Log.d("MLGB", countryCode());
+    }
+
+    private String countryCode() {
+        TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+        String countryCode = tm.getSimCountryIso();
+        return countryCode;
     }
 
     public void button1(View view) {

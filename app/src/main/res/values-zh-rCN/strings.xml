@@ -40,11 +40,12 @@
 
     <!-- permissions -->
     <string name="permission_dialog_header">权限</string>
-    <string name="permission_dialog_message">9喵需要使用你的摄像头和麦克风</string>
+    <string name="permission_dialog_message_audio_camera">9喵需要使用你的摄像头和麦克风</string>
     <string name="to_settings">去设置</string>
     <string name="cancel">取消</string>
     <string name="rejected">挂断了</string>
     <string name="matching_you_with">正在连线...</string>
     <string name="connected_to">连上了</string>
+    <string name="permission_dialog_message_phone">允许9喵自动读取电话号码？</string>
 
 </resources>

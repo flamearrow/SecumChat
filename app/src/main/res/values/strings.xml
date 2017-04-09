@@ -48,7 +48,8 @@
 
     <!-- permissions -->
     <string name="permission_dialog_header">Request for permission</string>
-    <string name="permission_dialog_message">9miao needs to use your camera and microphone.</string>
+    <string name="permission_dialog_message_audio_camera">9miao needs to use your camera and microphone.</string>
+    <string name="permission_dialog_message_phone">Allow 9miao to know your phone number?</string>
     <string name="to_settings">To Settings</string>
     <string name="cancel">Cancel</string>
 

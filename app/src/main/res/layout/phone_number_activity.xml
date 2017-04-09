@@ -5,18 +5,6 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical">
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-
-        <CheckBox
-            android:id="@+id/debug"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:checked="true"
-            android:text="@string/debug"/>
-    </LinearLayout>
-
     <TextView
         android:id="@+id/header"
         style="@style/OnboardingText"

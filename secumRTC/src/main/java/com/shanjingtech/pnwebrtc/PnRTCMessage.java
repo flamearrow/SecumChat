@@ -11,7 +11,7 @@ public class PnRTCMessage extends JSONObject {
     public static final String JSON_TYPE = "type";
     public static final String JSON_PACKET = "packet";
     public static final String JSON_ID = "id";
-    public static final String JSON_NUMBER = "number"; // Todo: Change to more accurate name.
+    public static final String JSON_SENDER_ID = "senderId";
     public static final String JSON_CALLER_ID = "callerId";
     public static final String JSON_MESSAGE = "message";
     public static final String JSON_USERMSG = "usermsg";

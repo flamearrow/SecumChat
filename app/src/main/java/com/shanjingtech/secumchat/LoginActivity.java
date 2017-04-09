@@ -17,14 +17,11 @@ import com.shanjingtech.secumchat.util.SecumDebug;
 
 public class LoginActivity extends SecumBaseActivity {
 
-    private EditText mUsername;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         SecumDebug.enableDebugMode(sharedPreferences);
-        mUsername = (EditText) findViewById(R.id.login_username);
     }
 
     @Override
@@ -87,21 +84,4 @@ public class LoginActivity extends SecumBaseActivity {
         return manager.getLine1Number();
     }
 
-    /**
-     * Optional function to specify what a username in your chat app can look like.
-     *
-     * @param username The name entered by a user.
-     * @return is username valid
-     */
-    private boolean validUsername(String username) {
-        if (username.length() == 0) {
-            mUsername.setError("Username cannot be empty.");
-            return false;
-        }
-        if (username.length() > 16) {
-            mUsername.setError("Username too long.");
-            return false;
-        }
-        return true;
-    }
 }

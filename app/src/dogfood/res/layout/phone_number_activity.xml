@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:ccp="http://schemas.android.com/apk/res-auto"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <CheckBox
+            android:id="@+id/debug_check_box"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:onClick="debugCheckClicked"
+            android:text="@string/debug"/>
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+
+        <Button
+            style="@style/OnboardingButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:onClick="toDebug"
+            android:text="@string/hola"/>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/header"
+        style="@style/OnboardingText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/onboarding_vertical_margin"
+        android:text="@string/cell"/>
+
+    <GridLayout
+        android:id="@+id/phone_number_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/header"
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="@dimen/onboarding_side_margin_thin"
+        android:layout_marginRight="@dimen/onboarding_side_margin_thin"
+        android:layout_marginTop="@dimen/onboarding_vertical_margin"
+        android:columnCount="2">
+
+        <com.shanjingtech.countrycodepicker.CountryCodePicker
+            android:id="@+id/country_code"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            ccp:ccpLanguage="ENGLISH"
+            ccp:defaultNameCode="us"
+            ccp:hideNameCode="true"/>
+
+        <EditText
+            android:id="@+id/phone_number"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/onboarding_side_margin_thin"
+            android:inputType="phone"
+            android:textSize="25dp"/>
+    </GridLayout>
+
+    <Button
+        style="@style/OnboardingButton"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/phone_number_bar"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/onboarding_vertical_margin"
+        android:onClick="clickGo"
+        android:text="@string/send_code"/>
+
+    <ImageView
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="@dimen/onboarding_vertical_margin"
+        android:scaleType="centerCrop"
+        android:src="@mipmap/ic_launcher"/>
+</RelativeLayout>

@@ -191,7 +191,7 @@ public class PnPeerConnectionClient {
             JSONObject message = new JSONObject();
             message.put(PnRTCMessage.JSON_PACKET, packet);
             message.put(PnRTCMessage.JSON_ID, ""); //Todo: session id, unused in js SDK?
-            message.put(PnRTCMessage.JSON_NUMBER, this.id);
+            message.put(PnRTCMessage.JSON_SENDER_ID, this.id);
             this.mPubNub.publish().channel(toID).message(message).async(new PNCallback<PNPublishResult>() {
 
                 @Override
@@ -329,7 +329,7 @@ public class PnPeerConnectionClient {
             packet.put(PnRTCMessage.JSON_HANGUP, true);
             json.put(PnRTCMessage.JSON_PACKET, packet);
             json.put(PnRTCMessage.JSON_ID, ""); //Todo: session id, unused in js SDK?
-            json.put(PnRTCMessage.JSON_NUMBER, userId);
+            json.put(PnRTCMessage.JSON_SENDER_ID, userId);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -347,7 +347,7 @@ public class PnPeerConnectionClient {
             packet.put(PnRTCMessage.JSON_ADDTIME, true);
             json.put(PnRTCMessage.JSON_PACKET, packet);
             json.put(PnRTCMessage.JSON_ID, ""); //Todo: session id, unused in js SDK?
-            json.put(PnRTCMessage.JSON_NUMBER, userId);
+            json.put(PnRTCMessage.JSON_SENDER_ID, userId);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -358,15 +358,14 @@ public class PnPeerConnectionClient {
      * @param callerId Your id. Used to tag the message before publishing it to another user.
      * @return
      */
-    public static JSONObject generateDialPacket(String callerId, String calleeId) {
+    public static JSONObject generateDialPacket(String callerId) {
         JSONObject json = new JSONObject();
         try {
             JSONObject packet = new JSONObject();
             packet.put(PnRTCMessage.JSON_DIAL, true);
             json.put(PnRTCMessage.JSON_PACKET, packet);
             json.put(PnRTCMessage.JSON_ID, ""); //Todo: session id, unused in js SDK?
-            json.put(PnRTCMessage.JSON_NUMBER, calleeId);
-            json.put(PnRTCMessage.JSON_CALLER_ID, callerId);
+            json.put(PnRTCMessage.JSON_SENDER_ID, callerId);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -389,7 +388,7 @@ public class PnPeerConnectionClient {
             packet.put(PnRTCMessage.JSON_USERMSG, message);
             json.put(PnRTCMessage.JSON_PACKET, packet);
             json.put(PnRTCMessage.JSON_ID, ""); //Todo: session id, unused in js SDK?
-            json.put(PnRTCMessage.JSON_NUMBER, userId);
+            json.put(PnRTCMessage.JSON_SENDER_ID, userId);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -418,13 +417,12 @@ public class PnPeerConnectionClient {
                 Log.d(JSONUtils.JSON_TAG, "empty json or json doesn't have call user");
             }
             try {
-                String peerId = jsonMessage.getString(PnRTCMessage.JSON_NUMBER);
+                String peerId = jsonMessage.getString(PnRTCMessage.JSON_SENDER_ID);
                 JSONObject packet = jsonMessage.getJSONObject(PnRTCMessage.JSON_PACKET);
                 Log.d("MLGB", "received message: " + packet.toString());
                 // Initial dial message, we don't need to register a peer at this time
                 if (packet.has(PnRTCMessage.JSON_DIAL)) {
-                    String callerId = jsonMessage.getString(PnRTCMessage.JSON_CALLER_ID);
-                    actionMap.get(PnUserDialAction.TRIGGER).execute(callerId, packet);
+                    actionMap.get(PnUserDialAction.TRIGGER).execute(peerId, packet);
                     return;
                 }
                 PnPeer peer;

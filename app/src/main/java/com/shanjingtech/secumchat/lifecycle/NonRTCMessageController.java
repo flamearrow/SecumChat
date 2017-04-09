@@ -105,9 +105,7 @@ public class NonRTCMessageController {
                         else {
                             callbacks.onCalleeOnline(peerName);
                         }
-                        JSONObject dialMsg = PnPeerConnectionClient.generateDialPacket(
-                                username,
-                                peerName);
+                        JSONObject dialMsg = PnPeerConnectionClient.generateDialPacket(username);
                         pubnub.publish().channel(peerName).message(dialMsg).async(
                                 new PNCallback<PNPublishResult>() {
                                     @Override

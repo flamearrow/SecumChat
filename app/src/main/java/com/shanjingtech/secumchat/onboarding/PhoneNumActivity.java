@@ -8,6 +8,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 
 import com.shanjingtech.countrycodepicker.CountryCodePicker;
+import com.shanjingtech.secumchat.LoginActivity;
 import com.shanjingtech.secumchat.R;
 import com.shanjingtech.secumchat.SecumBaseActivity;
 import com.shanjingtech.secumchat.model.User;
@@ -39,8 +40,22 @@ public class PhoneNumActivity extends SecumBaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.phone_number_activity);
         phoneNumber = (EditText) findViewById(R.id.phone_number);
-        debugCheckbox = (CheckBox) findViewById(R.id.debug);
+
+        if (findViewById(R.id.debug_check_box) != null) {
+            SecumDebug.enableDebugMode(sharedPreferences);
+            debugCheckbox = (CheckBox) findViewById(R.id.debug_check_box);
+        } else {
+            SecumDebug.disableDebugMode(sharedPreferences);
+        }
         ccp = (CountryCodePicker) findViewById(R.id.country_code);
+    }
+
+    public void debugCheckClicked(View view) {
+        if (debugCheckbox.isChecked()) {
+            SecumDebug.enableDebugMode(sharedPreferences);
+        } else {
+            SecumDebug.disableDebugMode(sharedPreferences);
+        }
     }
 
     private boolean validatePhone() {
@@ -58,14 +73,15 @@ public class PhoneNumActivity extends SecumBaseActivity {
     }
 
     public void clickGo(View view) {
-        if (debugCheckbox.isChecked()) {
-            SecumDebug.enableDebugMode(sharedPreferences);
-            Intent intent = new Intent(PhoneNumActivity.this,
-                    AccessCodeActivity.class);
-            intent.putExtra(Constants.PHONE_NUMBER, "12345");
-            startActivity(intent);
+        if (SecumDebug.isDebugMode(sharedPreferences)) {
+            if (debugCheckbox.isChecked()) {
+                SecumDebug.enableDebugMode(sharedPreferences);
+                Intent intent = new Intent(PhoneNumActivity.this,
+                        AccessCodeActivity.class);
+                intent.putExtra(Constants.PHONE_NUMBER, "12345");
+                startActivity(intent);
+            }
         } else {
-            SecumDebug.disableDebugMode(sharedPreferences);
             final String phoneNo = getFullPhoneNumber();
             if (validatePhone()) {
                 secumAPI.registerUser(new UserRequest(phoneNo))
@@ -90,6 +106,10 @@ public class PhoneNumActivity extends SecumBaseActivity {
 
             }
         }
+    }
+
+    public void toDebug(View view) {
+        startActivity(new Intent(this, LoginActivity.class));
     }
 
     private String getFullPhoneNumber() {

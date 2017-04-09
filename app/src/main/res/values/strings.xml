@@ -7,7 +7,7 @@
     <string name="action_logout">Logout</string>
     <string name="action_debug" translatable="false">Debug</string>
 
-    <string name="login">hola</string>
+    <string name="hola">hola</string>
     <string name="username">username</string>
     <string name="logo_text">welcome!</string>
 

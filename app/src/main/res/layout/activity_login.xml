@@ -14,24 +14,10 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="40dp"
         android:gravity="center"
-        android:text="@string/login"
+        android:text="@string/hola"
         android:textColor="@color/pn_blue"
         android:textSize="35sp"/>
 
-    <EditText
-        android:id="@+id/login_username"
-        android:layout_width="match_parent"
-        android:layout_height="75dp"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_below="@+id/textView"
-        android:layout_marginTop="45dp"
-        android:gravity="center"
-        android:hint="@string/username"
-        android:inputType="text"
-        android:text="@string/phone11"
-        android:textColor="#333"
-        android:textSize="30sp"/>
 
     <Button
         android:id="@+id/testButton"

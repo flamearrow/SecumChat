@@ -15,7 +15,6 @@ import com.shanjingtech.secumchat.SecumChatActivity;
 import com.shanjingtech.secumchat.model.UpdateUserRequest;
 import com.shanjingtech.secumchat.model.User;
 import com.shanjingtech.secumchat.util.Constants;
-import com.shanjingtech.secumchat.util.SecumDebug;
 import com.wefika.horizontalpicker.HorizontalPicker;
 
 import retrofit2.Call;
@@ -90,7 +89,6 @@ public class MyDetailsActivity extends SecumBaseActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_profile, menu);
-        menu.findItem(R.id.action_debug).setChecked(SecumDebug.isDebugMode(sharedPreferences));
         return true;
     }
 
@@ -101,14 +99,6 @@ public class MyDetailsActivity extends SecumBaseActivity {
                 finish();
                 logOut();
                 break;
-            case R.id.action_debug:
-                if (item.isChecked()) {
-                    item.setChecked(false);
-                    SecumDebug.disableDebugMode(sharedPreferences);
-                } else {
-                    item.setChecked(true);
-                    SecumDebug.enableDebugMode(sharedPreferences);
-                }
         }
         return true;
     }

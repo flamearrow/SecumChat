@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="debug_check_box" type="id"/>
+    <item name="action_debug" type="id"/>
+</resources>

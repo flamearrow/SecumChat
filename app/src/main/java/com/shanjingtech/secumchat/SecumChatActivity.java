@@ -30,7 +30,6 @@ import com.shanjingtech.secumchat.ui.DialingReceivingWaitingLayout;
 import com.shanjingtech.secumchat.ui.HeartMagicLayout;
 import com.shanjingtech.secumchat.ui.SecumCounter;
 import com.shanjingtech.secumchat.util.Constants;
-import com.shanjingtech.secumchat.util.SecumDebug;
 
 import org.webrtc.AudioSource;
 import org.webrtc.AudioTrack;
@@ -152,7 +151,6 @@ public class SecumChatActivity extends SecumBaseActivity implements
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_chat, menu);
-        menu.findItem(R.id.action_debug).setChecked(SecumDebug.isDebugMode(sharedPreferences));
         return true;
     }
 
@@ -170,14 +168,6 @@ public class SecumChatActivity extends SecumBaseActivity implements
                 logOut();
                 startActivity(new Intent(this, SplashActivity.class));
                 break;
-            case R.id.action_debug:
-                if (item.isChecked()) {
-                    item.setChecked(false);
-                    SecumDebug.disableDebugMode(sharedPreferences);
-                } else {
-                    item.setChecked(true);
-                    SecumDebug.enableDebugMode(sharedPreferences);
-                }
         }
         return true;
     }

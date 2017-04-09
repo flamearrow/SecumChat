@@ -90,7 +90,8 @@ public class NetModule {
                                 credential = "Bearer " + SecumDebug.TOKEN_22;
                                 break;
                             default:
-                                throw new RuntimeException("incorrect debug user");
+                                credential = "mlgb";
+                                Log.d(TAG, "No debug user credential found");
                         }
                     } else {
                         String bearer = sharedPreferences.getString(Constants

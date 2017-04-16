@@ -2,6 +2,7 @@ package com.shanjingtech.secumchat.onboarding;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.telephony.TelephonyManager;
 import android.util.Log;
@@ -133,6 +134,11 @@ public class PhoneNumActivity extends SecumBaseActivity {
 
             }
         }
+    }
+
+    public void privacy(View view) {
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(Constants.PRIVACY_URL));
+        startActivity(browserIntent);
     }
 
     public void toDebug(View view) {

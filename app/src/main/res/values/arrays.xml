@@ -89,4 +89,9 @@
         <item>98</item>
         <item>99</item>
     </string-array>
+
+    <string-array name="report_items">
+        <item>nudity</item>
+        <item>violence</item>
+    </string-array>
 </resources>

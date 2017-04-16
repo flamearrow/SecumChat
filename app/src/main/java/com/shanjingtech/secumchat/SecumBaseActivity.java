@@ -243,11 +243,14 @@ public class SecumBaseActivity
 
     @Override
     public void onClick(DialogInterface dialog, int which) {
-        if (which == DialogInterface.BUTTON_POSITIVE) {
-            Log.d(PERMISSION_TAG, "You clicked settings");
-            gotToSettings();
-        } else if (which == DialogInterface.BUTTON_NEGATIVE) {
-            Log.d(PERMISSION_TAG, "You clicked cancel");
+        if (dialog == phoneStatePermissionAlertDialog || dialog ==
+                audioCameraPermissionAlertDialog) {
+            if (which == DialogInterface.BUTTON_POSITIVE) {
+                Log.d(PERMISSION_TAG, "You clicked settings");
+                gotToSettings();
+            } else if (which == DialogInterface.BUTTON_NEGATIVE) {
+                Log.d(PERMISSION_TAG, "You clicked cancel");
+            }
         }
     }
 

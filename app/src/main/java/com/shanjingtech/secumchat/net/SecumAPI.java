@@ -7,6 +7,8 @@ import com.shanjingtech.secumchat.model.EndMatch;
 import com.shanjingtech.secumchat.model.GetMatch;
 import com.shanjingtech.secumchat.model.GetMatchRequest;
 import com.shanjingtech.secumchat.model.PingResponse;
+import com.shanjingtech.secumchat.model.ReportUserRequest;
+import com.shanjingtech.secumchat.model.ReportUserResponse;
 import com.shanjingtech.secumchat.model.UpdateUserRequest;
 import com.shanjingtech.secumchat.model.User;
 import com.shanjingtech.secumchat.model.UserRequest;
@@ -84,4 +86,10 @@ public interface SecumAPI {
     @Headers("Content-Type: application/json")
     @POST(Constants.PATH_UPDATE_USER)
     Call<User> updateUser(@Body UpdateUserRequest request);
+
+    @Headers("Content-Type: application/json")
+    @POST(Constants.PATH_REPORT)
+    Call<ReportUserResponse> reportUser(@Body ReportUserRequest request);
+
+
 }

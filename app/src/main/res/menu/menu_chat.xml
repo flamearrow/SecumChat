@@ -4,6 +4,9 @@
         android:id="@+id/action_update_profile"
         android:title="@string/action_update_profile"/>
     <item
+        android:id="@+id/action_report"
+        android:title="@string/action_report"/>
+    <item
         android:id="@+id/action_logout"
         android:title="@string/action_logout"/>
 </menu>

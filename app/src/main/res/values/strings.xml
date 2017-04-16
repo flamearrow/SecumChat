@@ -5,6 +5,8 @@
     <string name="action_settings">Settings</string>
     <string name="action_update_profile">Update Profile</string>
     <string name="action_logout">Logout</string>
+    <string name="action_report">Report</string>
+
     <string name="action_debug" translatable="false">Debug</string>
 
     <string name="hola">hola</string>
@@ -56,4 +58,13 @@
     <string name="rejected">&#160;rejected</string>
     <string name="matching_you_with">matching you with </string>
     <string name="connected_to">Connected to </string>
+
+    <!-- privacy -->
+    <string name="privacy">Privacy Policy</string>
+    <string name="report_dialog_header">Report</string>
+    <string name="nudity">nudity</string>
+    <string name="violence">violence</string>
+    <string name="report_reason">Please choose at least one reason.</string>
+    <string name="no_one_to_report">No one to report.</string>
+    <string name="report_success">Report success!</string>
 </resources>

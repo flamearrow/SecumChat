@@ -70,6 +70,7 @@
     </GridLayout>
 
     <Button
+        android:id="@+id/go_button"
         style="@style/OnboardingButton"
         android:layout_width="120dp"
         android:layout_height="wrap_content"
@@ -78,6 +79,15 @@
         android:layout_marginTop="@dimen/onboarding_vertical_margin"
         android:onClick="clickGo"
         android:text="@string/send_code"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/go_button"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:onClick="privacy"
+        android:text="@string/privacy"/>
 
     <ImageView
         android:layout_width="120dp"

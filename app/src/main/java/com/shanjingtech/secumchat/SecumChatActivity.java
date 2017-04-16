@@ -1,7 +1,9 @@
 package com.shanjingtech.secumchat;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.media.AudioManager;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
@@ -9,18 +11,22 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CheckedTextView;
 
 import com.shanjingtech.pnwebrtc.PnRTCClient;
 import com.shanjingtech.pnwebrtc.PnSignalingParams;
 import com.shanjingtech.secumchat.lifecycle.NonRTCMessageController;
 import com.shanjingtech.secumchat.lifecycle.SecumRTCListener;
 import com.shanjingtech.secumchat.model.GetMatch;
+import com.shanjingtech.secumchat.model.ReportUserRequest;
+import com.shanjingtech.secumchat.model.ReportUserResponse;
 import com.shanjingtech.secumchat.model.User;
 import com.shanjingtech.secumchat.net.SecumNetworkRequester;
 import com.shanjingtech.secumchat.net.XirSysRequest;
@@ -44,6 +50,10 @@ import org.webrtc.VideoTrack;
 
 import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 import static com.shanjingtech.secumchat.util.Constants.MLGB;
 
 /**
@@ -54,7 +64,8 @@ public class SecumChatActivity extends SecumBaseActivity implements
         SecumRTCListener.RTCPeerListener,
         NonRTCMessageController.NonRTCMessageControllerCallbacks,
         SecumNetworkRequester.SecumNetworkRequesterCallbacks,
-        SecumCounter.SecumCounterListener {
+        SecumCounter.SecumCounterListener,
+        DialogInterface.OnMultiChoiceClickListener {
 
     private GLSurfaceView videoView;
     // my name, also used for regular channel name
@@ -95,6 +106,12 @@ public class SecumChatActivity extends SecumBaseActivity implements
 
     // uber guard
     private boolean paused;
+
+    // private dialog
+    private AlertDialog reportDialog;
+    private boolean nudity;
+    private boolean violence;
+    CharSequence[] reportItemArray;
 
     /**
      * An {@code Runnable} to hangup and switch back to waiting state if the current state is
@@ -140,6 +157,16 @@ public class SecumChatActivity extends SecumBaseActivity implements
         this.currentUser = (User) getIntent().getSerializableExtra(Constants.CURRENT_USER);
         this.myName = currentUser.getUsername();
         setTitle(currentUser.getNickname());
+        Resources resources = getResources();
+
+        reportItemArray = getResources().getTextArray(R.array.report_items);
+        reportDialog = new AlertDialog.Builder(this)
+                .setTitle(resources.getString(R.string.report_dialog_header))
+                .setMultiChoiceItems(reportItemArray, null, this)
+                .setPositiveButton(resources.getString(R.string.action_report), this)
+                .setNegativeButton(resources.getString(R.string.cancel), this)
+                .setIcon(R.drawable.cat_head)
+                .create();
 
         initUI();
         initRTCComponents();
@@ -171,8 +198,98 @@ public class SecumChatActivity extends SecumBaseActivity implements
                 logOut();
                 startActivity(new Intent(this, SplashActivity.class));
                 break;
+            case R.id.action_report:
+                if (getPeerName() == null) {
+                    showToast(getResources().getString(R.string.no_one_to_report));
+                } else {
+                    if (!reportDialog.isShowing()) {
+                        nudity = false;
+                        violence = false;
+                        clearReportDialg();
+                        reportDialog.show();
+                    }
+                }
+                break;
+
         }
         return true;
+    }
+
+    private void clearReportDialg() {
+        for (int i = 0; i < reportItemArray.length; i++) {
+            reportDialog.getListView().setItemChecked(i, false);
+        }
+    }
+
+    @Override
+    public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+        if (dialog == reportDialog) {
+            if (isChecked) {
+                if (which == 0) {
+                    nudity = true;
+                } else if (which == 1) {
+                    violence = true;
+                }
+            } else {
+                if (which == 0) {
+                    nudity = false;
+                } else if (which == 1) {
+                    violence = false;
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onClick(DialogInterface dialog, int which) {
+        super.onClick(dialog, which);
+        if (dialog == reportDialog) {
+            if (which == DialogInterface.BUTTON_POSITIVE) {
+                if (!nudity && !violence) {
+                    showToast(getResources().getString(R.string.report_reason));
+                } else {
+                    final String userName = getPeerName();
+                    if (userName != null) {
+                        ReportUserRequest request = new ReportUserRequest();
+                        request.setReason(buildReportReason());
+                        request.setReportedUserName(userName);
+                        secumAPI.reportUser(request).enqueue(new Callback<ReportUserResponse>
+                                () {
+                            @Override
+                            public void onResponse(Call<ReportUserResponse> call,
+                                                   Response<ReportUserResponse> response) {
+                                if (response.isSuccessful()) {
+                                    Log.d(TAG, "Report success: " + userName);
+                                } else {
+                                    Log.d(TAG, "Report failure: " + userName);
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<ReportUserResponse> call, Throwable t) {
+                                Log.d(TAG, "Report failure: " + userName);
+                            }
+                        });
+                        showToast(getResources().getString(R.string.report_success));
+                    } else {
+                        showToast(getResources().getString(R.string.no_one_to_report));
+                    }
+
+                }
+            }
+        }
+    }
+
+    private String buildReportReason() {
+        StringBuilder stringBuilder = new StringBuilder("Reason:");
+        if (nudity) {
+            stringBuilder.append(" nudity");
+        }
+        if (violence) {
+            stringBuilder.append(" violence");
+        }
+
+        return stringBuilder.toString();
     }
 
     private void initUI() {

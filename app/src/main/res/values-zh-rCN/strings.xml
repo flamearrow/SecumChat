@@ -47,5 +47,13 @@
     <string name="matching_you_with">正在连线...</string>
     <string name="connected_to">连上了</string>
     <string name="permission_dialog_message_phone">允许9喵自动读取电话号码？</string>
+    <string name="action_report">举报</string>
+    <string name="privacy">隐私条款</string>
+    <string name="report_dialog_header">举报</string>
+    <string name="violence">暴力</string>
+    <string name="nudity">裸体</string>
+    <string name="report_reason">请选择至少一个理由</string>
+    <string name="no_one_to_report">没有人可以举报...</string>
+    <string name="report_success">举报成功！</string>
 
 </resources>

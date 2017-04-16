@@ -85,9 +85,12 @@ public class Constants {
     public static final String PATH_PING = "/api/posts/";
     public static final String PATH_GET_PROFILE = "/api/users/get_profile/";
     public static final String PATH_UPDATE_USER = "/api/users/update_user/";
+    public static final String PATH_REPORT = "/api/report/";
 
     // mydetails activity
     public static final String MALE = "male";
     public static final String FEMALE = "female";
 
+    // urls
+    public static final String PRIVACY_URL = "http://www.9miao.tv/policy.html";
 }

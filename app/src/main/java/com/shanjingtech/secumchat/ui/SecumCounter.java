@@ -23,6 +23,9 @@ public class SecumCounter extends android.support.v7.widget.AppCompatTextView {
 
     private Animation bounceAnimation;
 
+    interface BothAddedListener {
+        void onBothSidesAdded();
+    }
 
     public interface SecumCounterListener {
         void onCounterStart();
@@ -51,7 +54,9 @@ public class SecumCounter extends android.support.v7.widget.AppCompatTextView {
     private boolean meAdd;
     private boolean peerAdd;
     private int secondsLeft;
-    private SecumCounterListener listener;
+    private SecumCounterListener secumCounterListener;
+    private BothAddedListener bothAddedListener;
+    private boolean bouncing;
 
     public SecumCounter(Context context) {
         super(context);
@@ -69,7 +74,11 @@ public class SecumCounter extends android.support.v7.widget.AppCompatTextView {
     }
 
     public void setSecumCounterListener(SecumCounterListener listener) {
-        this.listener = listener;
+        this.secumCounterListener = listener;
+    }
+
+    public void setBothAddedListener(BothAddedListener listener) {
+        this.bothAddedListener = listener;
     }
 
     private void initializeUI() {
@@ -77,6 +86,24 @@ public class SecumCounter extends android.support.v7.widget.AppCompatTextView {
         // center text
         shakeAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.shake);
         bounceAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.bounce);
+        bounceAnimation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                if (bouncing) {
+                    startAnimation(bounceAnimation);
+                }
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
         setText("" + Constants.TORA);
         setGravity(Gravity.CENTER);
         setBackground(getResources().getDrawable(R.drawable.cat_timer));
@@ -88,8 +115,8 @@ public class SecumCounter extends android.support.v7.widget.AppCompatTextView {
      */
     public void meAdd() {
         if (!meAdd) {
-            if (listener != null) {
-                listener.onMeAdd();
+            if (secumCounterListener != null) {
+                secumCounterListener.onMeAdd();
             }
             meAdd = true;
             checkAddTime();
@@ -101,8 +128,8 @@ public class SecumCounter extends android.support.v7.widget.AppCompatTextView {
      */
     public void peerAdd() {
         if (!peerAdd) {
-            if (listener != null) {
-                listener.onPeerAdd();
+            if (secumCounterListener != null) {
+                secumCounterListener.onPeerAdd();
             }
             peerAdd = true;
             checkAddTime();
@@ -120,39 +147,52 @@ public class SecumCounter extends android.support.v7.widget.AppCompatTextView {
      * bounce once
      */
     private void bounce() {
-        startAnimation(bounceAnimation);
+        bouncing = true;
+        post(new Runnable() {
+            @Override
+            public void run() {
+                startAnimation(bounceAnimation);
+            }
+        });
     }
 
     /**
      * Freeze, don't move!
      */
-    public void freeze() {
+    private void freeze() {
+        bouncing = false;
         clearAnimation();
     }
 
     private void checkAddTime() {
         if (meAdd && peerAdd) {
             secondsLeft += Constants.SECONDS_TO_ADD;
-            if (listener != null) {
-                post(clearAndBounceRunnable);
-                listener.onAddTimePaired(secondsLeft);
+            if (secumCounterListener != null) {
+                secumCounterListener.onAddTimePaired(secondsLeft);
+            }
+            if (bothAddedListener != null) {
+                bothAddedListener.onBothSidesAdded();
             }
             meAdd = false;
             peerAdd = false;
+        } else if (meAdd || peerAdd) {
+            bounce();
         }
     }
 
     public void initialize() {
         stop();
         freeze();
+        meAdd = false;
+        peerAdd = false;
         secondsLeft = Constants.TORA;
         start();
     }
 
     private void start() {
         running = true;
-        if (listener != null) {
-            listener.onCounterStart();
+        if (secumCounterListener != null) {
+            secumCounterListener.onCounterStart();
         }
         updateRunning();
     }
@@ -175,8 +215,8 @@ public class SecumCounter extends android.support.v7.widget.AppCompatTextView {
     private void updateUI() {
         if (secondsLeft < 0) {
             if (running) {
-                if (listener != null) {
-                    listener.onCounterExpire();
+                if (secumCounterListener != null) {
+                    secumCounterListener.onCounterExpire();
                 }
                 stop();
             }
@@ -196,14 +236,6 @@ public class SecumCounter extends android.support.v7.widget.AppCompatTextView {
                 updateUI();
                 postDelayed(tickRunnable, MILLIS_IN_SECOND);
             }
-        }
-    };
-
-    private final Runnable clearAndBounceRunnable = new Runnable() {
-        @Override
-        public void run() {
-            clearAnimation();
-            bounce();
         }
     };
 

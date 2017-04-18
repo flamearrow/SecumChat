@@ -18,7 +18,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.CheckedTextView;
 
 import com.shanjingtech.pnwebrtc.PnRTCClient;
 import com.shanjingtech.pnwebrtc.PnSignalingParams;
@@ -33,7 +32,7 @@ import com.shanjingtech.secumchat.net.XirSysRequest;
 import com.shanjingtech.secumchat.onboarding.MyDetailsActivity;
 import com.shanjingtech.secumchat.onboarding.SplashActivity;
 import com.shanjingtech.secumchat.ui.DialingReceivingWaitingLayout;
-import com.shanjingtech.secumchat.ui.HeartMagicLayout;
+import com.shanjingtech.secumchat.ui.HeartSecumCounter;
 import com.shanjingtech.secumchat.ui.SecumCounter;
 import com.shanjingtech.secumchat.util.Constants;
 
@@ -88,8 +87,7 @@ public class SecumChatActivity extends SecumBaseActivity implements
     // The button should be invisible until the user is being called
     private DialingReceivingWaitingLayout dialingReceivingWaitingView;
     private View matchingView;
-    private HeartMagicLayout heartToAddTime;
-    private SecumCounter secumCounter;
+    private HeartSecumCounter heartSecumCounter;
 
     // pubnub
     private NonRTCMessageController nonRTCMessageController;
@@ -294,9 +292,14 @@ public class SecumChatActivity extends SecumBaseActivity implements
 
     private void initUI() {
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
-        heartToAddTime = (HeartMagicLayout) findViewById(R.id.heart);
-        secumCounter = (SecumCounter) findViewById(R.id.secum_counter);
-        secumCounter.setSecumCounterListener(this);
+        heartSecumCounter = (HeartSecumCounter) findViewById(R.id.heart_secum_counter);
+        heartSecumCounter.getSecumCounter().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addTime(null);
+            }
+        });
+        heartSecumCounter.setSecumCounterListener(this);
         dialingReceivingWaitingView = (DialingReceivingWaitingLayout) findViewById(R.id
                 .dialing_receiving_waiting);
         matchingView = findViewById(R.id.matching_view);
@@ -535,8 +538,7 @@ public class SecumChatActivity extends SecumBaseActivity implements
             @Override
             public void run() {
                 hideAllUI();
-                secumCounter.setVisibility(View.VISIBLE);
-                heartToAddTime.setVisibility(View.VISIBLE);
+                heartSecumCounter.setVisibility(View.VISIBLE);
             }
         });
     }
@@ -566,11 +568,9 @@ public class SecumChatActivity extends SecumBaseActivity implements
 
     private void hideAllUI() {
         dialingReceivingWaitingView.switchUIState(State.MATCHING);
-        secumCounter.clearAnimation();
-        secumCounter.setVisibility(View.INVISIBLE);
-        secumCounter.stop();
-        heartToAddTime.setVisibility(View.INVISIBLE);
-        heartToAddTime.reset();
+        heartSecumCounter.clearAnimation();
+        heartSecumCounter.setVisibility(View.INVISIBLE);
+        heartSecumCounter.stop();
         matchingView.setVisibility(View.INVISIBLE);
     }
 
@@ -580,8 +580,7 @@ public class SecumChatActivity extends SecumBaseActivity implements
      * @param view
      */
     public void addTime(View view) {
-        secumCounter.meAdd();
-        heartToAddTime.meLike();
+        heartSecumCounter.meAdd();
         // send a addTime packet
         nonRTCMessageController.addTime(getPeerName());
     }
@@ -601,8 +600,7 @@ public class SecumChatActivity extends SecumBaseActivity implements
      * When peer clicked addTime
      */
     public void onPeerAddTime() {
-        secumCounter.peerAdd();
-        heartToAddTime.peerLike();
+        heartSecumCounter.peerAdd();
     }
 
     /**
@@ -638,8 +636,6 @@ public class SecumChatActivity extends SecumBaseActivity implements
         // me yet, switch to CHATTING when onAddRemoteStream() is called
         if (currentState == State.DIALING) {
             // I'm caller, I dial callee
-//            nonRTCMessageController.dial(getMatch.getCallee());
-
             nonRTCMessageController.dial(getMatch.getCallee());
             // when callee accepted, onAddRemoteStream() will be called
             switchState(State.WAITING);
@@ -675,7 +671,7 @@ public class SecumChatActivity extends SecumBaseActivity implements
     @Override
     public void onRemoteStreamAdded() {
         if (currentState == State.CHATTING) {
-            secumCounter.initialize();
+            heartSecumCounter.restart();
         }
     }
 

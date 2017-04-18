@@ -3,6 +3,7 @@
      android:shareInterpolator="false">
 
     <translate
+        android:startOffset="800"
         android:duration="150"
         android:fromYDelta="0%p"
         android:interpolator="@android:anim/accelerate_decelerate_interpolator"
@@ -12,7 +13,7 @@
         android:duration="800"
         android:fromYDelta="0%p"
         android:interpolator="@android:anim/bounce_interpolator"
-        android:startOffset="150"
+        android:startOffset="950"
         android:toYDelta="20%p"/>
 
 </set>

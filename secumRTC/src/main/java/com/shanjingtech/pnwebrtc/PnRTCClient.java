@@ -204,7 +204,7 @@ public class PnRTCClient {
     }
 
     /**
-     * Call this method in Activity.onDestroy() to clost all open connections and clean up
+     * Call this method in Activity.onDestroy() to close all open connections and clean up
      * instance for garbage collection.
      */
     public void onDestroy() {

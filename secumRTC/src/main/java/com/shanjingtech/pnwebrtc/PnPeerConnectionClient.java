@@ -122,7 +122,7 @@ public class PnPeerConnectionClient {
     }
 
     private void subscribe(String channel) {
-
+        
         mPubNub.subscribe().channels(Arrays.asList(channel)).execute();
     }
 

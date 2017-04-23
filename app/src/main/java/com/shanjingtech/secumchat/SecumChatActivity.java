@@ -377,7 +377,8 @@ public class SecumChatActivity extends SecumBaseActivity implements
      */
     private void hangUp() {
         String peerName = getPeerName();
-        if (peerName != null) {
+        // for dialing, don't send hangup as peer hasn't received
+        if (peerName != null && currentState != State.DIALING) {
             nonRTCMessageController.hangUp(peerName);
         }
         switchState(State.MATCHING);
@@ -411,6 +412,7 @@ public class SecumChatActivity extends SecumBaseActivity implements
         // stop camera
         localVideoSource.stop();
         removeAllHandlerCallbacks();
+        pnRTCClient.onDestroy();
         currentState = null;
     }
 
@@ -419,6 +421,7 @@ public class SecumChatActivity extends SecumBaseActivity implements
         // note it's ok to subscribe to a pubnub channel multiple times
 
         pnRTCClient.closeAllConnections();
+        pnRTCClient.getPubNub().unsubscribeAll();
         // subscribe to my regular channel
         pnRTCClient.listenOnForce(myName);
     }

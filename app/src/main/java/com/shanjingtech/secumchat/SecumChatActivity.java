@@ -293,7 +293,7 @@ public class SecumChatActivity extends SecumBaseActivity implements
         heartSecumCounter.getSecumCounter().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addTime(null);
+                addTime(v);
             }
         });
         heartSecumCounter.setSecumCounterListener(this);
@@ -577,8 +577,6 @@ public class SecumChatActivity extends SecumBaseActivity implements
      */
     public void addTime(View view) {
         heartSecumCounter.meAdd();
-        // send a addTime packet
-        nonRTCMessageController.addTime(getPeerName());
     }
 
     /**
@@ -751,6 +749,8 @@ public class SecumChatActivity extends SecumBaseActivity implements
     @Override
     public void onMeAdd() {
         Log.d(SECUMCOUNTER, "onMeAdd");
+        // send a addTime packet
+        nonRTCMessageController.addTime(getPeerName());
     }
 
     @Override

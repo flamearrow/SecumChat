@@ -366,7 +366,6 @@ public class PnPeerConnectionClient {
         try {
             JSONObject packet = new JSONObject();
             packet.put(PnRTCMessage.JSON_TYPE, PnRTCMessage.JSON_DIAL);
-//            packet.put(PnRTCMessage.JSON_DIAL, true);
             json.put(PnRTCMessage.JSON_PACKET, packet);
             json.put(PnRTCMessage.JSON_ID, ""); //Todo: session id, unused in js SDK?
             json.put(PnRTCMessage.JSON_SENDER_ID, senderId);

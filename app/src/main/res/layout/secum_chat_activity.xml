@@ -20,33 +20,36 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
-    <LinearLayout
+
+    <com.shanjingtech.secumchat.ui.PulseImageView
+        android:id="@+id/matching_view"
+        android:layout_width="160dp"
+        android:layout_height="160dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="100dp"
+        android:src="@drawable/cat_head_white"
+        app:animation_duration="500"
+        app:animation_reverse="true"
+        app:animation_scale_end="1.0"
+        app:animation_scale_start="0.9"
+        app:animation_time_interpolator="overshoot"/>
+
+    <com.shanjingtech.secumchat.ui.DialingReceivingWaitingLayout
+        android:id="@+id/dialing_receiving_waiting"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="100dp"
-        android:orientation="vertical">
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:paddingBottom="100dp"/>
 
 
-        <com.shanjingtech.secumchat.ui.PulseImageView
-            android:id="@+id/matching_view"
-            android:layout_width="160dp"
-            android:layout_height="160dp"
-            android:layout_gravity="center_horizontal"
-            android:src="@drawable/cat_head_white"
-            app:animation_duration="500"
-            app:animation_reverse="true"
-            app:animation_scale_end="1.0"
-            app:animation_scale_start="0.9"
-            app:animation_time_interpolator="overshoot"/>
-
-        <com.shanjingtech.secumchat.ui.DialingReceivingWaitingLayout
-            android:id="@+id/dialing_receiving_waiting"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-
-    </LinearLayout>
-
-    <include layout="@layout/chatting_layout"/>
+    <com.shanjingtech.secumchat.ui.HeartSecumCounter
+        android:id="@+id/heart_secum_counter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:paddingBottom="20dp"/>
 
 </RelativeLayout>

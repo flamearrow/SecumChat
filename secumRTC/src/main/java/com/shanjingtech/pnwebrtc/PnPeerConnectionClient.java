@@ -95,6 +95,9 @@ public class PnPeerConnectionClient {
      * @return boolean value of success
      */
     boolean connect(String userId) {
+//        if (peers.containsKey(userId)) {
+//            removePeer(userId);
+//        }
         if (!peers.containsKey(userId)) { // Prevents duplicate dials.
             if (peers.size() < MAX_CONNECTIONS) {
                 PnPeer peer = addPeer(userId);
@@ -159,8 +162,7 @@ public class PnPeerConnectionClient {
             if (!this.peers.containsKey(id)) return;
             PnPeer peer = this.peers.get(id);
             peer.hangup();
-//            packet.put(PnRTCMessage.JSON_HANGUP, true);
-            packet.put(PnRTCMessage.JSON_TYPE, PnRTCMessage.JSON_TYPE);
+            packet.put(PnRTCMessage.JSON_TYPE, PnRTCMessage.JSON_HANGUP);
             transmitMessage(id, packet);
             mRtcListener.onPeerConnectionClosed(peer);
         } catch (JSONException e) {
@@ -328,7 +330,6 @@ public class PnPeerConnectionClient {
         try {
             JSONObject packet = new JSONObject();
             packet.put(PnRTCMessage.JSON_TYPE, PnRTCMessage.JSON_HANGUP);
-//            packet.put(PnRTCMessage.JSON_HANGUP, true);
             json.put(PnRTCMessage.JSON_PACKET, packet);
             json.put(PnRTCMessage.JSON_ID, ""); //Todo: session id, unused in js SDK?
             json.put(PnRTCMessage.JSON_SENDER_ID, userId);
@@ -347,7 +348,6 @@ public class PnPeerConnectionClient {
         try {
             JSONObject packet = new JSONObject();
             packet.put(PnRTCMessage.JSON_TYPE, PnRTCMessage.JSON_ADDTIME);
-//            packet.put(PnRTCMessage.JSON_ADDTIME, true);
             json.put(PnRTCMessage.JSON_PACKET, packet);
             json.put(PnRTCMessage.JSON_ID, ""); //Todo: session id, unused in js SDK?
             json.put(PnRTCMessage.JSON_SENDER_ID, userId);
@@ -358,10 +358,10 @@ public class PnPeerConnectionClient {
     }
 
     /**
-     * @param callerId Your id. Used to tag the message before publishing it to another user.
+     * @param senderId Your id. Used to tag the message before publishing it to another user.
      * @return
      */
-    public static JSONObject generateDialPacket(String callerId) {
+    public static JSONObject generateDialPacket(String senderId) {
         JSONObject json = new JSONObject();
         try {
             JSONObject packet = new JSONObject();
@@ -369,7 +369,7 @@ public class PnPeerConnectionClient {
 //            packet.put(PnRTCMessage.JSON_DIAL, true);
             json.put(PnRTCMessage.JSON_PACKET, packet);
             json.put(PnRTCMessage.JSON_ID, ""); //Todo: session id, unused in js SDK?
-            json.put(PnRTCMessage.JSON_SENDER_ID, callerId);
+            json.put(PnRTCMessage.JSON_SENDER_ID, senderId);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -423,19 +423,30 @@ public class PnPeerConnectionClient {
             try {
                 String peerId = jsonMessage.getString(PnRTCMessage.JSON_SENDER_ID);
                 JSONObject packet = jsonMessage.getJSONObject(PnRTCMessage.JSON_PACKET);
-                Log.d("MLGB", "received message: " + packet.toString());
+//                Log.d("MLGB", "received message: " + packet.toString());
                 String type = packet.getString(PnRTCMessage.JSON_TYPE);
                 // Initial dial message, we don't need to register a peer at this time
 //                if (packet.has(PnRTCMessage.JSON_DIAL)) {
+                if (!PnRTCMessage.JSON_ICE.equals(type)) {
+                    Log.d("MLGB", "received from " + peerId + ", message type: " + type);
+                }
                 if (PnRTCMessage.JSON_DIAL.equals(type)) {
                     actionMap.get(PnUserDialAction.TRIGGER).execute(peerId, packet);
                     return;
                 }
+
                 PnPeer peer;
                 if (!peers.containsKey(peerId)) {
-                    // Possibly threshold number of allowed users
                     peer = addPeer(peerId);
                     peer.pc.addStream(localMediaStream);
+                    // received a non existant hangup message, ignore it
+//                    if (PnRTCMessage.JSON_HANGUP.equals(type)) {
+//                        return;
+//                    } else {
+//                        // Possibly threshold number of allowed users
+//                        peer = addPeer(peerId);
+//                        peer.pc.addStream(localMediaStream);
+//                    }
                 } else {
                     peer = peers.get(peerId);
                 }
@@ -445,12 +456,10 @@ public class PnPeerConnectionClient {
                     actionMap.get(PnUserMessageAction.TRIGGER).execute(peerId, packet);
                     return;
                 }
-//                if (packet.has(PnRTCMessage.JSON_HANGUP)) {
                 if (PnRTCMessage.JSON_HANGUP.equals(type)) {
                     actionMap.get(PnUserHangupAction.TRIGGER).execute(peerId, packet);
                     return;
                 }
-//                if (packet.has(PnRTCMessage.JSON_ADDTIME)) {
                 if (PnRTCMessage.JSON_ADDTIME.equals(type)) {
                     actionMap.get(PnUserAddtimeAction.TRIGGER).execute(peerId, packet);
                     return;
@@ -464,7 +473,6 @@ public class PnPeerConnectionClient {
                     actionMap.get(type).execute(peerId, packet);
                     return;
                 }
-//                if (packet.has(PnRTCMessage.JSON_ICE)) {
                 if (PnRTCMessage.JSON_ICE.equals(type)) {
                     actionMap.get(AddIceCandidateAction.TRIGGER).execute(peerId, packet);
                     return;

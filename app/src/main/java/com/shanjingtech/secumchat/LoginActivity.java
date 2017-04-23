@@ -32,7 +32,7 @@ public class LoginActivity extends SecumBaseActivity {
     private boolean useUser11;
 
     public void button0(View view) {
-        Log.d("MLGB", countryCode());
+//        Log.d("MLGB", countryCode());
     }
 
     private String countryCode() {

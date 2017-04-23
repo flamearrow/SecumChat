@@ -5,6 +5,7 @@ import android.widget.Toast;
 
 import com.shanjingtech.pnwebrtc.PnPeer;
 import com.shanjingtech.pnwebrtc.PnRTCListener;
+import com.shanjingtech.pnwebrtc.PnRTCMessage;
 import com.shanjingtech.secumchat.R;
 import com.shanjingtech.secumchat.SecumChatActivity;
 
@@ -139,6 +140,11 @@ public class SecumRTCListener extends PnRTCListener {
     @Override
     public void onDialed(String callerId) {
         secumChatActivity.onDialed(callerId);
+    }
+
+    @Override
+    public void onDebug(PnRTCMessage message) {
+        Log.d(TAG, message.getMessage());
     }
 
     @Override

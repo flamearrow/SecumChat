@@ -53,8 +53,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static com.shanjingtech.secumchat.util.Constants.MLGB;
-
 /**
  * Activity to make you cum.
  */
@@ -125,7 +123,6 @@ public class SecumChatActivity extends SecumBaseActivity implements
         @Override
         public void run() {
             if (currentState == stateToError) {
-                Log.d(MLGB, "Error Runnable rejected, stateToError: " + stateToError.toString());
                 showRejected(getPeerName());
                 hangUp();
             }
@@ -479,7 +476,6 @@ public class SecumChatActivity extends SecumBaseActivity implements
                 return;
             }
             case ERROR: {
-                Log.d(MLGB, "Error rejected");
                 showRejected(getPeerName());
                 switchState(State.MATCHING);
                 return;
@@ -679,7 +675,6 @@ public class SecumChatActivity extends SecumBaseActivity implements
     public void onRTCPeerDisconnected() {
         if (currentState == State.WAITING) {
             // callee rejected me by generating a hangup message and triggersPnPeer.hangup()
-            Log.d(MLGB, "onRTCPeerDisconnected rejected");
             showRejected(getPeerName());
             switchState(State.MATCHING);
         } else if (currentState == State.RECEIVING) {
@@ -716,7 +711,6 @@ public class SecumChatActivity extends SecumBaseActivity implements
 
     @Override
     public void onGetMatchSucceed(final GetMatch getMatch, boolean isCaller) {
-        Log.d(MLGB, "onGetMatchSucceed, isCaller: " + isCaller);
         if (currentState == State.MATCHING) {
             this.getMatch = getMatch;
             if (isCaller) {

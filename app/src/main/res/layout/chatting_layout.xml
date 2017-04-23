@@ -7,21 +7,8 @@
               android:orientation="horizontal"
               android:paddingBottom="20dp">
 
-    <!--<com.shanjingtech.secumchat.ui.SecumCounter-->
-    <!--android:id="@+id/secum_counter"-->
-    <!--android:layout_width="wrap_content"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:layout_marginTop="60dp"-->
-    <!--android:onClick="addTime"/>-->
-
     <com.shanjingtech.secumchat.ui.HeartSecumCounter
         android:id="@+id/heart_secum_counter"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="addTime"/>
-    <!--<com.shanjingtech.secumchat.ui.HeartMagicLayout-->
-    <!--android:id="@+id/heart"-->
-    <!--android:layout_width="wrap_content"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:onClick="addTime"/>-->
+        android:layout_height="wrap_content"/>
 </LinearLayout>

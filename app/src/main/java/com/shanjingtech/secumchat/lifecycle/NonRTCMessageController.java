@@ -34,7 +34,6 @@ public class NonRTCMessageController {
 
     private String username;
 
-
     private NonRTCMessageControllerCallbacks callbacks;
 
     private PubNub pubnub;
@@ -52,13 +51,15 @@ public class NonRTCMessageController {
      * @param peerName
      */
     public void hangUp(final String peerName) {
-        JSONObject hangupMsg = PnPeerConnectionClient.generateHangupPacket(peerName);
+        JSONObject hangupMsg = PnPeerConnectionClient.generateHangupPacket(username);
         pubnub.publish().channel(peerName).message(hangupMsg).async(new PNCallback<PNPublishResult>() {
             @Override
             public void onResponse(PNPublishResult result, PNStatus status) {
                 if (status.isError()) {
                     Log.d(TAG, "hangUp failed!");
                 } else {
+                    Log.d("MLGB", "Succesfully sent hangUp message to " +
+                            peerName);
                     Log.d(TAG, "hangUp succeeded!");
                 }
             }
@@ -71,13 +72,15 @@ public class NonRTCMessageController {
      * @param peerName
      */
     public void addTime(final String peerName) {
-        JSONObject addtimeMsg = PnPeerConnectionClient.generateAddtimePacket(peerName);
+        JSONObject addtimeMsg = PnPeerConnectionClient.generateAddtimePacket(username);
         pubnub.publish().channel(peerName).message(addtimeMsg).async(new PNCallback<PNPublishResult>() {
             @Override
             public void onResponse(PNPublishResult result, PNStatus status) {
                 if (status.isError()) {
                     Log.d(TAG, "addTime failed!");
                 } else {
+                    Log.d("MLGB", "Succesfully sent addTime message to " +
+                            peerName);
                     Log.d(TAG, "addTime succeeded!");
                 }
             }
@@ -114,6 +117,8 @@ public class NonRTCMessageController {
                                         if (status.isError()) {
                                             Log.d(TAG, "dial failed!");
                                         } else {
+                                            Log.d("MLGB", "Succesfully sent dial message to " +
+                                                    peerName);
                                             Log.d(TAG, "dial succeeded!");
                                         }
                                     }

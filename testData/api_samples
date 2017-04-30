@@ -45,16 +45,39 @@
 
 4. Get Match
   Request
-    curl -X POST -H "Content-Type: application/json" -d '{ "username":"phone+16314560722"}' https://www.shanjingtech.com/api/matches/get_match/
+    curl -X POST -H "Content-Type: application/json" -H "Authorization: Bearer vUXSNoPy3XLb3oh51zrhrYqQoDaVGd" -d '{ "username":"phone_11"}' https://www.shanjingtech.com/api/matches/get_match/
 
   Response(not available)
     {
-       "status":"MATCH_NOT_AVAILABLE",
-       "match_id":null,
-       "chat_uri":null,
-       "text":null,
-       "logging":"Time now: 2017-03-06 07:43:02 ## phone_+16314560722; is_matching : True; live_exp: 2017-03-06 07:43:12",
-       "matched_username":null
+       "status":"MATCH_ACTIVE",
+       "chat_uri":"phone_22|phone_11",
+       "match_status":"CREATED",
+       "match_id":2,
+       "is_caller":false,
+       "nickname":"nick_phone_11",
+       "caller_username":"phone_22",
+       "callee_username":"phone_11",
+       "distance_in_m":null,
+       "lat":null,
+       "lng":null,
+       "age":null,
+       "gender":null,
+       "tag":null,
+       "text":"You are matched to phone_22!",
+       "caller_nickname":"nick_phone_22",
+       "caller_age":null,
+       "caller_gender":null,
+       "caller_lat":null,
+       "caller_lng":null,
+       "caller_text":"You are matched to nick_phone_11!",
+       "callee_nickname":"nick_phone_11",
+       "callee_age":null,
+       "callee_gender":null,
+       "callee_lat":null,
+       "callee_lng":null,
+       "callee_text":"You are matched to nick_phone_22!",
+       "logging":" ##  ## Time now: 2017-04-30 21:08:58phone_11;## is_matching : False; ## live_exp: 2017-04-30 21:09:08 match #2 ## status: CREATED; (phone_11, phone_22) ; ## expire at 2017-04-30 21:09:02 ## ip: 104.132.7.98 (lat: 37.419200000000004,-122.0574) address: Mountain View United States agent: curl/7.51.0",
+       "matched_username":"phone_22"
     }
 
 

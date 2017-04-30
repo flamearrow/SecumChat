@@ -11,8 +11,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.shanjingtech.secumchat.R;
+import com.shanjingtech.secumchat.model.GetMatch;
 
 import static com.shanjingtech.secumchat.SecumChatActivity.State;
+import static com.shanjingtech.secumchat.util.Constants.FEMALE;
+import static com.shanjingtech.secumchat.util.Constants.MALE;
 
 /**
  * Layout for {@code SecumChatActivity.State.DIALING},
@@ -24,10 +27,12 @@ public class DialingReceivingWaitingLayout extends GridLayout {
     private ImageView acceptButton;
     private ImageView rejectButton;
     private TextView messageField;
+    private ImageView genderView;
     private Animation enterFromLeft;
     private Animation enterFromRight;
     private Animation exitToLeft;
     private Animation exitToRight;
+    private boolean hasGender;
 
     public DialingReceivingWaitingLayout(Context context, AttributeSet attributeSet) {
         super(context, attributeSet);
@@ -39,6 +44,7 @@ public class DialingReceivingWaitingLayout extends GridLayout {
         acceptButton = (ImageView) findViewById(R.id.accept_button);
         rejectButton = (ImageView) findViewById(R.id.reject_button);
         messageField = (TextView) findViewById(R.id.message_field);
+        genderView = (ImageView) findViewById(R.id.gender);
 
         enterFromLeft = AnimationUtils.loadAnimation(getContext(), R.anim.enter_from_left);
         enterFromRight = AnimationUtils.loadAnimation(getContext(), R.anim.enter_from_right);
@@ -47,7 +53,31 @@ public class DialingReceivingWaitingLayout extends GridLayout {
 
     }
 
-    public void setMessage(String message) {
+    public void setCalleeMessage(GetMatch getMatch) {
+        setMessage(getMatch.getCalleeNickName());
+        setGender(getMatch.getCalleeGender());
+    }
+
+    public void setCallerMessage(GetMatch getMatch) {
+        setMessage(getMatch.getCallerNickName());
+        setGender(getMatch.getCallerGender());
+    }
+
+    private void setGender(String genderStr) {
+        if (MALE.equals(genderStr)) {
+            hasGender = true;
+            genderView.setImageDrawable(getResources().getDrawable(R.drawable
+                    .male_filled_yellow));
+        } else if (FEMALE.equals(genderStr)) {
+            hasGender = true;
+            genderView.setImageDrawable(getResources().getDrawable(R.drawable
+                    .female_filled_yellow));
+        } else {
+            hasGender = false;
+        }
+    }
+
+    private void setMessage(String message) {
         messageField.setText(message);
     }
 
@@ -60,6 +90,7 @@ public class DialingReceivingWaitingLayout extends GridLayout {
                 rejectButton.setVisibility(View.VISIBLE);
                 rejectButton.startAnimation(enterFromLeft);
                 messageField.setVisibility(View.VISIBLE);
+                genderView.setVisibility(hasGender ? VISIBLE : GONE);
                 break;
             case WAITING:
                 acceptButton.startAnimation(exitToRight);
@@ -67,6 +98,7 @@ public class DialingReceivingWaitingLayout extends GridLayout {
                 rejectButton.startAnimation(exitToLeft);
                 rejectButton.setVisibility(View.INVISIBLE);
                 messageField.setVisibility(View.VISIBLE);
+                genderView.setVisibility(hasGender ? VISIBLE : GONE);
                 break;
             default:
                 if (acceptButton.getVisibility() == VISIBLE) {
@@ -77,7 +109,7 @@ public class DialingReceivingWaitingLayout extends GridLayout {
                     rejectButton.startAnimation(exitToLeft);
                     rejectButton.setVisibility(View.INVISIBLE);
                 }
-
+                genderView.setVisibility(INVISIBLE);
                 messageField.setVisibility(INVISIBLE);
         }
     }

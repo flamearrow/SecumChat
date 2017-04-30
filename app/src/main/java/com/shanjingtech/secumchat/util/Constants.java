@@ -87,7 +87,6 @@ public class Constants {
     public static final String PATH_UPDATE_USER = "/api/users/update_user/";
     public static final String PATH_REPORT = "/api/report/";
 
-    // mydetails activity
     public static final String MALE = "male";
     public static final String FEMALE = "female";
 

@@ -59,6 +59,15 @@ public class GetMatch {
     @SerializedName("caller_username")
     String callerName;
 
+
+    @Expose
+    @SerializedName("caller_nickname")
+    String callerNickName;
+
+    @Expose
+    @SerializedName("callee_nickname")
+    String calleeNickName;
+
     @Expose
     @SerializedName("callee_username")
     String calleeName;
@@ -74,6 +83,14 @@ public class GetMatch {
     @Expose
     @SerializedName("matched_username")
     String matchedUsername;
+
+    @Expose
+    @SerializedName("caller_gender")
+    String callerGender;
+
+    @Expose
+    @SerializedName("callee_gender")
+    String calleeGender;
 
     public String getStatus() {
         return status;
@@ -125,5 +142,29 @@ public class GetMatch {
 
     public void setCalleeName(String calleeName) {
         this.calleeName = calleeName;
+    }
+
+    public String getCallerGender() {
+        return callerGender;
+    }
+
+    public void setCallerGender(String callerGender) {
+        this.callerGender = callerGender;
+    }
+
+    public String getCalleeGender() {
+        return calleeGender;
+    }
+
+    public void setCalleeGender(String calleeGender) {
+        this.calleeGender = calleeGender;
+    }
+
+    public String getCallerNickName() {
+        return callerNickName;
+    }
+
+    public String getCalleeNickName() {
+        return calleeNickName;
     }
 }

@@ -510,9 +510,7 @@ public class SecumChatActivity extends SecumBaseActivity implements
             public void run() {
                 hideAllUI();
                 matchingView.setVisibility(View.VISIBLE);
-                dialingReceivingWaitingView.setMessage(
-                        getResources().getString(R.string.matching_you_with) +
-                                getMatch.getCallee());
+                dialingReceivingWaitingView.setCalleeMessage(getMatch);
                 dialingReceivingWaitingView.switchUIState(State.DIALING);
             }
         });
@@ -524,9 +522,7 @@ public class SecumChatActivity extends SecumBaseActivity implements
             public void run() {
                 hideAllUI();
                 matchingView.setVisibility(View.VISIBLE);
-                dialingReceivingWaitingView.setMessage(
-                        getResources().getString(R.string.matching_you_with) +
-                                getMatch.getCaller());
+                dialingReceivingWaitingView.setCallerMessage(getMatch);
                 dialingReceivingWaitingView.switchUIState(State.RECEIVING);
             }
         });
@@ -548,9 +544,7 @@ public class SecumChatActivity extends SecumBaseActivity implements
             public void run() {
                 hideAllUI();
                 matchingView.setVisibility(View.VISIBLE);
-                dialingReceivingWaitingView.setMessage(
-                        getResources().getString(R.string.matching_you_with) +
-                                getMatch.getCallee());
+                dialingReceivingWaitingView.setCalleeMessage(getMatch);
                 dialingReceivingWaitingView.switchUIState(State.WAITING);
             }
         });

@@ -167,7 +167,7 @@ public class SecumChatActivity extends SecumBaseActivity implements
         initRTCComponents();
         initializeMediaStream();
 
-        nonRTCMessageController = new NonRTCMessageController(myName, pnRTCClient.getPubNub(),
+        nonRTCMessageController = new NonRTCMessageController(currentUser, pnRTCClient.getPubNub(),
                 this);
         networkRequester = new SecumNetworkRequester(this, myName, this);
     }
@@ -600,8 +600,10 @@ public class SecumChatActivity extends SecumBaseActivity implements
      * Note: this might be called multiple times by pubnub
      *
      * @param callerName
+     * @param callerNickName
+     * @param callerGender
      */
-    public void onDialed(String callerName) {
+    public void onDialed(String callerName, String callerNickName, String callerGender) {
         if (currentState == State.MATCHING)
             // verify if it's from the correct caller, if not ignore
             // it's possible callee hasn't receive getMatch yet
@@ -611,12 +613,17 @@ public class SecumChatActivity extends SecumBaseActivity implements
                 // If getMatch is still null, I'm callee and I have not received the getMatch yet,
                 // manually create getMatch
                 Log.d(Constants.RACE_CONDITION_TAG, "getMatch null");
-                GetMatch calleGetMatch = new GetMatch();
-                calleGetMatch.setCallerName(callerName);
-                calleGetMatch.setMatchedUsername(callerName);
-                calleGetMatch.setCalleeName(myName);
-                calleGetMatch.setCaller(false);
-                this.getMatch = calleGetMatch;
+                GetMatch calleeGetMatch = new GetMatch();
+                calleeGetMatch.setCallerName(callerName);
+                calleeGetMatch.setMatchedUsername(callerName);
+                calleeGetMatch.setCallerNickName(callerNickName);
+                calleeGetMatch.setCallerGender(callerGender);
+                calleeGetMatch.setCalleeName(myName);
+                calleeGetMatch.setCalleeNickName(currentUser.getNickname());
+                calleeGetMatch.setCalleeGender(currentUser.getGender());
+                calleeGetMatch.setCaller(false);
+
+                this.getMatch = calleeGetMatch;
                 // TODO: mlgb would need to set more fields like location/age etc. for caller
                 switchState(State.RECEIVING);
             }

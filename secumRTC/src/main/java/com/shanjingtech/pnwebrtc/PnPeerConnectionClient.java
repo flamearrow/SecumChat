@@ -28,6 +28,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static com.shanjingtech.pnwebrtc.PnRTCMessage.JSON_SENDER_GENDER;
+import static com.shanjingtech.pnwebrtc.PnRTCMessage.JSON_SENDER_NICK_NAME;
+
 /**
  * Created by flamearrow on 2/26/17.
  */
@@ -122,7 +125,7 @@ public class PnPeerConnectionClient {
     }
 
     private void subscribe(String channel) {
-        
+
         mPubNub.subscribe().channels(Arrays.asList(channel)).execute();
     }
 
@@ -317,7 +320,9 @@ public class PnPeerConnectionClient {
         @Override
         public void execute(String callerId, JSONObject payload) throws JSONException {
             Log.d(PNACTION, "PnUserDialAction");
-            mRtcListener.onDialed(callerId);
+            String senderNickName = payload.getString(JSON_SENDER_NICK_NAME);
+            String senderGender = payload.getString(JSON_SENDER_GENDER);
+            mRtcListener.onDialed(callerId, senderNickName, senderGender);
         }
     }
 
@@ -361,11 +366,14 @@ public class PnPeerConnectionClient {
      * @param senderId Your id. Used to tag the message before publishing it to another user.
      * @return
      */
-    public static JSONObject generateDialPacket(String senderId) {
+    public static JSONObject generateDialPacket(String senderId, String senderNickName, String
+            senderGender) {
         JSONObject json = new JSONObject();
         try {
             JSONObject packet = new JSONObject();
             packet.put(PnRTCMessage.JSON_TYPE, PnRTCMessage.JSON_DIAL);
+            packet.put(JSON_SENDER_NICK_NAME, senderNickName);
+            packet.put(PnRTCMessage.JSON_SENDER_GENDER, senderGender);
             json.put(PnRTCMessage.JSON_PACKET, packet);
             json.put(PnRTCMessage.JSON_ID, ""); //Todo: session id, unused in js SDK?
             json.put(PnRTCMessage.JSON_SENDER_ID, senderId);

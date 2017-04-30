@@ -86,9 +86,12 @@ public abstract class PnRTCListener {
 
     /**
      * Called when a dial message is sent, tell me who dialed
-     * @param callerId Id of the caller/dialer
+     *
+     * @param senderId       Id of the caller/dialer
+     * @param senderNickName NickName of caller/dialer
+     * @param senderGender   Gender the caller/dialer
      */
-    public void onDialed(String callerId) {
+    public void onDialed(String senderId, String senderNickName, String senderGender) {
 
     }
 

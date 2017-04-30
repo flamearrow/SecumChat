@@ -8,6 +8,7 @@ import com.pubnub.api.models.consumer.PNPublishResult;
 import com.pubnub.api.models.consumer.PNStatus;
 import com.pubnub.api.models.consumer.presence.PNHereNowResult;
 import com.shanjingtech.pnwebrtc.PnPeerConnectionClient;
+import com.shanjingtech.secumchat.model.User;
 
 import org.json.JSONObject;
 
@@ -33,14 +34,16 @@ public class NonRTCMessageController {
     }
 
     private String username;
+    private User currentUser;
 
     private NonRTCMessageControllerCallbacks callbacks;
 
     private PubNub pubnub;
 
-    public NonRTCMessageController(String myName, PubNub pubnub,
+    public NonRTCMessageController(User currentuser, PubNub pubnub,
                                    NonRTCMessageControllerCallbacks lifeCycleCallbacks) {
-        this.username = myName;
+        this.currentUser = currentuser;
+        this.username = currentuser.getUsername();
         this.callbacks = lifeCycleCallbacks;
         this.pubnub = pubnub;
     }
@@ -88,7 +91,7 @@ public class NonRTCMessageController {
     }
 
     /**
-     * Dial peer's pubnub channel so that they knwo someone is calling
+     * Dial peer's pubnub channel so that they know someone is calling
      *
      * @param peerName
      */
@@ -108,7 +111,9 @@ public class NonRTCMessageController {
                         else {
                             callbacks.onCalleeOnline(peerName);
                         }
-                        JSONObject dialMsg = PnPeerConnectionClient.generateDialPacket(username);
+                        JSONObject dialMsg = PnPeerConnectionClient.generateDialPacket
+                                (currentUser.getUsername(), currentUser.getNickname(),
+                                        currentUser.getGender());
                         pubnub.publish().channel(peerName).message(dialMsg).async(
                                 new PNCallback<PNPublishResult>() {
                                     @Override

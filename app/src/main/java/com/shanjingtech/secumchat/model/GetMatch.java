@@ -167,4 +167,12 @@ public class GetMatch {
     public String getCalleeNickName() {
         return calleeNickName;
     }
+
+    public void setCallerNickName(String callerNickName) {
+        this.callerNickName = callerNickName;
+    }
+
+    public void setCalleeNickName(String calleeNickName) {
+        this.calleeNickName = calleeNickName;
+    }
 }

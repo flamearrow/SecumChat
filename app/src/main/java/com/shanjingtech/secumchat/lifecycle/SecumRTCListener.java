@@ -138,8 +138,8 @@ public class SecumRTCListener extends PnRTCListener {
     }
 
     @Override
-    public void onDialed(String callerId) {
-        secumChatActivity.onDialed(callerId);
+    public void onDialed(String senderId, String senderNickName, String senderGender) {
+        secumChatActivity.onDialed(senderId, senderNickName, senderGender);
     }
 
     @Override

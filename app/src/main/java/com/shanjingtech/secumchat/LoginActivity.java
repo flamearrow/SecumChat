@@ -4,12 +4,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.telephony.TelephonyManager;
-import android.util.Log;
 import android.view.View;
 
 import com.shanjingtech.secumchat.model.User;
 import com.shanjingtech.secumchat.util.Constants;
 import com.shanjingtech.secumchat.util.SecumDebug;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Legacy login activity, direct access to SecumChat and debug api
@@ -49,12 +52,14 @@ public class LoginActivity extends SecumBaseActivity {
     private void logInAs11() {
         // login as phone_11
         SecumDebug.setDebugUser(sharedPreferences, SecumDebug.USER_11);
-        User user = new User();
-        user.setUsername("phone_11");
+//        User user = new User();
+//        user.setUsername("phone_11");
         // accesstoken: "vUXSNoPy3XLb3oh51zrhrYqQoDaVGd"
-        Intent intent = new Intent(this, SecumChatActivity.class);
-        intent.putExtra(Constants.CURRENT_USER, user);
-        startActivity(intent);
+//        Intent intent = new Intent(this, SecumChatActivity.class);
+//        intent.putExtra(Constants.CURRENT_USER, user);
+//        startActivity(intent);
+        logInAsCurrentuser();
+
     }
 
     public void button2(View view) {
@@ -65,12 +70,33 @@ public class LoginActivity extends SecumBaseActivity {
     private void logInAs22() {
         // login as phone_22
         SecumDebug.setDebugUser(sharedPreferences, SecumDebug.USER_22);
-        User user = new User();
-        user.setUsername("phone_22");
-        // accesstoken: "zhvG2zIf4xXFzzFfTJjnfOycXTjBZn"
-        Intent intent = new Intent(this, SecumChatActivity.class);
-        intent.putExtra(Constants.CURRENT_USER, user);
-        startActivity(intent);
+//        User user = new User();
+//        user.setUsername("phone_22");
+//        // accesstoken: "zhvG2zIf4xXFzzFfTJjnfOycXTjBZn"
+//        Intent intent = new Intent(this, SecumChatActivity.class);
+//        intent.putExtra(Constants.CURRENT_USER, user);
+//        startActivity(intent);
+        logInAsCurrentuser();
+    }
+
+    private void logInAsCurrentuser() {
+        secumAPI.getProfile().enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(Call<User> call, Response<User> response) {
+                if (response.isSuccessful()) {
+                    User user = response.body();
+                    Intent intent = new Intent(LoginActivity.this, SecumChatActivity.class);
+                    intent.putExtra(Constants.CURRENT_USER, user);
+                    startActivity(intent);
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<User> call, Throwable t) {
+
+            }
+        });
     }
 
     @Override

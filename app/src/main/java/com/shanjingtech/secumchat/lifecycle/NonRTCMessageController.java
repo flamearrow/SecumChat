@@ -61,8 +61,6 @@ public class NonRTCMessageController {
                 if (status.isError()) {
                     Log.d(TAG, "hangUp failed!");
                 } else {
-                    Log.d("MLGB", "Succesfully sent hangUp message to " +
-                            peerName);
                     Log.d(TAG, "hangUp succeeded!");
                 }
             }
@@ -82,8 +80,6 @@ public class NonRTCMessageController {
                 if (status.isError()) {
                     Log.d(TAG, "addTime failed!");
                 } else {
-                    Log.d("MLGB", "Succesfully sent addTime message to " +
-                            peerName);
                     Log.d(TAG, "addTime succeeded!");
                 }
             }
@@ -122,8 +118,6 @@ public class NonRTCMessageController {
                                         if (status.isError()) {
                                             Log.d(TAG, "dial failed!");
                                         } else {
-                                            Log.d("MLGB", "Succesfully sent dial message to " +
-                                                    peerName);
                                             Log.d(TAG, "dial succeeded!");
                                         }
                                     }

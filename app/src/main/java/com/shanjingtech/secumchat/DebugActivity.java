@@ -76,6 +76,11 @@ public class DebugActivity extends Activity implements SecumCounter.SecumCounter
     }
 
     @Override
+    public void onCounterStop() {
+        Log.d(TAG, "onCounterStop");
+    }
+
+    @Override
     public void onCounterExpire() {
         Log.d(TAG, "onCounterExpire");
 

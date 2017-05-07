@@ -53,6 +53,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static com.shanjingtech.secumchat.ui.SecumCounter.SECUMCOUNTER;
+
 /**
  * Activity to make you cum.
  */
@@ -737,11 +739,15 @@ public class SecumChatActivity extends SecumBaseActivity implements
 
     }
 
-    private static final String SECUMCOUNTER = "SecumCounter";
 
     @Override
     public void onCounterStart() {
         Log.d(SECUMCOUNTER, "onCounterStart");
+    }
+
+    @Override
+    public void onCounterStop() {
+        Log.d(SECUMCOUNTER, "onCounterStop");
     }
 
     @Override

@@ -30,6 +30,7 @@ import java.util.Set;
 
 import static com.shanjingtech.pnwebrtc.PnRTCMessage.JSON_SENDER_GENDER;
 import static com.shanjingtech.pnwebrtc.PnRTCMessage.JSON_SENDER_NICK_NAME;
+import static com.shanjingtech.pnwebrtc.PnRTCMessage.META_MSG;
 
 /**
  * Created by flamearrow on 2/26/17.
@@ -430,12 +431,13 @@ public class PnPeerConnectionClient {
             try {
                 String peerId = jsonMessage.getString(PnRTCMessage.JSON_SENDER_ID);
                 JSONObject packet = jsonMessage.getJSONObject(PnRTCMessage.JSON_PACKET);
-//                Log.d("MLGB", "received message: " + packet.toString());
                 String type = packet.getString(PnRTCMessage.JSON_TYPE);
                 // Initial dial message, we don't need to register a peer at this time
-//                if (packet.has(PnRTCMessage.JSON_DIAL)) {
                 if (!PnRTCMessage.JSON_ICE.equals(type)) {
-                    Log.d("MLGB", "received from " + peerId + ", message type: " + type);
+                    Log.d(META_MSG, "received from " + peerId + ", message type: " +
+                            type);
+                    Log.d(META_MSG, "" + jsonMessage);
+
                 }
                 if (PnRTCMessage.JSON_DIAL.equals(type)) {
                     actionMap.get(PnUserDialAction.TRIGGER).execute(peerId, packet);

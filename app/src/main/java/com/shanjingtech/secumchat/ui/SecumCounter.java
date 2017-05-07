@@ -2,6 +2,7 @@ package com.shanjingtech.secumchat.ui;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.animation.Animation;
@@ -16,6 +17,7 @@ import com.shanjingtech.secumchat.util.Constants;
  * {@link android.widget.Chronometer}
  */
 public class SecumCounter extends android.support.v7.widget.AppCompatTextView {
+    public static final String SECUMCOUNTER = "SecumCounter";
 
     private static final long MILLIS_IN_SECOND = 1000;
 
@@ -29,6 +31,8 @@ public class SecumCounter extends android.support.v7.widget.AppCompatTextView {
 
     public interface SecumCounterListener {
         void onCounterStart();
+
+        void onCounterStop();
 
         void onCounterExpire();
 
@@ -50,7 +54,7 @@ public class SecumCounter extends android.support.v7.widget.AppCompatTextView {
         void onAddTimePaired(int secondsLeft);
     }
 
-    private boolean running;
+    private volatile boolean running;
     private boolean meAdd;
     private boolean peerAdd;
     private int secondsLeft;
@@ -120,6 +124,8 @@ public class SecumCounter extends android.support.v7.widget.AppCompatTextView {
             }
             meAdd = true;
             checkAddTime();
+        } else {
+            Log.d(SECUMCOUNTER, "me already add!");
         }
     }
 
@@ -199,6 +205,9 @@ public class SecumCounter extends android.support.v7.widget.AppCompatTextView {
 
     public void stop() {
         running = false;
+        if (secumCounterListener != null) {
+            secumCounterListener.onCounterStop();
+        }
         freeze();
         updateRunning();
     }

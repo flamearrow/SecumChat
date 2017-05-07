@@ -24,6 +24,9 @@ public class PnRTCMessage extends JSONObject {
     public static final String JSON_SDP = "sdp";
     public static final String JSON_ICE = "candidate"; // Identify ICE
 
+    // gate all incoming messages
+    public static final String META_MSG = "META_MSG";
+
     private String message;
     private JSONObject json;
 

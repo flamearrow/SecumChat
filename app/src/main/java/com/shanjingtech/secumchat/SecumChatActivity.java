@@ -371,7 +371,12 @@ public class SecumChatActivity extends SecumBaseActivity implements
         localStream.addTrack(localVideoTrack);
         localStream.addTrack(localAudioTrack);
 
-        pnRTCClient.attachLocalMediaStream(localStream);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                pnRTCClient.attachLocalMediaStream(localStream);
+            }
+        });
     }
 
     /**

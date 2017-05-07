@@ -136,6 +136,14 @@ public class GetMatch {
         this.matchedUsername = matchedUsername;
     }
 
+    public String getMatchedNickname() {
+        if (isCaller) {
+            return calleeNickName;
+        } else {
+            return callerNickName;
+        }
+    }
+
     public void setCallerName(String callerName) {
         this.callerName = callerName;
     }

@@ -55,5 +55,6 @@
     <string name="report_reason">请选择至少一个理由</string>
     <string name="no_one_to_report">没有人可以举报...</string>
     <string name="report_success">举报成功！</string>
+    <string name="otherside">对方</string>
 
 </resources>

@@ -125,7 +125,7 @@ public class SecumChatActivity extends SecumBaseActivity implements
         @Override
         public void run() {
             if (currentState == stateToError) {
-                showRejected(getPeerName());
+                showRejected(getPeerNickName());
                 hangUp();
             }
         }
@@ -196,7 +196,7 @@ public class SecumChatActivity extends SecumBaseActivity implements
                 startActivity(new Intent(this, SplashActivity.class));
                 break;
             case R.id.action_report:
-                if (getPeerName() == null) {
+                if (getPeerUserName() == null) {
                     showToast(getResources().getString(R.string.no_one_to_report));
                 } else {
                     if (!reportDialog.isShowing()) {
@@ -245,7 +245,7 @@ public class SecumChatActivity extends SecumBaseActivity implements
                 if (!nudity && !violence) {
                     showToast(getResources().getString(R.string.report_reason));
                 } else {
-                    final String userName = getPeerName();
+                    final String userName = getPeerUserName();
                     if (userName != null) {
                         ReportUserRequest request = new ReportUserRequest();
                         request.setReason(buildReportReason());
@@ -383,7 +383,7 @@ public class SecumChatActivity extends SecumBaseActivity implements
      * Send peer an hangup message, regardless of its result, switch back to matching state
      */
     private void hangUp() {
-        String peerName = getPeerName();
+        String peerName = getPeerUserName();
         // for dialing, don't send hangup as peer hasn't received
         if (peerName != null && currentState != State.DIALING) {
             nonRTCMessageController.hangUp(peerName);
@@ -393,6 +393,26 @@ public class SecumChatActivity extends SecumBaseActivity implements
 
     @Nullable
     private String getPeerName() {
+        // getMatch could be nullified by peer hangup
+        if (getMatch == null) {
+            return null;
+        } else {
+            return getMatch.getMatchedUsername();
+        }
+    }
+
+    @Nullable
+    private String getPeerNickName() {
+        // getMatch could be nullified by peer hangup
+        if (getMatch == null) {
+            return null;
+        } else {
+            return getMatch.getMatchedNickname();
+        }
+    }
+
+    @Nullable
+    private String getPeerUserName() {
         // getMatch could be nullified by peer hangup
         if (getMatch == null) {
             return null;
@@ -486,7 +506,7 @@ public class SecumChatActivity extends SecumBaseActivity implements
                 return;
             }
             case ERROR: {
-                showRejected(getPeerName());
+                showRejected(getPeerNickName());
                 switchState(State.MATCHING);
                 return;
             }
@@ -561,7 +581,9 @@ public class SecumChatActivity extends SecumBaseActivity implements
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                showToast("" + otherSideName + getResources().getString(R.string.rejected));
+                String peerName = otherSideName == null ? getResources().getString(R.string
+                        .otherside) : otherSideName;
+                showToast("" + peerName + getResources().getString(R.string.rejected));
             }
         });
     }
@@ -684,7 +706,7 @@ public class SecumChatActivity extends SecumBaseActivity implements
     public void onRTCPeerDisconnected() {
         if (currentState == State.WAITING) {
             // callee rejected me by generating a hangup message and triggersPnPeer.hangup()
-            showRejected(getPeerName());
+            showRejected(getPeerNickName());
             switchState(State.MATCHING);
         } else if (currentState == State.RECEIVING) {
             // TODO: mlgb is it possible to reach here?
@@ -765,7 +787,7 @@ public class SecumChatActivity extends SecumBaseActivity implements
     public void onMeAdd() {
         Log.d(SECUMCOUNTER, "onMeAdd");
         // send a addTime packet
-        nonRTCMessageController.addTime(getPeerName());
+        nonRTCMessageController.addTime(getPeerUserName());
     }
 
     @Override

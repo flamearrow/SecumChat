@@ -97,10 +97,6 @@ public class SecumRTCListener extends PnRTCListener {
         secumChatActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(secumChatActivity,
-                        secumChatActivity.getResources().getString(
-                                R.string.connected_to) + peer.getId(),
-                        Toast.LENGTH_SHORT).show();
                 try {
                     if (remoteStream.audioTracks.size() == 0 || remoteStream.videoTracks.size
                             () == 0) {

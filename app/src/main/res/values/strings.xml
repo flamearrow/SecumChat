@@ -48,6 +48,8 @@
 
     <string name="debug" translatable="false">enableDebug</string>
 
+    <string name="otherside">Otherside</string>
+
     <!-- permissions -->
     <string name="permission_dialog_header">Request for permission</string>
     <string name="permission_dialog_message_audio_camera">9miao needs to use your camera and microphone.</string>

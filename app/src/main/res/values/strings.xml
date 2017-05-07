@@ -60,6 +60,7 @@
     <string name="rejected">&#160;rejected</string>
     <string name="matching_you_with">matching you with </string>
     <string name="connected_to">Connected to </string>
+    <string name="hang_up">&#160;hung up.</string>
 
     <!-- privacy -->
     <string name="privacy">Privacy Policy</string>

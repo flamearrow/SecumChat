@@ -506,7 +506,12 @@ public class SecumChatActivity extends SecumBaseActivity implements
                 return;
             }
             case ERROR: {
-                showRejected(getPeerNickName());
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        showRejected(getPeerNickName());
+                    }
+                });
                 switchState(State.MATCHING);
                 return;
             }
@@ -578,14 +583,14 @@ public class SecumChatActivity extends SecumBaseActivity implements
     }
 
     private void showRejected(final String otherSideName) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                String peerName = otherSideName == null ? getResources().getString(R.string
-                        .otherside) : otherSideName;
-                showToast("" + peerName + getResources().getString(R.string.rejected));
-            }
-        });
+        String peerName = otherSideName == null ? getResources().getString(R.string
+                .otherside) : otherSideName;
+        showToast("" + peerName + getResources().getString(R.string.rejected));
+    }
+
+    private void showHangup() {
+        showToast("" + getResources().getString(R.string
+                .otherside) + getResources().getString(R.string.hang_up));
     }
 
     private void hideAllUI() {
@@ -706,12 +711,17 @@ public class SecumChatActivity extends SecumBaseActivity implements
     public void onRTCPeerDisconnected() {
         if (currentState == State.WAITING) {
             // callee rejected me by generating a hangup message and triggersPnPeer.hangup()
-            showRejected(getPeerNickName());
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    showRejected(getPeerNickName());
+                }
+            });
             switchState(State.MATCHING);
         } else if (currentState == State.RECEIVING) {
             // TODO: mlgb is it possible to reach here?
         } else if (currentState == State.CHATTING) {
-            // timeout or hangup
+            showHangup();
             switchState(State.MATCHING);
         }
     }

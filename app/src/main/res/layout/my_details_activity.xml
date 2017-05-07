@@ -1,87 +1,93 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:app="http://schemas.android.com/apk/res-auto"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:gravity="center_horizontal"
-              android:orientation="vertical">
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true">
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="@android:color/transparent"
-        android:elevation="4dp"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark"/>
-
-    <TextView
-        style="@style/OnboardingText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/onboarding_vertical_margin"
-        android:text="@string/name"/>
-
-    <EditText
-        android:id="@+id/my_name"
-        style="@style/OnboardingInputText"
-        android:layout_marginTop="@dimen/onboarding_vertical_margin_thin"/>
-
-    <TextView
-        style="@style/OnboardingText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/onboarding_vertical_margin"
-        android:text="@string/age"/>
-
-
-    <com.wefika.horizontalpicker.HorizontalPicker
-        android:id="@+id/my_age"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/onboarding_vertical_margin_thin"
-        android:textSize="35sp"
-        app:values="@array/ages"/>
-
-    <TextView
-        style="@style/OnboardingText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/onboarding_vertical_margin"
-        android:text="@string/gender"/>
-
-    <RadioGroup
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/onboarding_vertical_margin_thin"
+        android:layout_height="match_parent"
         android:gravity="center_horizontal"
-        android:orientation="horizontal">
+        android:orientation="vertical">
 
-        <RadioButton
-            android:id="@+id/male"
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@android:color/transparent"
+            android:elevation="4dp"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+
+        <TextView
+            style="@style/OnboardingText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="15dp"
-            android:button="@drawable/male_button"
-            android:onClick="clickGender"/>
+            android:layout_marginTop="@dimen/onboarding_vertical_margin"
+            android:text="@string/name"/>
 
-        <RadioButton
-            android:id="@+id/female"
+        <EditText
+            android:id="@+id/my_name"
+            style="@style/OnboardingInputText"
+            android:layout_marginTop="@dimen/onboarding_vertical_margin_thin"/>
+
+        <TextView
+            style="@style/OnboardingText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="15dp"
-            android:button="@drawable/female_button"
-            android:checked="true"
-            android:onClick="clickGender"/>
-    </RadioGroup>
+            android:layout_marginTop="@dimen/onboarding_vertical_margin"
+            android:text="@string/age"/>
 
 
-    <Button
-        android:id="@+id/button"
-        style="@style/OnboardingButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/onboarding_vertical_margin"
-        android:onClick="clickGo"
-        android:text="@string/go"/>
-</LinearLayout>
+        <com.wefika.horizontalpicker.HorizontalPicker
+            android:id="@+id/my_age"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/onboarding_vertical_margin_thin"
+            android:textSize="35sp"
+            app:values="@array/ages"/>
+
+        <TextView
+            style="@style/OnboardingText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/onboarding_vertical_margin"
+            android:text="@string/gender"/>
+
+        <RadioGroup
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/onboarding_vertical_margin_thin"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/male"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="15dp"
+                android:button="@drawable/male_button"
+                android:onClick="clickGender"/>
+
+            <RadioButton
+                android:id="@+id/female"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:button="@drawable/female_button"
+                android:checked="true"
+                android:onClick="clickGender"/>
+        </RadioGroup>
+
+        <Button
+            android:id="@+id/button"
+            style="@style/OnboardingButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/onboarding_vertical_margin"
+            android:layout_marginTop="@dimen/onboarding_vertical_margin"
+            android:onClick="clickGo"
+            android:text="@string/go"/>
+    </LinearLayout>
+</ScrollView>

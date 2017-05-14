@@ -57,5 +57,6 @@
     <string name="report_success">举报成功！</string>
     <string name="otherside">对方</string>
     <string name="hang_up">挂断了</string>
+    <string name="permission_access_fine_location">9喵需要知道你手机的位置</string>
 
 </resources>

@@ -112,7 +112,7 @@ public class MyDetailsActivity extends SecumBaseActivity {
     }
 
     public void clickGo(View view) {
-        requestCameraAudioPermissions();
+        requestCameraAudioLocationPermissions();
     }
 
     private void startSecumChat() {
@@ -148,7 +148,7 @@ public class MyDetailsActivity extends SecumBaseActivity {
     }
 
     @Override
-    protected void onAudioCameraPermissionGranted() {
+    protected void onAudioCameraLocationPermissionGranted() {
         startSecumChat();
     }
 

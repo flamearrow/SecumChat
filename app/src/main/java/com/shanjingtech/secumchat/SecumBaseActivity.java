@@ -47,6 +47,7 @@ public class SecumBaseActivity
     private static final String PERMISSION_TAG = "SecumPermission";
     private AlertDialog audioCameraPermissionAlertDialog;
     private AlertDialog phoneStatePermissionAlertDialog;
+    private AlertDialog permissionAlertDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +65,13 @@ public class SecumBaseActivity
         phoneStatePermissionAlertDialog = new AlertDialog.Builder(this)
                 .setTitle(resources.getString(R.string.permission_dialog_header))
                 .setMessage(resources.getString(R.string.permission_dialog_message_phone))
+                .setPositiveButton(resources.getString(R.string.to_settings), this)
+                .setNegativeButton(resources.getString(R.string.cancel), this)
+                .setIcon(R.drawable.cat_head)
+                .create();
+
+        permissionAlertDialog = new AlertDialog.Builder(this)
+                .setTitle(resources.getString(R.string.permission_dialog_header))
                 .setPositiveButton(resources.getString(R.string.to_settings), this)
                 .setNegativeButton(resources.getString(R.string.cancel), this)
                 .setIcon(R.drawable.cat_head)
@@ -87,25 +95,48 @@ public class SecumBaseActivity
     }
 
     /**
-     * Sequentially request audio and camera permissions, if user already has both or granted both,
-     * callback {@link #onAudioCameraPermissionGranted()}, otherwise bring user to settings page.
+     * Sequentially request audio, camera and location permissions, if user already has both or
+     * granted both,
+     * callback {@link #onAudioCameraLocationPermissionGranted()}, otherwise bring user to
+     * settings page.
      */
-    protected void requestCameraAudioPermissions() {
+    protected void requestCameraAudioLocationPermissions() {
         // 你说前半生就这样吧还有明天
         if (needToRequestPermission()) {
-            if (hasPermission(android.Manifest.permission.RECORD_AUDIO)) {
-                if (hasPermission(android.Manifest.permission.CAMERA)) {
-                    onAudioCameraPermissionGranted();
-                } else {
-                    requestPermission(
-                            android.Manifest.permission.CAMERA,
-                            Constants.PERMISSION_CAMERA);
-                }
-            } else {
-                requestPermission(
-                        android.Manifest.permission.RECORD_AUDIO,
-                        Constants.PERMISSION_RECORD_AUDIO);
-            }
+            requestAudioPermission();
+        }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    private void requestAudioPermission() {
+        if (hasPermission(android.Manifest.permission.RECORD_AUDIO)) {
+            requestCameraPermission();
+        } else {
+            requestPermission(
+                    android.Manifest.permission.RECORD_AUDIO,
+                    Constants.PERMISSION_RECORD_AUDIO);
+        }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    private void requestCameraPermission() {
+        if (hasPermission(android.Manifest.permission.CAMERA)) {
+            requestLocationPermission();
+        } else {
+            requestPermission(
+                    android.Manifest.permission.CAMERA,
+                    Constants.PERMISSION_CAMERA);
+        }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    private void requestLocationPermission() {
+        if (hasPermission(Manifest.permission.ACCESS_FINE_LOCATION)) {
+            onAudioCameraLocationPermissionGranted();
+        } else {
+            requestPermission(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Constants.PERMISSION_ACCESS_FINE_LOCATION);
         }
     }
 
@@ -139,8 +170,7 @@ public class SecumBaseActivity
             Log.d(PERMISSION_TAG, "shouldRequestPermission: " + shouldRequestPermission);
 
             if (shouldRequestPermission) {
-                showBlockingPermissionDialog(
-                        permission.equals(Manifest.permission.READ_PHONE_STATE));
+                showBlockingPermissionDialog(permission);
             } else {
                 ActivityCompat.requestPermissions(this, new String[]{permission}, code);
             }
@@ -158,15 +188,33 @@ public class SecumBaseActivity
     /**
      * Show a dialog to direct user to app settings
      */
-    protected void showBlockingPermissionDialog(boolean isPhoneState) {
-        if (isPhoneState) {
-            if (!phoneStatePermissionAlertDialog.isShowing()) {
-                phoneStatePermissionAlertDialog.show();
-            }
-        } else {
-            if (!audioCameraPermissionAlertDialog.isShowing()) {
-                audioCameraPermissionAlertDialog.show();
-            }
+    protected void showBlockingPermissionDialog(String permission) {
+        switch (permission) {
+            case Manifest.permission.READ_PHONE_STATE:
+                if (!permissionAlertDialog.isShowing()) {
+                    permissionAlertDialog.setTitle(
+                            getResources().getString(R.string
+                                    .permission_dialog_message_phone));
+                    permissionAlertDialog.show();
+                }
+                break;
+            case Manifest.permission.RECORD_AUDIO:
+            case Manifest.permission.CAMERA:
+                if (!permissionAlertDialog.isShowing()) {
+                    permissionAlertDialog.setTitle(
+                            getResources().getString(R.string
+                                    .permission_dialog_message_audio_camera));
+                    permissionAlertDialog.show();
+                }
+                break;
+            case Manifest.permission.ACCESS_FINE_LOCATION:
+                if (!permissionAlertDialog.isShowing()) {
+                    permissionAlertDialog.setTitle(
+                            getResources().getString(R.string
+                                    .permission_access_fine_location));
+                    permissionAlertDialog.show();
+                }
+                break;
         }
     }
 
@@ -194,15 +242,9 @@ public class SecumBaseActivity
                 // user denied camera permission
                 if (grantResults.length <= 0
                         || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                    showBlockingPermissionDialog(false);
+                    showBlockingPermissionDialog(Manifest.permission.CAMERA);
                 } else {
-                    if (hasPermission(android.Manifest.permission.RECORD_AUDIO)) {
-                        onAudioCameraPermissionGranted();
-                    } else {
-                        requestPermission(
-                                android.Manifest.permission.RECORD_AUDIO,
-                                Constants.PERMISSION_RECORD_AUDIO);
-                    }
+                    requestLocationPermission();
                 }
                 break;
             }
@@ -210,23 +252,25 @@ public class SecumBaseActivity
                 // user denied audio permission
                 if (grantResults.length <= 0
                         || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                    showBlockingPermissionDialog(false);
+                    showBlockingPermissionDialog(Manifest.permission.RECORD_AUDIO);
                 } else {
-                    if (hasPermission(android.Manifest.permission.CAMERA)) {
-                        onAudioCameraPermissionGranted();
-                    } else {
-                        requestPermission(
-                                android.Manifest.permission.CAMERA,
-                                Constants.PERMISSION_CAMERA);
-                    }
+                    requestCameraPermission();
                 }
                 break;
+            }
+            case Constants.PERMISSION_ACCESS_FINE_LOCATION: {
+                if (grantResults.length <= 0
+                        || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                    showBlockingPermissionDialog(Manifest.permission.ACCESS_FINE_LOCATION);
+                } else {
+                    onAudioCameraLocationPermissionGranted();
+                }
             }
             case Constants.PERMISSION_PHONE_STATE: {
                 // user denied phone state permission
                 if (grantResults.length <= 0
                         || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                    showBlockingPermissionDialog(true);
+                    showBlockingPermissionDialog(Manifest.permission.READ_PHONE_STATE);
                 } else {
                     onPhoneStatePermissionGranted();
                 }
@@ -235,7 +279,7 @@ public class SecumBaseActivity
         }
     }
 
-    protected void onAudioCameraPermissionGranted() {
+    protected void onAudioCameraLocationPermissionGranted() {
     }
 
     protected void onPhoneStatePermissionGranted() {
@@ -243,14 +287,11 @@ public class SecumBaseActivity
 
     @Override
     public void onClick(DialogInterface dialog, int which) {
-        if (dialog == phoneStatePermissionAlertDialog || dialog ==
-                audioCameraPermissionAlertDialog) {
-            if (which == DialogInterface.BUTTON_POSITIVE) {
-                Log.d(PERMISSION_TAG, "You clicked settings");
-                gotToSettings();
-            } else if (which == DialogInterface.BUTTON_NEGATIVE) {
-                Log.d(PERMISSION_TAG, "You clicked cancel");
-            }
+        if (which == DialogInterface.BUTTON_POSITIVE) {
+            Log.d(PERMISSION_TAG, "You clicked settings");
+            gotToSettings();
+        } else if (which == DialogInterface.BUTTON_NEGATIVE) {
+            Log.d(PERMISSION_TAG, "You clicked cancel");
         }
     }
 

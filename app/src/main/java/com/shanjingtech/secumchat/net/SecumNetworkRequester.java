@@ -1,8 +1,14 @@
 package com.shanjingtech.secumchat.net;
 
+import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 
 import com.crashlytics.android.answers.Answers;
@@ -61,12 +67,18 @@ public class SecumNetworkRequester {
     @Inject
     GetMatchSuccessFactory getMatchSuccessFactory;
 
+    private LocationManager locationManager;
+    private Activity activity;
+
+
     public SecumNetworkRequester(Activity activity, String myName, SecumNetworkRequesterCallbacks
             callbacks) {
         ((SecumApplication) activity.getApplication()).getNetComponet().inject(this);
         this.myName = myName;
         this.callbacks = callbacks;
         handler = new Handler();
+        this.activity = activity;
+        locationManager = (LocationManager) activity.getSystemService(Context.LOCATION_SERVICE);
     }
 
     /**
@@ -81,6 +93,7 @@ public class SecumNetworkRequester {
         cancellAll();
         endMatch();
     }
+
     /**
      * Cancel all pending getMatch and endMatch
      */
@@ -129,38 +142,57 @@ public class SecumNetworkRequester {
         public void run() {
             Log.d(SecumAPI.TAG, "Posting GetMatch(" + myName + ")");
             answers.logCustom(getMatchSentFactory.create(myName));
-            secumAPI.getMatch(new GetMatchRequest()).enqueue(new Callback<GetMatch>() {
-                @Override
-                public void onResponse(Call<GetMatch> call, Response<GetMatch> response) {
-                    GetMatch getMatch = response.body();
-                    if (getMatch != null && getMatch.isSuccess()) {
-                        answers.logCustom(getMatchSuccessFactory.create(getMatch.getCaller(),
-                                getMatch.getCallee()));
-                        Log.d(SecumAPI.TAG, "GetMatch(" + myName + ") Success, caller: " + getMatch
-                                .getCaller());
-                        if (getMatch.isCaller()) {
-                            callbacks.onGetMatchSucceed(getMatch, true);
-                        } else if (getMatch.isCallee()) {
-                            callbacks.onGetMatchSucceed(getMatch, false);
-                            Log.d(SecumAPI.TAG, "GetMatch(" + myName + ")  Success, callee: " +
-                                    getMatch.getCallee() + ", posting another get match");
-                            // keep posting
+            if (ActivityCompat.checkSelfPermission(activity, Manifest.permission
+                    .ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat
+                    .checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION) !=
+                    PackageManager.PERMISSION_GRANTED) {
+                return;
+            }
+            Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            GetMatchRequest getMatchRequest;
+            if (location != null) {
+                getMatchRequest = new GetMatchRequest.Builder().setLat("" + location.getLatitude())
+                        .setLng("" + location.getLongitude()).build();
+            } else {
+                getMatchRequest = new GetMatchRequest.Builder().build();
+            }
+            secumAPI.getMatch(getMatchRequest).
+                    enqueue(new Callback<GetMatch>() {
+                        @Override
+                        public void onResponse(Call<GetMatch> call, Response<GetMatch> response) {
+                            GetMatch getMatch = response.body();
+                            if (getMatch != null && getMatch.isSuccess()) {
+                                answers.logCustom(getMatchSuccessFactory.create(getMatch
+                                                .getCaller(),
+                                        getMatch.getCallee()));
+                                Log.d(SecumAPI.TAG, "GetMatch(" + myName + ") Success, caller: "
+                                        + getMatch
+                                        .getCaller());
+                                if (getMatch.isCaller()) {
+                                    callbacks.onGetMatchSucceed(getMatch, true);
+                                } else if (getMatch.isCallee()) {
+                                    callbacks.onGetMatchSucceed(getMatch, false);
+                                    Log.d(SecumAPI.TAG, "GetMatch(" + myName + ")  Success, " +
+                                            "callee: " +
+                                            getMatch.getCallee() + ", posting another get match");
+                                    // keep posting
+                                    postMatchRequest();
+                                }
+                            } else {
+                                callbacks.onGetMatchFailed(getMatch);
+                                Log.d(SecumAPI.TAG, "GetMatch(" + myName + ")  failed, posting " +
+                                        "another " +
+                                        "get match");
+                                postMatchRequest();
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<GetMatch> call, Throwable t) {
+                            callbacks.onGetMatchFailed(null);
                             postMatchRequest();
                         }
-                    } else {
-                        callbacks.onGetMatchFailed(getMatch);
-                        Log.d(SecumAPI.TAG, "GetMatch(" + myName + ")  failed, posting another " +
-                                "get match");
-                        postMatchRequest();
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<GetMatch> call, Throwable t) {
-                    callbacks.onGetMatchFailed(null);
-                    postMatchRequest();
-                }
-            });
+                    });
         }
     };
 

@@ -46,7 +46,7 @@ public class LoginActivity extends SecumBaseActivity {
 
     public void button1(View view) {
         useUser11 = true;
-        requestCameraAudioPermissions();
+        requestCameraAudioLocationPermissions();
     }
 
     private void logInAs11() {
@@ -64,7 +64,7 @@ public class LoginActivity extends SecumBaseActivity {
 
     public void button2(View view) {
         useUser11 = false;
-        requestCameraAudioPermissions();
+        requestCameraAudioLocationPermissions();
     }
 
     private void logInAs22() {
@@ -100,7 +100,7 @@ public class LoginActivity extends SecumBaseActivity {
     }
 
     @Override
-    protected void onAudioCameraPermissionGranted() {
+    protected void onAudioCameraLocationPermissionGranted() {
         if (useUser11) {
             logInAs11();
         } else {

@@ -115,3 +115,16 @@
 8. Get profile
 curl -X POST -H "Content-Type: application/json" -H "Authorization: Bearer CIEDnKgErYlwmJKTWxFSgsijnDCuoc"  https://www.shanjingtech.com/api/users/get_profile/
 {"username":"phone_+16503181659","third_party_uid":null,"third_party_auth":null,"email":"","phone":"+16503181659","profile_image_url":null,"age":null,"gender":null,"lat":null,"lng":null,"nickname":null,"access_code":null,"num_comments":0,"num_posts":19,"num_following":0,"num_followed":0,"time_created":"2017-03-22T07:07:58.750586Z","time_updated":"2017-03-27T00:19:58.919426Z"}
+
+9. List contacts
+curl -X POST -H "Content-Type: application/json" -H "Authorization: Bearer vUXSNoPy3XLb3oh51zrhrYqQoDaVGd" -d '{ "status":"ACTIVE"}' https://www.shanjingtech.com/api/contacts/my/
+
+status can be active/requested
+[{"contact_user_id":4,"contact_username":"phone_22","contact_nickname":"隔壁22"}]
+
+
+10. Add contact
+curl -X POST -H "Content-Type: application/json" -H "Authorition: Bearer vUXSNoPy3XLb3oh51zrhrYqQoDaVGd" -d '{ "contact_username":"phone_22"}' https://www.shanjingtech.com/api/contacts/add/
+
+11. Approve
+curl -X POST -H "Content-Type: application/json" -H "Authorization: Bearer zhvG2zIf4xXFzzFfTJjnfOycXTjBZn" -d '{ "contact_username":"phone_11"}' https://www.shanjingtech.com/api/contacts/approve/

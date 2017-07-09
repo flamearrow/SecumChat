@@ -87,10 +87,19 @@ public class Constants {
     public static final String PATH_GET_PROFILE = "/api/users/get_profile/";
     public static final String PATH_UPDATE_USER = "/api/users/update_user/";
     public static final String PATH_REPORT = "/api/report/";
+    public static final String PATH_LIST_CONTACTS = "/api/contacts/my/";
+    public static final String PATH_ADD_CONTACT = "/api/contacts/add/";
+    public static final String PATH_APPROVE_CONTACT = "/api/contacts/approve/";
 
     public static final String MALE = "male";
     public static final String FEMALE = "female";
 
     // urls
     public static final String PRIVACY_URL = "http://www.9miao.tv/policy.html";
+
+    // contacts
+    public static final String CONTACT_STATUS_ACTIVE = "ACTIVE";
+    public static final String CONTACT_STATUS_REQUESTED = "REQUESTED";
+    public static final String CONTACT_STATUS_BLOCKED = "BLOCKED";
+    public static final String CONTACT_STATUS_PENDING = "PENDING";
 }

@@ -1,17 +1,20 @@
 package com.shanjingtech.secumchat;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
 
+import com.shanjingtech.secumchat.contacts.ContactsActivity;
 import com.shanjingtech.secumchat.ui.DialingReceivingWaitingLayout;
 import com.shanjingtech.secumchat.ui.HeartMagicLayout;
 import com.shanjingtech.secumchat.ui.HeartSecumCounter;
 import com.shanjingtech.secumchat.ui.SecumCounter;
+import com.shanjingtech.secumchat.util.SecumDebug;
 
-public class DebugActivity extends Activity implements SecumCounter.SecumCounterListener {
+public class DebugActivity extends SecumBaseActivity implements SecumCounter.SecumCounterListener {
     private final static String TAG = "DebugActivity";
     HeartSecumCounter heartSecumCounter;
     HeartMagicLayout heart;
@@ -21,6 +24,11 @@ public class DebugActivity extends Activity implements SecumCounter.SecumCounter
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.debug_activity);
+
+        // always use phone11's token
+        SecumDebug.enableDebugMode(sharedPreferences);
+        SecumDebug.setDebugUser(sharedPreferences, SecumDebug.USER_11);
+
         dialingReceivingWaitingLayout = (DialingReceivingWaitingLayout) findViewById(R.id.drw);
         heartSecumCounter = (HeartSecumCounter) findViewById(R.id.chronometer);
 //        catHead = (PulseImageView) findViewById(R.id.cat_head);
@@ -32,7 +40,7 @@ public class DebugActivity extends Activity implements SecumCounter.SecumCounter
     }
 
     public void b1(View view) {
-        heartSecumCounter.explode();
+//        heartSecumCounter.explode();
 //        secumCounter.initialize();
 //        heart.switchState(PairLikeImageView.LikeState.ME_LIKE);
 //        secumCounter.initialize();
@@ -42,6 +50,8 @@ public class DebugActivity extends Activity implements SecumCounter.SecumCounter
     }
 
     public void b2(View view) {
+        Intent intent = new Intent(this, ContactsActivity.class);
+        startActivity(intent);
 //        heart.switchState(PairLikeImageView.LikeState.PEER_LIKE);
 //        heart.peerLike();
 //        secumCounter.peerAdd();

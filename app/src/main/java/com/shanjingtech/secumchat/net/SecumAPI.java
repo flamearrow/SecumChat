@@ -3,9 +3,11 @@ package com.shanjingtech.secumchat.net;
 import com.shanjingtech.secumchat.model.AccessCode;
 import com.shanjingtech.secumchat.model.AccessCodeRequest;
 import com.shanjingtech.secumchat.model.AccessToken;
+import com.shanjingtech.secumchat.model.Contact;
 import com.shanjingtech.secumchat.model.EndMatch;
 import com.shanjingtech.secumchat.model.GetMatch;
 import com.shanjingtech.secumchat.model.GetMatchRequest;
+import com.shanjingtech.secumchat.model.ListContactsRequest;
 import com.shanjingtech.secumchat.model.PingResponse;
 import com.shanjingtech.secumchat.model.ReportUserRequest;
 import com.shanjingtech.secumchat.model.ReportUserResponse;
@@ -13,6 +15,8 @@ import com.shanjingtech.secumchat.model.UpdateUserRequest;
 import com.shanjingtech.secumchat.model.User;
 import com.shanjingtech.secumchat.model.UserRequest;
 import com.shanjingtech.secumchat.util.Constants;
+
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -91,5 +95,8 @@ public interface SecumAPI {
     @POST(Constants.PATH_REPORT)
     Call<ReportUserResponse> reportUser(@Body ReportUserRequest request);
 
+    @Headers("Content-Type: application/json")
+    @POST(Constants.PATH_LIST_CONTACTS)
+    Call<List<Contact>> listContacts(@Body ListContactsRequest request);
 
 }

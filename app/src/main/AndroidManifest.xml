@@ -61,14 +61,16 @@
             android:noHistory="true"
             android:screenOrientation="portrait"
             android:theme="@style/SplashTheme">
+        </activity>
+
+        <activity android:name=".DebugActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
 
-        <activity android:name=".DebugActivity">
-        </activity>
+        <activity android:name=".contacts.ContactsActivity"/>
 
         <meta-data
             android:name="io.fabric.ApiKey"

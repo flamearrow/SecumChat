@@ -71,6 +71,7 @@
         </activity>
 
         <activity android:name=".contacts.ContactsActivity"/>
+        <activity android:name=".ProfileActivity"/>
 
         <meta-data
             android:name="io.fabric.ApiKey"

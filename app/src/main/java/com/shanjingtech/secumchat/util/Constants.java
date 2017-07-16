@@ -48,6 +48,7 @@ public class Constants {
     // intents
     public static final String PHONE_NUMBER = "PHONE_NUMBER";
     public static final String CURRENT_USER = "CURRENT_USER";
+    public static final String CURRENT_USER_NAME = "CURRENT_USER_NAME";
     public static final String ACCESS_CODE = "CURRENT_USER";
     public static final String MY_NAME = "USER_NAME";
     public static final String MY_AGE = "USER_AGE";
@@ -88,6 +89,7 @@ public class Constants {
     public static final String PATH_UPDATE_USER = "/api/users/update_user/";
     public static final String PATH_REPORT = "/api/report/";
     public static final String PATH_LIST_CONTACTS = "/api/contacts/my/";
+    public static final String PATH_PROFILE_FROM_USERNAME = "/api/contacts/get_profile/";
     public static final String PATH_ADD_CONTACT = "/api/contacts/add/";
     public static final String PATH_APPROVE_CONTACT = "/api/contacts/approve/";
 

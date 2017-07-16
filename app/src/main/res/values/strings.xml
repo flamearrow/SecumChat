@@ -71,4 +71,7 @@
     <string name="report_reason">Please choose at least one reason.</string>
     <string name="no_one_to_report">No one to report.</string>
     <string name="report_success">Report success!</string>
+
+    <string name="chat">Chat</string>
+    <string name="video">Video</string>
 </resources>

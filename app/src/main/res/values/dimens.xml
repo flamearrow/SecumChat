@@ -8,4 +8,5 @@
     <dimen name="onboarding_side_margin">60dp</dimen>
     <dimen name="onboarding_side_margin_thin">30dp</dimen>
 
+    <dimen name="profile_item_vertical_paddings">20dp</dimen>
 </resources>

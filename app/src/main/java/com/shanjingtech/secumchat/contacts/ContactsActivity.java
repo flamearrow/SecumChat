@@ -51,8 +51,9 @@ public class ContactsActivity extends SecumBaseActivity {
 
     private void initializeRecyclerView() {
         recyclerView = (RecyclerView) findViewById(R.id.contacts_recycler);
-        contactsAdapter = new ContactsAdapter();
+        contactsAdapter = new ContactsAdapter(recyclerView);
         recyclerView.setAdapter(contactsAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
+
 }

@@ -7,6 +7,7 @@ import com.shanjingtech.secumchat.model.Contact;
 import com.shanjingtech.secumchat.model.EndMatch;
 import com.shanjingtech.secumchat.model.GetMatch;
 import com.shanjingtech.secumchat.model.GetMatchRequest;
+import com.shanjingtech.secumchat.model.GetProfileFromUserNameRequest;
 import com.shanjingtech.secumchat.model.ListContactsRequest;
 import com.shanjingtech.secumchat.model.PingResponse;
 import com.shanjingtech.secumchat.model.ReportUserRequest;
@@ -98,5 +99,9 @@ public interface SecumAPI {
     @Headers("Content-Type: application/json")
     @POST(Constants.PATH_LIST_CONTACTS)
     Call<List<Contact>> listContacts(@Body ListContactsRequest request);
+
+    @Headers("Content-Type: application/json")
+    @POST(Constants.PATH_PROFILE_FROM_USERNAME)
+    Call<User> getProfileFromUserName(@Body GetProfileFromUserNameRequest request);
 
 }

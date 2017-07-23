@@ -45,7 +45,8 @@ public class MyDetailsActivity extends SecumBaseActivity {
         maleButton = (RadioButton) findViewById(R.id.male);
         femaleButton = (RadioButton) findViewById(R.id.female);
         isMale = false;
-        currentUser = (User) getIntent().getSerializableExtra(Constants.CURRENT_USER);
+//        currentUser = (User) getIntent().getSerializableExtra(Constants.CURRENT_USER);
+        currentUser = currentUserProvider.getUser();
         if (currentUser != null) {
             prefill();
         }
@@ -131,9 +132,10 @@ public class MyDetailsActivity extends SecumBaseActivity {
                 public void onResponse(Call<User> call, Response<User> response) {
                     if (response.isSuccessful()) {
                         User user = response.body();
+                        currentUserProvider.setUser(user);
                         Intent intent = new Intent(MyDetailsActivity.this, SecumChatActivity
                                 .class);
-                        intent.putExtra(Constants.CURRENT_USER, user);
+//                        intent.putExtra(Constants.CURRENT_USER, user);
                         startActivity(intent);
                         finish();
                     }

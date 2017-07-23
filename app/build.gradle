@@ -89,6 +89,9 @@ dependencies {
     // horizontal name picker
     compile 'com.wefika:horizontal-picker:1.1.1'
 
+    // bottom nav bar
+    compile 'com.android.support:design:25.0.0'
+
     compile 'com.googlecode.libphonenumber:libphonenumber:8.4.0'
     compile project(':secumRTC')
     compile project(':countrycodepicker')

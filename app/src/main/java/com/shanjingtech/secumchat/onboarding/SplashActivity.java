@@ -7,7 +7,6 @@ import com.shanjingtech.secumchat.SecumBaseActivity;
 import com.shanjingtech.secumchat.SecumChatActivity;
 import com.shanjingtech.secumchat.model.PingResponse;
 import com.shanjingtech.secumchat.model.User;
-import com.shanjingtech.secumchat.util.Constants;
 import com.shanjingtech.secumchat.util.SecumDebug;
 
 import retrofit2.Call;
@@ -61,7 +60,7 @@ public class SplashActivity extends SecumBaseActivity {
                 if (response.isSuccessful()) {
                     User user = response.body();
                     Intent intent = new Intent(SplashActivity.this, SecumChatActivity.class);
-                    intent.putExtra(Constants.CURRENT_USER, user);
+                    currentUserProvider.setUser(user);
                     startActivity(intent);
 
                 }

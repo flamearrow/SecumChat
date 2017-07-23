@@ -74,4 +74,10 @@
 
     <string name="chat">Chat</string>
     <string name="video">Video</string>
+
+    <!-- bottom nav tab -->
+    <string name="conversation">conversation</string>
+    <string name="contacts">contacts</string>
+    <string name="discover">discover</string>
+
 </resources>

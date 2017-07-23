@@ -31,6 +31,10 @@
             android:name="com.shanjingtech.secumchat.LoginActivity"
             android:configChanges="orientation|keyboardHidden"
             android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
         </activity>
         <activity
             android:name="com.shanjingtech.secumchat.SecumChatActivity"
@@ -64,14 +68,14 @@
         </activity>
 
         <activity android:name=".DebugActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
         </activity>
 
-        <activity android:name=".contacts.ContactsActivity"/>
+        <activity
+            android:name=".contacts.ContactsActivity"
+            android:launchMode="singleInstance"/>
         <activity android:name=".ProfileActivity"/>
+        <activity android:name=".BottomNavActivity">
+        </activity>
 
         <meta-data
             android:name="io.fabric.ApiKey"

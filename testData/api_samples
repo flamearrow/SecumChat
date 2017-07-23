@@ -124,7 +124,7 @@ status can be active/requested
 
 
 10. Add contact
-curl -X POST -H "Content-Type: application/json" -H "Authorition: Bearer vUXSNoPy3XLb3oh51zrhrYqQoDaVGd" -d '{ "contact_username":"phone_22"}' https://www.shanjingtech.com/api/contacts/add/
+curl -X POST -H "Content-Type: application/json" -H "Authorization: Bearer vUXSNoPy3XLb3oh51zrhrYqQoDaVGd" -d '{ "contact_username":"phone_22"}' https://www.shanjingtech.com/api/contacts/add/
 
 11. Approve
 curl -X POST -H "Content-Type: application/json" -H "Authorization: Bearer zhvG2zIf4xXFzzFfTJjnfOycXTjBZn" -d '{ "contact_username":"phone_11"}' https://www.shanjingtech.com/api/contacts/approve/

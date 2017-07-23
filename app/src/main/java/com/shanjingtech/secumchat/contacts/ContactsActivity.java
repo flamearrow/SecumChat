@@ -6,7 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 
 import com.shanjingtech.secumchat.R;
-import com.shanjingtech.secumchat.SecumBaseActivity;
+import com.shanjingtech.secumchat.SecumTabbedActivity;
 import com.shanjingtech.secumchat.model.Contact;
 import com.shanjingtech.secumchat.model.ListContactsRequest;
 
@@ -20,7 +20,7 @@ import retrofit2.Response;
  * Show your contacts.
  */
 
-public class ContactsActivity extends SecumBaseActivity {
+public class ContactsActivity extends SecumTabbedActivity {
     private RecyclerView recyclerView;
     private ContactsAdapter contactsAdapter;
 
@@ -29,9 +29,18 @@ public class ContactsActivity extends SecumBaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.contacts_activity);
         initializeRecyclerView();
         requestContacts();
+    }
+
+    @Override
+    protected int getLayoutID() {
+        return R.layout.contacts_activity;
+    }
+
+    @Override
+    protected int getNavigationMenuItemId() {
+        return R.id.menu_contacts;
     }
 
     private void requestContacts() {
@@ -55,5 +64,6 @@ public class ContactsActivity extends SecumBaseActivity {
         recyclerView.setAdapter(contactsAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
+
 
 }

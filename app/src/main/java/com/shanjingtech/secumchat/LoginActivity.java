@@ -85,9 +85,8 @@ public class LoginActivity extends SecumBaseActivity {
             public void onResponse(Call<User> call, Response<User> response) {
                 if (response.isSuccessful()) {
                     User user = response.body();
-                    Intent intent = new Intent(LoginActivity.this, SecumChatActivity.class);
-                    intent.putExtra(Constants.CURRENT_USER, user);
-                    startActivity(intent);
+                    currentUserProvider.setUser(user);
+                    startActivity(new Intent(LoginActivity.this, SecumChatActivity.class));
 
                 }
             }

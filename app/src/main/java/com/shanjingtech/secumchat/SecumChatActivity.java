@@ -59,7 +59,7 @@ import static com.shanjingtech.secumchat.ui.SecumCounter.SECUMCOUNTER;
  * Activity to make you cum.
  */
 
-public class SecumChatActivity extends SecumBaseActivity implements
+public class SecumChatActivity extends SecumTabbedActivity implements
         SecumRTCListener.RTCPeerListener,
         NonRTCMessageController.NonRTCMessageControllerCallbacks,
         SecumNetworkRequester.SecumNetworkRequesterCallbacks,
@@ -150,8 +150,8 @@ public class SecumChatActivity extends SecumBaseActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.secum_chat_activity);
-        this.currentUser = (User) getIntent().getSerializableExtra(Constants.CURRENT_USER);
+
+        this.currentUser = currentUserProvider.getUser();
         this.myName = currentUser.getUsername();
         setTitle(currentUser.getNickname());
         Resources resources = getResources();
@@ -187,7 +187,6 @@ public class SecumChatActivity extends SecumBaseActivity implements
             case R.id.action_update_profile:
                 finish();
                 Intent intent = new Intent(this, MyDetailsActivity.class);
-                intent.putExtra(Constants.CURRENT_USER, currentUser);
                 startActivity(intent);
                 break;
             case R.id.action_logout:
@@ -441,6 +440,16 @@ public class SecumChatActivity extends SecumBaseActivity implements
         removeAllHandlerCallbacks();
         pnRTCClient.onDestroy();
         currentState = null;
+    }
+
+    @Override
+    protected int getLayoutID() {
+        return R.layout.secum_chat_activity;
+    }
+
+    @Override
+    protected int getNavigationMenuItemId() {
+        return R.id.menu_discover;
     }
 
     private void setUpChannels() {

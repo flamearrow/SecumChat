@@ -47,7 +47,6 @@ public class Constants {
 
     // intents
     public static final String PHONE_NUMBER = "PHONE_NUMBER";
-    public static final String CURRENT_USER = "CURRENT_USER";
     public static final String CURRENT_USER_NAME = "CURRENT_USER_NAME";
     public static final String ACCESS_CODE = "CURRENT_USER";
     public static final String MY_NAME = "USER_NAME";

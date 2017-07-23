@@ -20,6 +20,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.crashlytics.android.answers.Answers;
+import com.shanjingtech.secumchat.injection.CurrentUserProvider;
 import com.shanjingtech.secumchat.log.AddTimePairedFactory;
 import com.shanjingtech.secumchat.net.SecumAPI;
 import com.shanjingtech.secumchat.onboarding.SplashActivity;
@@ -43,10 +44,10 @@ public class SecumBaseActivity
     AddTimePairedFactory addTimePairedFactory;
     @Inject
     protected SharedPreferences sharedPreferences;
+    @Inject
+    protected CurrentUserProvider currentUserProvider;
 
     private static final String PERMISSION_TAG = "SecumPermission";
-    private AlertDialog audioCameraPermissionAlertDialog;
-    private AlertDialog phoneStatePermissionAlertDialog;
     private AlertDialog permissionAlertDialog;
 
     @Override
@@ -54,21 +55,6 @@ public class SecumBaseActivity
         super.onCreate(savedInstanceState);
         ((SecumApplication) getApplication()).getNetComponet().inject(this);
         Resources resources = getResources();
-        audioCameraPermissionAlertDialog = new AlertDialog.Builder(this)
-                .setTitle(resources.getString(R.string.permission_dialog_header))
-                .setMessage(resources.getString(R.string.permission_dialog_message_audio_camera))
-                .setPositiveButton(resources.getString(R.string.to_settings), this)
-                .setNegativeButton(resources.getString(R.string.cancel), this)
-                .setIcon(R.drawable.cat_head)
-                .create();
-
-        phoneStatePermissionAlertDialog = new AlertDialog.Builder(this)
-                .setTitle(resources.getString(R.string.permission_dialog_header))
-                .setMessage(resources.getString(R.string.permission_dialog_message_phone))
-                .setPositiveButton(resources.getString(R.string.to_settings), this)
-                .setNegativeButton(resources.getString(R.string.cancel), this)
-                .setIcon(R.drawable.cat_head)
-                .create();
 
         permissionAlertDialog = new AlertDialog.Builder(this)
                 .setTitle(resources.getString(R.string.permission_dialog_header))

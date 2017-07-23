@@ -53,7 +53,7 @@ public class AccessCodeActivity extends SecumBaseActivity
         phoneNo = getIntent().getStringExtra(Constants.PHONE_NUMBER);
         isDebug = SecumDebug.isDebugMode(sharedPreferences);
         if (!isDebug) {
-            currentUser = (User) getIntent().getSerializableExtra(Constants.CURRENT_USER);
+            currentUser = currentUserProvider.getUser();
             correctAccessCode = currentUser.getAccess_code();
         }
         autoEnableTextView.startCount();
@@ -127,7 +127,6 @@ public class AccessCodeActivity extends SecumBaseActivity
 
     private void toDetailsActivity() {
         Intent intent = new Intent(AccessCodeActivity.this, MyDetailsActivity.class);
-        intent.putExtra(Constants.CURRENT_USER, currentUser);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
     }

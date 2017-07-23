@@ -119,10 +119,10 @@ public class PhoneNumActivity extends SecumBaseActivity {
                                     public void onResponse(Call<User> call, Response<User>
                                             response) {
                                         User user = response.body();
+                                        currentUserProvider.setUser(user);
                                         Intent intent = new Intent(PhoneNumActivity.this,
                                                 AccessCodeActivity.class);
                                         intent.putExtra(Constants.PHONE_NUMBER, phoneNo);
-                                        intent.putExtra(Constants.CURRENT_USER, user);
                                         startActivity(intent);
                                     }
 

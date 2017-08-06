@@ -66,5 +66,10 @@
     <string name="pending">等待回应</string>
     <string name="video">视频</string>
     <string name="requested">已请求</string>
+    <string name="search_title">查找</string>
+    <string name="search_user_hint">通过用户名查找</string>
+    <string name="add_friend">添加</string>
+    <string name="request_fail">请求失败，请稍后重试</string>
+    <string name="no_user_found">未找到用户</string>
 
 </resources>

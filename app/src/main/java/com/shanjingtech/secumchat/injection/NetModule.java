@@ -13,6 +13,8 @@ import com.shanjingtech.secumchat.util.Constants;
 import com.shanjingtech.secumchat.util.SecumDebug;
 
 import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 
 import javax.inject.Singleton;
 
@@ -24,7 +26,9 @@ import okhttp3.Credentials;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import okhttp3.ResponseBody;
 import okhttp3.Route;
+import retrofit2.Converter;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -124,6 +128,25 @@ public class NetModule {
         // (otherwise) oauth ping/getMatch/endMatch/updateUser
     }
 
+    /**
+     * handle the case when server response is empty
+     */
+    class NullOnEmptyConverterFactory extends Converter.Factory {
+        @Override
+        public Converter<ResponseBody, ?> responseBodyConverter(Type type, Annotation
+                [] annotations, Retrofit retrofit) {
+            final Converter<ResponseBody, ?> delegate = retrofit
+                    .nextResponseBodyConverter(this, type, annotations);
+            return new Converter<ResponseBody, Object>() {
+                @Override
+                public Object convert(ResponseBody body) throws IOException {
+                    if (body.contentLength() == 0) return null;
+                    return delegate.convert(body);
+                }
+            };
+        }
+    }
+
     @Provides
     @Singleton
     public Retrofit provideRetrofit(Gson gson, OkHttpClient okHttpClient) {
@@ -131,6 +154,7 @@ public class NetModule {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(apiBaseUrl)
                 .client(okHttpClient)
+                .addConverterFactory(new NullOnEmptyConverterFactory())
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         return retrofit;

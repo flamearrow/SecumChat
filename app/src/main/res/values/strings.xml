@@ -74,6 +74,7 @@
 
     <string name="chat">Chat</string>
     <string name="video">Video</string>
+    <string name="add_friend">add</string>
 
     <!-- bottom nav tab -->
     <string name="conversation">conversation</string>
@@ -81,8 +82,12 @@
     <string name="discover">discover</string>
 
     <string name="requested">Requested</string>
+    <string name="request_fail">Request failed, try again later</string>
     <string name="blocked">Blocked</string>
     <string name="pending">Pending</string>
+    <string name="search_title">search</string>
 
+    <string name="search_user_hint">Search by user ID</string>
 
+    <string name="no_user_found">No user found!</string>
 </resources>

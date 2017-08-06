@@ -85,7 +85,7 @@ public class ContactsAdapter extends RecyclerView.Adapter {
                     String currentUserName = activeContacts.get(itemPosition).getContact_username();
                     Context context = parent.getContext();
                     Intent intent = new Intent(context, ProfileActivity.class);
-                    intent.putExtra(Constants.CURRENT_USER_NAME, currentUserName);
+                    intent.putExtra(Constants.PROFILE_USER_NAME, currentUserName);
                     context.startActivity(intent);
                 }
             });

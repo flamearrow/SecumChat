@@ -75,9 +75,15 @@
             android:launchMode="singleInstance"
             android:theme="@style/ListTheme">
         </activity>
-        <activity android:name=".ProfileActivity"/>
-        <activity android:name=".BottomNavActivity">
+        <activity android:name=".ProfileActivity">
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable"/>
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH"/>
+            </intent-filter>
         </activity>
+        <activity android:name=".BottomNavActivity"/>
 
         <meta-data
             android:name="io.fabric.ApiKey"

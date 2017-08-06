@@ -1,10 +1,19 @@
 package com.shanjingtech.secumchat.contacts;
 
+import android.app.SearchManager;
+import android.content.ComponentName;
+import android.content.Context;
 import android.os.Bundle;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 
+import com.shanjingtech.secumchat.ProfileActivity;
 import com.shanjingtech.secumchat.R;
 import com.shanjingtech.secumchat.SecumTabbedActivity;
 import com.shanjingtech.secumchat.model.Contact;
@@ -25,12 +34,48 @@ public class ContactsActivity extends SecumTabbedActivity {
     private ContactsAdapter contactsAdapter;
 
     private static final String TAG = "CONTACTSACTIVITY";
+    private static final String CONTACTS_TYPE = "CONTACTS_TYPE";
+    private static final String CONTACTS_TYPE_CONTACTS = "CONTACTS";
+    private static final String CONTACTS_TYPE_REQUSTED = "REQUESTED";
+    private static final String CONTACTS_TYPE_PENDING = "PENDING";
+    private static final String CONTACTS_TYPE_BLOCKED = "BLOCKED";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initializeRecyclerView();
         requestContacts();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.search_menu, menu);
+        // Associate searchable configuration with the SearchView
+        SearchManager searchManager =
+                (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        final MenuItem searchItem = menu.findItem(R.id.search);
+        final SearchView searchView =
+                (SearchView) MenuItemCompat.getActionView(searchItem);
+        searchView.setSearchableInfo(
+                searchManager.getSearchableInfo(new ComponentName(this, ProfileActivity.class)));
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                searchView.clearFocus();
+                searchView.setIconified(true);
+                MenuItemCompat.collapseActionView(searchItem);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+        return true;
     }
 
     @Override

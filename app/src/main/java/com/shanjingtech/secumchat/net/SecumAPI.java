@@ -3,8 +3,10 @@ package com.shanjingtech.secumchat.net;
 import com.shanjingtech.secumchat.model.AccessCode;
 import com.shanjingtech.secumchat.model.AccessCodeRequest;
 import com.shanjingtech.secumchat.model.AccessToken;
+import com.shanjingtech.secumchat.model.AddContactRequest;
 import com.shanjingtech.secumchat.model.Contact;
 import com.shanjingtech.secumchat.model.EndMatch;
+import com.shanjingtech.secumchat.model.GenericResponse;
 import com.shanjingtech.secumchat.model.GetMatch;
 import com.shanjingtech.secumchat.model.GetMatchRequest;
 import com.shanjingtech.secumchat.model.GetProfileFromUserNameRequest;
@@ -104,4 +106,7 @@ public interface SecumAPI {
     @POST(Constants.PATH_PROFILE_FROM_USERNAME)
     Call<User> getProfileFromUserName(@Body GetProfileFromUserNameRequest request);
 
+    @Headers("Content-Type: application/json")
+    @POST(Constants.PATH_ADD_CONTACT)
+    Call<List<GenericResponse>> addContact(@Body AddContactRequest request);
 }

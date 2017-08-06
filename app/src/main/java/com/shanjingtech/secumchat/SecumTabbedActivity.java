@@ -4,16 +4,16 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.LayoutRes;
-import android.support.annotation.MenuRes;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewStub;
 
 import com.shanjingtech.secumchat.contacts.ContactsActivity;
 
 /**
- * Created by flamearrow on 7/23/17.
+ * Activities with a configurable tab at bottom of screen.
  */
 
 public abstract class SecumTabbedActivity extends SecumBaseActivity implements
@@ -23,12 +23,17 @@ public abstract class SecumTabbedActivity extends SecumBaseActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(getLayoutID());
-
+        setContentView(R.layout.secum_tabbed_activity);
+        ViewStub contentSub = (ViewStub) findViewById(R.id.content);
+        contentSub.setLayoutResource(getContentResId());
+        contentSub.inflate();
         bottomNavigationView = (BottomNavigationView) findViewById(R.id.navigation_bar);
         bottomNavigationView.setOnNavigationItemSelectedListener(this);
     }
 
+
+    @LayoutRes
+    abstract protected int getContentResId();
 
     @Override
     protected void onResume() {
@@ -55,7 +60,6 @@ public abstract class SecumTabbedActivity extends SecumBaseActivity implements
                 @Override
                 public void run() {
                     if (itemId == R.id.menu_conversation) {
-//                    startActivity(new Intent(SecumTabbedActivity.this, SecumChatActivity.class));
                     } else if (itemId == R.id.menu_discover) {
                         startActivity(new Intent(SecumTabbedActivity.this, SecumChatActivity
                                 .class));
@@ -63,15 +67,11 @@ public abstract class SecumTabbedActivity extends SecumBaseActivity implements
                     } else if (itemId == R.id.menu_contacts) {
                         startActivity(new Intent(SecumTabbedActivity.this, ContactsActivity.class));
                     }
-//                    finish();
                 }
             });
         }
         return true;
     }
-
-    @LayoutRes
-    protected abstract int getLayoutID();
 
     @IdRes
     protected abstract int getNavigationMenuItemId();

@@ -80,4 +80,9 @@
     <string name="contacts">contacts</string>
     <string name="discover">discover</string>
 
+    <string name="requested">Requested</string>
+    <string name="blocked">Blocked</string>
+    <string name="pending">Pending</string>
+
+
 </resources>

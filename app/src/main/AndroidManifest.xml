@@ -72,7 +72,9 @@
 
         <activity
             android:name=".contacts.ContactsActivity"
-            android:launchMode="singleInstance"/>
+            android:launchMode="singleInstance"
+            android:theme="@style/ListTheme">
+        </activity>
         <activity android:name=".ProfileActivity"/>
         <activity android:name=".BottomNavActivity">
         </activity>

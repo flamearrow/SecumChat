@@ -34,7 +34,7 @@ public class ContactsActivity extends SecumTabbedActivity {
     }
 
     @Override
-    protected int getLayoutID() {
+    protected int getContentResId() {
         return R.layout.contacts_activity;
     }
 
@@ -47,7 +47,7 @@ public class ContactsActivity extends SecumTabbedActivity {
         secumAPI.listContacts(new ListContactsRequest()).enqueue(new Callback<List<Contact>>() {
             @Override
             public void onResponse(Call<List<Contact>> call, Response<List<Contact>> response) {
-                contactsAdapter.updateContacts(response.body());
+                contactsAdapter.updateActiveContacts(response.body());
             }
 
             @Override

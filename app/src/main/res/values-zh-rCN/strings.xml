@@ -58,5 +58,13 @@
     <string name="otherside">对方</string>
     <string name="hang_up">挂断了</string>
     <string name="permission_access_fine_location">9喵需要知道你手机的位置</string>
+    <string name="chat">聊天</string>
+    <string name="contacts">联系人</string>
+    <string name="conversation">对话</string>
+    <string name="discover">发现</string>
+    <string name="blocked">黑名单</string>
+    <string name="pending">等待回应</string>
+    <string name="video">视频</string>
+    <string name="requested">已请求</string>
 
 </resources>

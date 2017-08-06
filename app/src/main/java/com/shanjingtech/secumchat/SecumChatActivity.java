@@ -443,7 +443,7 @@ public class SecumChatActivity extends SecumTabbedActivity implements
     }
 
     @Override
-    protected int getLayoutID() {
+    protected int getContentResId() {
         return R.layout.secum_chat_activity;
     }
 

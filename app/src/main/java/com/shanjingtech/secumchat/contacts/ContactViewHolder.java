@@ -19,4 +19,6 @@ public class ContactViewHolder extends RecyclerView.ViewHolder {
         avatar = (ImageView) itemView.findViewById(R.id.avatar);
         name = (TextView) itemView.findViewById(R.id.name);
     }
+
+
 }

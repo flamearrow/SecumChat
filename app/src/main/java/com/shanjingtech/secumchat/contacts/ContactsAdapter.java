@@ -6,49 +6,82 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.Toast;
 
 import com.shanjingtech.secumchat.ProfileActivity;
 import com.shanjingtech.secumchat.R;
+import com.shanjingtech.secumchat.model.ApproveContactRequest;
 import com.shanjingtech.secumchat.model.Contact;
+import com.shanjingtech.secumchat.model.GenericResponse;
+import com.shanjingtech.secumchat.net.SecumAPI;
 import com.shanjingtech.secumchat.util.Constants;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+import static com.shanjingtech.secumchat.contacts.ContactsActivity.CONTACTS_TYPE_BLOCKED;
+import static com.shanjingtech.secumchat.contacts.ContactsActivity.CONTACTS_TYPE_CONTACTS;
+import static com.shanjingtech.secumchat.contacts.ContactsActivity.CONTACTS_TYPE_PENDING;
+import static com.shanjingtech.secumchat.contacts.ContactsActivity.CONTACTS_TYPE_REQUESTED;
+
 /**
- * Adapts activeContacts.
+ * Adapts contacts.
  */
 
 public class ContactsAdapter extends RecyclerView.Adapter {
     private static final int PENDING_POINTER = 0;
-    private static final int CONTACTS_LABEL = 1;
-    private static final int CONTACTS = 2;
     private static final int REQUESTED_POINTER = 3;
     private static final int BLOCKED_POINTER = 4;
-    private List<Contact> activeContacts;
+
+    private static final int CONTACTS_LABEL = 1;
+    private static final int CONTACTS = 2;
+
+    private List<Contact> contacts;
 
     private RecyclerView recyclerView;
 
     private Context context;
 
-    public ContactsAdapter(RecyclerView recyclerView) {
+    private String adapterType;
+
+    private SecumAPI secumAPI;
+
+    public ContactsAdapter(RecyclerView recyclerView, String type, SecumAPI secumAPI) {
         this.recyclerView = recyclerView;
+        this.secumAPI = secumAPI;
         context = recyclerView.getContext();
+        adapterType = type;
     }
 
-    public void updateActiveContacts(List<Contact> activeContacts) {
-        this.activeContacts = activeContacts;
+    public void updateContacts(List<Contact> contacts) {
+        this.contacts = contacts;
         notifyDataSetChanged();
     }
 
-    /**
-     * 0: pending label
-     * 1: contacts label
-     * [2, 2+actibeSize-1]: contacts
-     * 2+activeSize: requested label
-     * 3+activeSize: blocked label
-     */
-    private int calculateViewTypeFromPosition(int position) {
-        int contactsCount = activeContacts == null ? 0 : activeContacts.size();
+
+    @Override
+    public int getItemViewType(int position) {
+        if (adapterType.equals(CONTACTS_TYPE_BLOCKED) ||
+                adapterType.equals(CONTACTS_TYPE_PENDING) ||
+                adapterType.equals(CONTACTS_TYPE_REQUESTED)) {
+            return position == 0 ? CONTACTS_LABEL : CONTACTS;
+        }
+
+        /**
+         * For active contacts list:
+         * 0: pending label
+         * 1: contacts label
+         * [2, 2+actibeSize-1]: contacts
+         * 2+activeSize: requested label
+         * 3+activeSize: blocked label
+         */
+        int contactsCount = contacts == null ? 0 : contacts.size();
         if (position == 0) {
             return PENDING_POINTER;
         } else if (position == 1) {
@@ -63,11 +96,6 @@ public class ContactsAdapter extends RecyclerView.Adapter {
     }
 
     @Override
-    public int getItemViewType(int position) {
-        return calculateViewTypeFromPosition(position);
-    }
-
-    @Override
     public RecyclerView.ViewHolder onCreateViewHolder(final ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         if (viewType == CONTACTS_LABEL) {
@@ -77,18 +105,64 @@ public class ContactsAdapter extends RecyclerView.Adapter {
         } else if (viewType == CONTACTS) {
             final View view = inflater.inflate(
                     R.layout.contact_item, parent, false);
-            view.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    // need to -2 to offset the two labels
-                    int itemPosition = recyclerView.getChildLayoutPosition(view) - 2;
-                    String currentUserName = activeContacts.get(itemPosition).getContact_username();
-                    Context context = parent.getContext();
-                    Intent intent = new Intent(context, ProfileActivity.class);
-                    intent.putExtra(Constants.PROFILE_USER_NAME, currentUserName);
-                    context.startActivity(intent);
-                }
-            });
+
+
+            if (adapterType.equals(CONTACTS_TYPE_PENDING)) {
+                // add a button to accept pending requests
+                Button button = (Button) view.findViewById(R.id.action_button);
+                button.setText(context.getText(R.string.approve));
+                button.setVisibility(View.VISIBLE);
+                button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        int itemPosition = recyclerView.getChildLayoutPosition(view) - 1;
+                        String currentUserName = contacts.get(itemPosition).getContact_username();
+                        secumAPI.approveContact(new ApproveContactRequest(currentUserName))
+                                .enqueue(new Callback<List<GenericResponse>>() {
+                                    @Override
+                                    public void onResponse(Call<List<GenericResponse>> call,
+                                                           Response<List<GenericResponse>>
+                                                                   response) {
+                                        Toast.makeText(context, context.getResources()
+                                                .getString(R.string.add_success), Toast
+                                                .LENGTH_SHORT)
+                                                .show();
+                                        notifyDataSetChanged();
+                                    }
+
+                                    @Override
+                                    public void onFailure(Call<List<GenericResponse>> call,
+                                                          Throwable t) {
+                                        Toast.makeText(context, context.getResources()
+                                                .getString(R.string.request_fail), Toast
+                                                .LENGTH_SHORT).show();
+                                    }
+                                });
+                    }
+                });
+            } else {
+                // for other 3 types, make the item clickable to see the users profile
+                view.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        int itemPosition = 0;
+                        if (adapterType.equals(CONTACTS_TYPE_CONTACTS)) {
+                            // offset pending and label
+                            itemPosition = recyclerView.getChildLayoutPosition(view) - 2;
+                        } else if (adapterType.equals(CONTACTS_TYPE_BLOCKED) || adapterType
+                                .equals(CONTACTS_TYPE_REQUESTED)) {
+                            // offset label
+                            itemPosition = recyclerView.getChildLayoutPosition(view) - 1;
+                        }
+
+                        String currentUserName = contacts.get(itemPosition).getContact_username();
+                        Context context = parent.getContext();
+                        Intent intent = new Intent(context, ProfileActivity.class);
+                        intent.putExtra(Constants.PROFILE_USER_NAME, currentUserName);
+                        context.startActivity(intent);
+                    }
+                });
+            }
             return new ContactViewHolder(view);
 
         } else if (viewType == PENDING_POINTER || viewType == REQUESTED_POINTER || viewType ==
@@ -102,12 +176,36 @@ public class ContactsAdapter extends RecyclerView.Adapter {
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         switch (getItemViewType(position)) {
             case CONTACTS: {
-                Contact contact = activeContacts.get(position - 2);
-                ((ContactViewHolder) holder).name.setText(contact.getContact_nickname());
+                if (adapterType == CONTACTS_TYPE_CONTACTS) {
+                    // offset label and pending pointer
+                    Contact contact = contacts.get(position - 2);
+                    ((ContactViewHolder) holder).name.setText(contact.getContact_nickname());
+                } else if (contacts != null && contacts.size() > 0) {
+                    // offset label
+                    Contact contact = contacts.get((position - 1));
+                    ((ContactViewHolder) holder).name.setText(contact.getContact_nickname());
+                }
                 break;
+
             }
             case CONTACTS_LABEL:
-                ((TextLabelViewHolder) holder).label.setText(context.getString(R.string.contacts));
+                String labelText;
+                switch (adapterType) {
+                    case CONTACTS_TYPE_BLOCKED:
+                        labelText = context.getString(R.string.blocked);
+                        break;
+                    case CONTACTS_TYPE_PENDING:
+                        labelText = context.getString(R.string.pending);
+                        break;
+                    case CONTACTS_TYPE_REQUESTED:
+                        labelText = context.getString(R.string.requested);
+                        break;
+                    case CONTACTS_TYPE_CONTACTS:
+                    default:
+                        labelText = context.getString(R.string.contacts);
+                        break;
+                }
+                ((TextLabelViewHolder) holder).label.setText(labelText);
                 break;
             case REQUESTED_POINTER:
                 ((PointerLabelViewHolder) holder).textLabel.setText(context.getString(R.string
@@ -116,11 +214,10 @@ public class ContactsAdapter extends RecyclerView.Adapter {
                         .OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        // pull requested
-                        int i = 0;
-                        i++;
-                        int j = 0;
-                        j++;
+                        Intent intent = new Intent(context, ContactsActivity.class);
+                        intent.putExtra(ContactsActivity.CONTACTS_TYPE,
+                                CONTACTS_TYPE_REQUESTED);
+                        context.startActivity(intent);
                     }
                 });
                 break;
@@ -131,7 +228,10 @@ public class ContactsAdapter extends RecyclerView.Adapter {
                         .OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        // pull blocked
+                        Intent intent = new Intent(context, ContactsActivity.class);
+                        intent.putExtra(ContactsActivity.CONTACTS_TYPE,
+                                CONTACTS_TYPE_BLOCKED);
+                        context.startActivity(intent);
                     }
                 });
                 break;
@@ -142,7 +242,10 @@ public class ContactsAdapter extends RecyclerView.Adapter {
                         .OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        // pull pending
+                        Intent intent = new Intent(context, ContactsActivity.class);
+                        intent.putExtra(ContactsActivity.CONTACTS_TYPE,
+                                CONTACTS_TYPE_PENDING);
+                        context.startActivity(intent);
                     }
                 });
                 break;
@@ -151,6 +254,10 @@ public class ContactsAdapter extends RecyclerView.Adapter {
 
     @Override
     public int getItemCount() {
-        return 4 + (activeContacts == null ? 0 : activeContacts.size());
+        if (adapterType.equals(CONTACTS_TYPE_CONTACTS)) {
+            return 4 + (contacts == null ? 0 : contacts.size());
+        } else {
+            return 1 + (contacts == null ? 0 : contacts.size());
+        }
     }
 }

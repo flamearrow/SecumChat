@@ -89,7 +89,7 @@ public class MyDetailsActivity extends SecumBaseActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_profile, menu);
+        inflater.inflate(R.menu.menu_details, menu);
         return true;
     }
 

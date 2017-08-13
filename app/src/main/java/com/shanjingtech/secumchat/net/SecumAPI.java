@@ -4,7 +4,10 @@ import com.shanjingtech.secumchat.model.AccessCode;
 import com.shanjingtech.secumchat.model.AccessCodeRequest;
 import com.shanjingtech.secumchat.model.AccessToken;
 import com.shanjingtech.secumchat.model.AddContactRequest;
+import com.shanjingtech.secumchat.model.ApproveContactRequest;
+import com.shanjingtech.secumchat.model.BlockContactRequest;
 import com.shanjingtech.secumchat.model.Contact;
+import com.shanjingtech.secumchat.model.DeleteContactRequest;
 import com.shanjingtech.secumchat.model.EndMatch;
 import com.shanjingtech.secumchat.model.GenericResponse;
 import com.shanjingtech.secumchat.model.GetMatch;
@@ -109,4 +112,20 @@ public interface SecumAPI {
     @Headers("Content-Type: application/json")
     @POST(Constants.PATH_ADD_CONTACT)
     Call<List<GenericResponse>> addContact(@Body AddContactRequest request);
+
+    @Headers("Content-Type: application/json")
+    @POST(Constants.PATH_APPROVE_CONTACT)
+    Call<List<GenericResponse>> approveContact(@Body ApproveContactRequest request);
+
+
+    @Headers("Content-Type: application/json")
+    @POST(Constants.PATH_DELETE_CONTACT)
+    Call<List<GenericResponse>> deleteContact(@Body DeleteContactRequest request);
+
+
+    @Headers("Content-Type: application/json")
+    @POST(Constants.PATH_BLOCK_CONTACT)
+    Call<List<GenericResponse>> blockContact(@Body BlockContactRequest request);
+
+
 }

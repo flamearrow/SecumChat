@@ -91,6 +91,8 @@ public class Constants {
     public static final String PATH_PROFILE_FROM_USERNAME = "/api/contacts/get_profile/";
     public static final String PATH_ADD_CONTACT = "/api/contacts/add/";
     public static final String PATH_APPROVE_CONTACT = "/api/contacts/approve/";
+    public static final String PATH_BLOCK_CONTACT = "/api/contacts/block/";
+    public static final String PATH_DELETE_CONTACT = "/api/contacts/delete/";
 
     public static final String MALE = "male";
     public static final String FEMALE = "female";

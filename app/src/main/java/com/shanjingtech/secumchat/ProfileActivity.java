@@ -4,10 +4,12 @@ import android.app.SearchManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -15,6 +17,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.shanjingtech.secumchat.model.AddContactRequest;
+import com.shanjingtech.secumchat.model.BlockContactRequest;
+import com.shanjingtech.secumchat.model.DeleteContactRequest;
 import com.shanjingtech.secumchat.model.GenericResponse;
 import com.shanjingtech.secumchat.model.GetProfileFromUserNameRequest;
 import com.shanjingtech.secumchat.model.User;
@@ -38,6 +42,7 @@ public class ProfileActivity extends SecumBaseActivity {
     private Button chat;
     private Button video;
     private Button add;
+    private boolean isStranger;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,21 +64,85 @@ public class ProfileActivity extends SecumBaseActivity {
         handleIntent(intent);
     }
 
-    private void handleIntent(Intent intent) {
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        if (!isStranger) {
+            MenuInflater inflater = getMenuInflater();
+            inflater.inflate(R.menu.menu_profile, menu);
+        }
+        return true;
+    }
 
-        // started by search
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_block:
+                secumAPI.blockContact(new BlockContactRequest(profileUserName)).enqueue(
+                        new Callback<List<GenericResponse>>() {
+                            @Override
+                            public void onResponse(Call<List<GenericResponse>> call,
+                                                   Response<List<GenericResponse>> response) {
+                                Toast.makeText(ProfileActivity.this, ProfileActivity.this
+                                        .getResources()
+                                        .getString(R.string.block_success), Toast.LENGTH_SHORT)
+                                        .show();
+                                finish();
+                            }
+
+                            @Override
+                            public void onFailure(Call<List<GenericResponse>> call, Throwable t) {
+                                Toast.makeText(ProfileActivity.this, ProfileActivity.this
+                                        .getResources()
+                                        .getString(R.string.request_fail), Toast.LENGTH_SHORT)
+                                        .show();
+                                finish();
+                            }
+                        });
+                break;
+            case R.id.action_delete:
+                secumAPI.deleteContact(new DeleteContactRequest(profileUserName)).enqueue(
+                        new Callback<List<GenericResponse>>() {
+                            @Override
+                            public void onResponse(Call<List<GenericResponse>> call,
+                                                   Response<List<GenericResponse>> response) {
+                                Toast.makeText(ProfileActivity.this, ProfileActivity.this
+                                        .getResources()
+                                        .getString(R.string.delete_success), Toast.LENGTH_SHORT)
+                                        .show();
+                                finish();
+                            }
+
+                            @Override
+                            public void onFailure(Call<List<GenericResponse>> call, Throwable t) {
+                                Toast.makeText(ProfileActivity.this, ProfileActivity.this
+                                        .getResources()
+                                        .getString(R.string.request_fail), Toast.LENGTH_SHORT)
+                                        .show();
+                                finish();
+                            }
+                        }
+                );
+                break;
+        }
+        return true;
+    }
+
+    private void handleIntent(Intent intent) {
+        // started by search, is stranger
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             profileUserName = Constants.ACCOUNT_PREFIX + intent.getStringExtra(SearchManager.QUERY);
             add.setVisibility(View.VISIBLE);
             chat.setVisibility(View.GONE);
             video.setVisibility(View.GONE);
+            isStranger = true;
         }
-        // otherwise
+        // otherwise, from contacts/requested/blocked
         else {
             profileUserName = intent.getStringExtra(PROFILE_USER_NAME);
             add.setVisibility(View.GONE);
             chat.setVisibility(View.VISIBLE);
             video.setVisibility(View.VISIBLE);
+            isStranger = false;
         }
         pullUser();
     }
@@ -129,7 +198,6 @@ public class ProfileActivity extends SecumBaseActivity {
 
     public void add(View view) {
         secumAPI.addContact(new AddContactRequest(profileUserName)).enqueue(new Callback<List<GenericResponse>>() {
-
 
             @Override
             public void onResponse(Call<List<GenericResponse>> call,

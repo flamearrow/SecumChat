@@ -72,10 +72,11 @@
 
         <activity
             android:name=".contacts.ContactsActivity"
-            android:launchMode="singleInstance"
             android:theme="@style/ListTheme">
         </activity>
-        <activity android:name=".ProfileActivity">
+        <activity
+            android:name=".ProfileActivity"
+            android:theme="@style/ProfileTheme">
             <meta-data
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable"/>

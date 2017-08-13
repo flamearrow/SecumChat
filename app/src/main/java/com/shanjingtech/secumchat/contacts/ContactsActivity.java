@@ -18,6 +18,7 @@ import com.shanjingtech.secumchat.R;
 import com.shanjingtech.secumchat.SecumTabbedActivity;
 import com.shanjingtech.secumchat.model.Contact;
 import com.shanjingtech.secumchat.model.ListContactsRequest;
+import com.shanjingtech.secumchat.util.Constants;
 
 import java.util.List;
 
@@ -32,13 +33,14 @@ import retrofit2.Response;
 public class ContactsActivity extends SecumTabbedActivity {
     private RecyclerView recyclerView;
     private ContactsAdapter contactsAdapter;
+    private String contactsType;
 
     private static final String TAG = "CONTACTSACTIVITY";
-    private static final String CONTACTS_TYPE = "CONTACTS_TYPE";
-    private static final String CONTACTS_TYPE_CONTACTS = "CONTACTS";
-    private static final String CONTACTS_TYPE_REQUSTED = "REQUESTED";
-    private static final String CONTACTS_TYPE_PENDING = "PENDING";
-    private static final String CONTACTS_TYPE_BLOCKED = "BLOCKED";
+    public static final String CONTACTS_TYPE = "CONTACTS_TYPE";
+    public static final String CONTACTS_TYPE_CONTACTS = "CONTACTS";
+    public static final String CONTACTS_TYPE_REQUESTED = "REQUESTED";
+    public static final String CONTACTS_TYPE_PENDING = "PENDING";
+    public static final String CONTACTS_TYPE_BLOCKED = "BLOCKED";
 
 
     @Override
@@ -46,6 +48,12 @@ public class ContactsActivity extends SecumTabbedActivity {
         super.onCreate(savedInstanceState);
         initializeRecyclerView();
         requestContacts();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        contactsAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -89,10 +97,25 @@ public class ContactsActivity extends SecumTabbedActivity {
     }
 
     private void requestContacts() {
-        secumAPI.listContacts(new ListContactsRequest()).enqueue(new Callback<List<Contact>>() {
+        ListContactsRequest request = new ListContactsRequest();
+        switch (contactsType) {
+            case CONTACTS_TYPE_BLOCKED:
+                request.setStatus(Constants.CONTACT_STATUS_BLOCKED);
+                break;
+            case CONTACTS_TYPE_PENDING:
+                request.setStatus(Constants.CONTACT_STATUS_PENDING);
+                break;
+            case CONTACTS_TYPE_REQUESTED:
+                request.setStatus(Constants.CONTACT_STATUS_REQUESTED);
+                break;
+            case CONTACTS_TYPE_CONTACTS:
+            default:
+                break;
+        }
+        secumAPI.listContacts(request).enqueue(new Callback<List<Contact>>() {
             @Override
             public void onResponse(Call<List<Contact>> call, Response<List<Contact>> response) {
-                contactsAdapter.updateActiveContacts(response.body());
+                contactsAdapter.updateContacts(response.body());
             }
 
             @Override
@@ -105,7 +128,9 @@ public class ContactsActivity extends SecumTabbedActivity {
 
     private void initializeRecyclerView() {
         recyclerView = (RecyclerView) findViewById(R.id.contacts_recycler);
-        contactsAdapter = new ContactsAdapter(recyclerView);
+        contactsType = getIntent().getStringExtra(CONTACTS_TYPE) == null ?
+                CONTACTS_TYPE_CONTACTS : getIntent().getStringExtra(CONTACTS_TYPE);
+        contactsAdapter = new ContactsAdapter(recyclerView, contactsType, secumAPI);
         recyclerView.setAdapter(contactsAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }

@@ -97,4 +97,6 @@
     <string name="search_user_hint">Search by user ID</string>
 
     <string name="no_user_found">No user found!</string>
+
+    <string name="send">Send</string>
 </resources>

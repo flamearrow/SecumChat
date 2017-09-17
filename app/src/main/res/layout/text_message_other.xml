@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout android:id="@+id/chat_sdk_root_view_text_friend"
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="7dp">
+
+    <com.shanjingtech.secumchat.ui.CircleImageView
+        android:id="@+id/img_user_image"
+        style="@style/CircleIconStyle"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:layout_margin="5dp"
+        android:src="@drawable/cat_head"/>
+
+    <LinearLayout
+        android:id="@+id/content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toLeftOf="@+id/txt_time"
+        android:layout_toRightOf="@+id/img_user_image"
+        android:orientation="horizontal">
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bubble_left"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/txt_content"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="3dp"
+                android:padding="7dp"
+                android:text="Messahe texx"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textSize="20dp"
+                />
+        </FrameLayout>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/txt_time"
+        style="@style/MessageDateStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:text="Time"
+        android:textAppearance="?android:attr/textAppearanceLarge"/>
+</RelativeLayout>

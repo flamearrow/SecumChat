@@ -63,4 +63,17 @@
         <item name="android:maxLength">1</item>
         <item name="android:gravity">center</item>
     </style>
+
+    <style name="MessageDateStyle">
+        <item name="android:textSize">13dp</item>
+        <item name="android:padding">2dp</item>
+        <item name="android:textColor">@android:color/darker_gray</item>
+        <item name="android:textStyle">italic</item>
+    </style>
+
+    <style name="CircleIconStyle">
+        <item name="android:layout_width">48dp</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="border_color">@android:color/black</item>
+    </style>
 </resources>

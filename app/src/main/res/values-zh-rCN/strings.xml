@@ -77,5 +77,6 @@
     <string name="action_delete">删除</string>
     <string name="block_success">拉黑成功</string>
     <string name="delete_success">删除成功</string>
+    <string name="send">发送</string>
 
 </resources>

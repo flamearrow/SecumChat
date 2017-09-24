@@ -1,24 +1,29 @@
 package com.shanjingtech.secumchat;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.shanjingtech.secumchat.contacts.ContactsActivity;
+import com.shanjingtech.secumchat.pushy.PushyInitializer;
 import com.shanjingtech.secumchat.ui.DialingReceivingWaitingLayout;
 import com.shanjingtech.secumchat.ui.HeartMagicLayout;
 import com.shanjingtech.secumchat.ui.HeartSecumCounter;
 import com.shanjingtech.secumchat.ui.SecumCounter;
 import com.shanjingtech.secumchat.util.SecumDebug;
 
-public class DebugActivity extends SecumBaseActivity implements SecumCounter.SecumCounterListener {
+import javax.inject.Inject;
+
+public class DebugActivity extends SecumBaseActivity implements SecumCounter
+        .SecumCounterListener, PushyInitializer.PushyInitializedCallback {
     private final static String TAG = "DebugActivity";
     HeartSecumCounter heartSecumCounter;
     HeartMagicLayout heart;
     DialingReceivingWaitingLayout dialingReceivingWaitingLayout;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -33,6 +38,15 @@ public class DebugActivity extends SecumBaseActivity implements SecumCounter.Sec
         heartSecumCounter = (HeartSecumCounter) findViewById(R.id.chronometer);
 //        catHead = (PulseImageView) findViewById(R.id.cat_head);
         heart = (HeartMagicLayout) findViewById(R.id.heart);
+
+        // To be used in splash
+        initializePushy();
+
+    }
+
+    private void initializePushy() {
+        pushyInitializer.setPushyInitializedCallback(this);
+//        pushyInitializer.initializePushy();
     }
 
     public void clickHeart(View view) {
@@ -40,6 +54,7 @@ public class DebugActivity extends SecumBaseActivity implements SecumCounter.Sec
     }
 
     public void b1(View view) {
+        pushyInitializer.initializePushy();
 //        heartSecumCounter.explode();
 //        secumCounter.initialize();
 //        heart.switchState(PairLikeImageView.LikeState.ME_LIKE);
@@ -119,5 +134,17 @@ public class DebugActivity extends SecumBaseActivity implements SecumCounter.Sec
 
     public void rejectChat(View view) {
         Log.d(TAG, "rejectChat");
+    }
+
+    @Override
+    public void onPushyInitialized() {
+        Toast.makeText(getApplicationContext(), "onPushyInitialized", Toast.LENGTH_SHORT)
+                .show();
+    }
+
+    @Override
+    public void onPushyInitializeFailed() {
+        Toast.makeText(getApplicationContext(), "onPushyInitialized", Toast.LENGTH_SHORT)
+                .show();
     }
 }

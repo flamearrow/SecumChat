@@ -90,7 +90,9 @@ dependencies {
     compile 'com.wefika:horizontal-picker:1.1.1'
 
     // bottom nav bar
-    compile 'com.android.support:design:25.0.0'
+    compile 'com.android.support:design:25.2.0'
+
+    compile 'me.pushy:sdk:1.0.28'
 
     compile 'com.googlecode.libphonenumber:libphonenumber:8.4.0'
     compile project(':secumRTC')

@@ -24,6 +24,7 @@ import com.shanjingtech.secumchat.injection.CurrentUserProvider;
 import com.shanjingtech.secumchat.log.AddTimePairedFactory;
 import com.shanjingtech.secumchat.net.SecumAPI;
 import com.shanjingtech.secumchat.onboarding.SplashActivity;
+import com.shanjingtech.secumchat.pushy.PushyInitializer;
 import com.shanjingtech.secumchat.util.Constants;
 
 import javax.inject.Inject;
@@ -46,6 +47,8 @@ public class SecumBaseActivity
     protected SharedPreferences sharedPreferences;
     @Inject
     protected CurrentUserProvider currentUserProvider;
+    @Inject
+    PushyInitializer pushyInitializer;
 
     private static final String PERMISSION_TAG = "SecumPermission";
     private AlertDialog permissionAlertDialog;

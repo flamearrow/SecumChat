@@ -7,7 +7,6 @@ import android.telephony.TelephonyManager;
 import android.view.View;
 
 import com.shanjingtech.secumchat.model.User;
-import com.shanjingtech.secumchat.util.Constants;
 import com.shanjingtech.secumchat.util.SecumDebug;
 
 import retrofit2.Call;
@@ -18,7 +17,7 @@ import retrofit2.Response;
  * Legacy login activity, direct access to SecumChat and debug api
  */
 
-public class LoginActivity extends SecumBaseActivity {
+public class LegacyLoginActivity extends SecumBaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,7 +85,7 @@ public class LoginActivity extends SecumBaseActivity {
                 if (response.isSuccessful()) {
                     User user = response.body();
                     currentUserProvider.setUser(user);
-                    startActivity(new Intent(LoginActivity.this, SecumChatActivity.class));
+                    startActivity(new Intent(LegacyLoginActivity.this, SecumChatActivity.class));
 
                 }
             }

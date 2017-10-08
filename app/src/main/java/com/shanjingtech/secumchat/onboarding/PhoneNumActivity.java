@@ -13,7 +13,7 @@ import android.widget.EditText;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
 import com.shanjingtech.countrycodepicker.CountryCodePicker;
-import com.shanjingtech.secumchat.LoginActivity;
+import com.shanjingtech.secumchat.LegacyLoginActivity;
 import com.shanjingtech.secumchat.R;
 import com.shanjingtech.secumchat.SecumBaseActivity;
 import com.shanjingtech.secumchat.model.User;
@@ -142,7 +142,7 @@ public class PhoneNumActivity extends SecumBaseActivity {
     }
 
     public void toDebug(View view) {
-        startActivity(new Intent(this, LoginActivity.class));
+        startActivity(new Intent(this, LegacyLoginActivity.class));
     }
 
     private String getFullPhoneNumber() {

@@ -3,6 +3,7 @@ package com.shanjingtech.secumchat.injection;
 import android.app.Application;
 import android.content.Context;
 
+import com.shanjingtech.secumchat.net.SecumAPI;
 import com.shanjingtech.secumchat.pushy.PushyInitializer;
 
 import javax.inject.Singleton;
@@ -36,7 +37,7 @@ public class AppModule {
 
     @Provides
     @Singleton
-    PushyInitializer providesPushyInitializer(Application application) {
-        return new PushyInitializer(application);
+    PushyInitializer providesPushyInitializer(Application application, SecumAPI secumAPI) {
+        return new PushyInitializer(application, secumAPI);
     }
 }

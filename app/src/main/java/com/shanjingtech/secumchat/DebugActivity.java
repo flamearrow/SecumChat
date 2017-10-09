@@ -188,7 +188,7 @@ public class DebugActivity extends AppCompatActivity implements SecumCounter
 
     @Override
     public void onPushyInitializeFailed() {
-        Toast.makeText(getApplicationContext(), "onPushyInitialized", Toast.LENGTH_SHORT)
+        Toast.makeText(getApplicationContext(), "onPushyInitializeFailed", Toast.LENGTH_SHORT)
                 .show();
     }
 }

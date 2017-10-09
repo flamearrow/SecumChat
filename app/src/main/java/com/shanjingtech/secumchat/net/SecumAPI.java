@@ -15,6 +15,7 @@ import com.shanjingtech.secumchat.model.GetMatchRequest;
 import com.shanjingtech.secumchat.model.GetProfileFromUserNameRequest;
 import com.shanjingtech.secumchat.model.ListContactsRequest;
 import com.shanjingtech.secumchat.model.PingResponse;
+import com.shanjingtech.secumchat.model.RegisterNotificationTokenRequest;
 import com.shanjingtech.secumchat.model.ReportUserRequest;
 import com.shanjingtech.secumchat.model.ReportUserResponse;
 import com.shanjingtech.secumchat.model.UpdateUserRequest;
@@ -127,5 +128,8 @@ public interface SecumAPI {
     @POST(Constants.PATH_BLOCK_CONTACT)
     Call<List<GenericResponse>> blockContact(@Body BlockContactRequest request);
 
-
+    @Headers("Content-Type: application/json")
+    @POST(Constants.PATH_REGISTER_NOTIFICATION_TOKEN)
+    Call<List<GenericResponse>> registerNotificationToken(@Body RegisterNotificationTokenRequest
+                                                                  request);
 }

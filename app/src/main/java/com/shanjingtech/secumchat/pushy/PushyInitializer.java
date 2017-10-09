@@ -2,18 +2,26 @@ package com.shanjingtech.secumchat.pushy;
 
 
 import android.content.Context;
-import android.os.AsyncTask;
-import android.util.Log;
-import android.widget.Toast;
+
+import com.shanjingtech.secumchat.model.GenericResponse;
+import com.shanjingtech.secumchat.model.RegisterNotificationTokenRequest;
+import com.shanjingtech.secumchat.net.SecumAPI;
+
+import java.util.List;
 
 import me.pushy.sdk.Pushy;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class PushyInitializer {
     private static final String TAG = PushyInitializer.class.getCanonicalName();
     private Context context;
+    private SecumAPI secumAPI;
 
-    public PushyInitializer(Context context) {
+    public PushyInitializer(Context context, SecumAPI secumAPI) {
         this.context = context;
+        this.secumAPI = secumAPI;
     }
 
     public void setPushyInitializedCallback(PushyInitializedCallback pushyInitializedCallback) {
@@ -37,49 +45,43 @@ public class PushyInitializer {
     public void initializePushy() {
         Pushy.listen(context);
         // TODO: request permission
-        new RegisterForPushNotificationsAsync().execute();
+
+        registerNotificationToken();
     }
 
-    private class RegisterForPushNotificationsAsync extends AsyncTask<Void, Void,
-            Exception> {
+    private void registerNotificationToken() {
+        // Assign a unique token to this device
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    String deviceToken = Pushy.register(context);
+                    secumAPI.registerNotificationToken(new RegisterNotificationTokenRequest
+                            (deviceToken)).enqueue(new Callback<List<GenericResponse>>() {
+                        @Override
+                        public void onResponse(Call<List<GenericResponse>> call,
+                                               Response<List<GenericResponse>> response) {
 
-        protected Exception doInBackground(Void... params) {
-            try {
-                // Assign a unique token to this device
-                String deviceToken = Pushy.register(context);
+                            if (pushyInitializedCallback == null) {
+                                return;
+                            }
+                            pushyInitializedCallback.onPushyInitialized();
+                        }
 
-                // Log it for debugging purposes
-//                Toast.makeText(context, "Pushy device token: " + deviceToken, Toast.LENGTH_SHORT)
-//                        .show();
-
-
-                int i = 23;
-                int j = 24;
-                // send it to backend
-            } catch (Exception exc) {
-                // Return exc to onPostExecute
-                return exc;
+                        @Override
+                        public void onFailure(Call<List<GenericResponse>> call, Throwable t) {
+                            if (pushyInitializedCallback != null) {
+                                pushyInitializedCallback.onPushyInitializeFailed();
+                            }
+                        }
+                    });
+                } catch (Exception exc) {
+                    if (pushyInitializedCallback != null) {
+                        pushyInitializedCallback.onPushyInitializeFailed();
+                    }
+                }
             }
-
-            // Success
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Exception exc) {
-            if (pushyInitializedCallback == null) {
-                return;
-            }
-            if (exc != null) {
-                // Show error as toast message
-                Log.d(TAG, exc.toString());
-                pushyInitializedCallback.onPushyInitializeFailed();
-            } else {
-                pushyInitializedCallback.onPushyInitialized();
-            }
-
-        }
+        }).start();
     }
 
 }
-

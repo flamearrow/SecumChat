@@ -49,9 +49,12 @@ public class PushyInitializer {
                 String deviceToken = Pushy.register(context);
 
                 // Log it for debugging purposes
-                Toast.makeText(context, "Pushy device token: " + deviceToken, Toast.LENGTH_SHORT)
-                        .show();
+//                Toast.makeText(context, "Pushy device token: " + deviceToken, Toast.LENGTH_SHORT)
+//                        .show();
 
+
+                int i = 23;
+                int j = 24;
                 // send it to backend
             } catch (Exception exc) {
                 // Return exc to onPostExecute
@@ -70,9 +73,9 @@ public class PushyInitializer {
             if (exc != null) {
                 // Show error as toast message
                 Log.d(TAG, exc.toString());
-//                pushyInitializedCallback.onPushyInitializeFailed();
+                pushyInitializedCallback.onPushyInitializeFailed();
             } else {
-//                pushyInitializedCallback.onPushyInitialized();
+                pushyInitializedCallback.onPushyInitialized();
             }
 
         }

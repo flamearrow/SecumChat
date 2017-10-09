@@ -55,7 +55,7 @@ public class PnPeerConnectionClient {
         this.signalingParams = signalingParams;
         this.mRtcListener = rtcListener;
         this.pcFactory = new PeerConnectionFactory(); // TODO: Check it allowed, else extra param
-        this.peers = new HashMap<String, PnPeer>();
+        this.peers = new HashMap<>();
         init();
     }
 
@@ -299,9 +299,9 @@ public class PnPeerConnectionClient {
 
         public void execute(String peerId, JSONObject payload) throws JSONException {
             Log.d(PNACTION, "PnUserMessageAction");
-            JSONObject msgJson = payload.getJSONObject(PnRTCMessage.JSON_USERMSG);
-            PnPeer peer = peers.get(peerId);
-            mRtcListener.onMessage(peer, msgJson);
+            String message = payload.getString(PnRTCMessage.JSON_MESSAGE);
+            long time = payload.getLong(PnRTCMessage.JSON_TIME);
+            mRtcListener.onMessage(message, time);
         }
     }
 
@@ -444,6 +444,12 @@ public class PnPeerConnectionClient {
                     return;
                 }
 
+                // User message has nothing to do with rtc
+                if (PnRTCMessage.JSON_USERMSG.equals(type)) {
+                    actionMap.get(PnUserMessageAction.TRIGGER).execute(peerId, packet);
+                    return;
+                }
+
                 PnPeer peer;
                 if (!peers.containsKey(peerId)) {
                     peer = addPeer(peerId);
@@ -461,10 +467,6 @@ public class PnPeerConnectionClient {
                 }
                 if (peer.getStatus().equals(PnPeer.STATUS_DISCONNECTED))
                     return; // Do nothing if disconnected.
-                if (packet.has(PnRTCMessage.JSON_USERMSG)) {
-                    actionMap.get(PnUserMessageAction.TRIGGER).execute(peerId, packet);
-                    return;
-                }
                 if (PnRTCMessage.JSON_HANGUP.equals(type)) {
                     actionMap.get(PnUserHangupAction.TRIGGER).execute(peerId, packet);
                     return;

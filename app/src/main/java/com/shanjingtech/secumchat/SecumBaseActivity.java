@@ -20,12 +20,21 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.crashlytics.android.answers.Answers;
+import com.shanjingtech.pnwebrtc.PnRTCClient;
+import com.shanjingtech.pnwebrtc.PnSignalingParams;
 import com.shanjingtech.secumchat.injection.CurrentUserProvider;
 import com.shanjingtech.secumchat.log.AddTimePairedFactory;
+import com.shanjingtech.secumchat.model.User;
 import com.shanjingtech.secumchat.net.SecumAPI;
+import com.shanjingtech.secumchat.net.XirSysRequest;
 import com.shanjingtech.secumchat.onboarding.SplashActivity;
 import com.shanjingtech.secumchat.pushy.PushyInitializer;
 import com.shanjingtech.secumchat.util.Constants;
+
+import org.webrtc.PeerConnection;
+import org.webrtc.PeerConnectionFactory;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -50,8 +59,12 @@ public class SecumBaseActivity
     @Inject
     PushyInitializer pushyInitializer;
 
+
     private static final String PERMISSION_TAG = "SecumPermission";
     private AlertDialog permissionAlertDialog;
+
+    // Pubhub components
+    protected PnRTCClient pnRTCClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +78,8 @@ public class SecumBaseActivity
                 .setNegativeButton(resources.getString(R.string.cancel), this)
                 .setIcon(R.drawable.cat_head)
                 .create();
+
+        initializeRTCComponents();
     }
 
     protected void showToast(final String message) {
@@ -289,5 +304,42 @@ public class SecumBaseActivity
         editor.remove(Constants.SHARED_PREF_ACCESS_TOKEN);
         editor.commit();
         startActivity(new Intent(this, SplashActivity.class));
+    }
+
+    /**
+     * @return my username
+     */
+    protected String getMyName() {
+        return currentUserProvider.getUser().getUsername();
+    }
+
+    /**
+     * @return my {@link User}
+     */
+    protected User getMyUser() {
+        return currentUserProvider.getUser();
+    }
+
+    protected void initializeRTCComponents() {
+        // First, we initiate the PeerConnectionFactory with our application context and some
+        // options.
+        PeerConnectionFactory.initializeAndroidGlobals(
+                this,  // Context
+                true,  // Audio Enabled
+                true,  // Video Enabled
+                true,  // Hardware Acceleration Enabled
+                null); // Render EGL Context
+
+        // init pubnubClient, order matters
+        List<PeerConnection.IceServer> servers = XirSysRequest.getIceServers();
+        if (!servers.isEmpty()) {
+            pnRTCClient = new PnRTCClient(Constants.PUB_KEY, Constants.SUB_KEY, Constants.SEC_KEY,
+                    getMyName(), new
+                    PnSignalingParams(servers));
+        } else {
+            // TODO: revert to use default signal params
+            pnRTCClient = new PnRTCClient(Constants.PUB_KEY, Constants.SUB_KEY, Constants.SEC_KEY,
+                    getMyName());
+        }
     }
 }

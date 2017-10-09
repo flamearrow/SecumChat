@@ -19,16 +19,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.shanjingtech.pnwebrtc.PnRTCClient;
-import com.shanjingtech.pnwebrtc.PnSignalingParams;
 import com.shanjingtech.secumchat.lifecycle.NonRTCMessageController;
 import com.shanjingtech.secumchat.lifecycle.SecumRTCListener;
 import com.shanjingtech.secumchat.model.GetMatch;
 import com.shanjingtech.secumchat.model.ReportUserRequest;
 import com.shanjingtech.secumchat.model.ReportUserResponse;
-import com.shanjingtech.secumchat.model.User;
 import com.shanjingtech.secumchat.net.SecumNetworkRequester;
-import com.shanjingtech.secumchat.net.XirSysRequest;
 import com.shanjingtech.secumchat.onboarding.MyDetailsActivity;
 import com.shanjingtech.secumchat.onboarding.SplashActivity;
 import com.shanjingtech.secumchat.ui.DialingReceivingWaitingLayout;
@@ -39,7 +35,6 @@ import com.shanjingtech.secumchat.util.Constants;
 import org.webrtc.AudioSource;
 import org.webrtc.AudioTrack;
 import org.webrtc.MediaStream;
-import org.webrtc.PeerConnection;
 import org.webrtc.PeerConnectionFactory;
 import org.webrtc.VideoCapturer;
 import org.webrtc.VideoCapturerAndroid;
@@ -67,9 +62,6 @@ public class SecumChatActivity extends SecumTabbedActivity implements
         DialogInterface.OnMultiChoiceClickListener {
 
     private GLSurfaceView videoView;
-    // my name, also used for regular channel name
-    private String myName;
-    private User currentUser;
 
     // webRTC components
     private MediaStream localStream;
@@ -80,8 +72,8 @@ public class SecumChatActivity extends SecumTabbedActivity implements
 
     private SecumRTCListener secumRTCListener;
 
-    // Pubhub components
-    private PnRTCClient pnRTCClient;
+//    // Pubhub components
+//    private PnRTCClient pnRTCClient;
 
     // UI
     // The button should be invisible until the user is being called
@@ -151,9 +143,7 @@ public class SecumChatActivity extends SecumTabbedActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        this.currentUser = currentUserProvider.getUser();
-        this.myName = currentUser.getUsername();
-        setTitle(currentUser.getNickname());
+        setTitle(getMyUser().getNickname());
         Resources resources = getResources();
 
         reportItemArray = getResources().getTextArray(R.array.report_items);
@@ -166,12 +156,12 @@ public class SecumChatActivity extends SecumTabbedActivity implements
                 .create();
 
         initUI();
-        initRTCComponents();
+        initCameraView();
         initializeMediaStream();
 
-        nonRTCMessageController = new NonRTCMessageController(currentUser, pnRTCClient.getPubNub(),
+        nonRTCMessageController = new NonRTCMessageController(getMyUser(), pnRTCClient.getPubNub(),
                 this);
-        networkRequester = new SecumNetworkRequester(this, myName, this);
+        networkRequester = new SecumNetworkRequester(this, getMyName(), this);
     }
 
     @Override
@@ -303,27 +293,27 @@ public class SecumChatActivity extends SecumTabbedActivity implements
         matchingView = findViewById(R.id.matching_view);
     }
 
-    private void initRTCComponents() {
-        // First, we initiate the PeerConnectionFactory with our application context and some
-        // options.
-        PeerConnectionFactory.initializeAndroidGlobals(
-                this,  // Context
-                true,  // Audio Enabled
-                true,  // Video Enabled
-                true,  // Hardware Acceleration Enabled
-                null); // Render EGL Context
-
-        // init pubnubClient, order matters
-        List<PeerConnection.IceServer> servers = XirSysRequest.getIceServers();
-        if (!servers.isEmpty()) {
-            pnRTCClient = new PnRTCClient(Constants.PUB_KEY, Constants.SUB_KEY, Constants.SEC_KEY,
-                    myName, new
-                    PnSignalingParams(servers));
-        } else {
-            // TODO: revert to use default signal params
-            pnRTCClient = new PnRTCClient(Constants.PUB_KEY, Constants.SUB_KEY, Constants.SEC_KEY,
-                    myName);
-        }
+    private void initCameraView() {
+//        // First, we initiate the PeerConnectionFactory with our application context and some
+//        // options.
+//        PeerConnectionFactory.initializeAndroidGlobals(
+//                this,  // Context
+//                true,  // Audio Enabled
+//                true,  // Video Enabled
+//                true,  // Hardware Acceleration Enabled
+//                null); // Render EGL Context
+//
+//        // init pubnubClient, order matters
+//        List<PeerConnection.IceServer> servers = XirSysRequest.getIceServers();
+//        if (!servers.isEmpty()) {
+//            pnRTCClient = new PnRTCClient(Constants.PUB_KEY, Constants.SUB_KEY, Constants.SEC_KEY,
+//                    getMyName(), new
+//                    PnSignalingParams(servers));
+//        } else {
+//            // TODO: revert to use default signal params
+//            pnRTCClient = new PnRTCClient(Constants.PUB_KEY, Constants.SUB_KEY, Constants.SEC_KEY,
+//                    getMyName());
+//        }
 
         // Init camera views: this view is in charge of both bigger(bg) and small cameras views by
         // adding renderer
@@ -459,7 +449,7 @@ public class SecumChatActivity extends SecumTabbedActivity implements
         pnRTCClient.closeAllConnections();
         pnRTCClient.getPubNub().unsubscribeAll();
         // subscribe to my regular channel
-        pnRTCClient.listenOnForce(myName);
+        pnRTCClient.listenOnForce(getMyName());
     }
 
     private void tearDownChannels() {
@@ -625,7 +615,7 @@ public class SecumChatActivity extends SecumTabbedActivity implements
      * @param channels
      */
     public void onChannelSubscribed(List<String> channels) {
-        if (channels.contains(myName)) {
+        if (channels.contains(getMyName())) {
             switchState(State.MATCHING);
         }
     }
@@ -661,9 +651,9 @@ public class SecumChatActivity extends SecumTabbedActivity implements
                 calleeGetMatch.setMatchedUsername(callerName);
                 calleeGetMatch.setCallerNickName(callerNickName);
                 calleeGetMatch.setCallerGender(callerGender);
-                calleeGetMatch.setCalleeName(myName);
-                calleeGetMatch.setCalleeNickName(currentUser.getNickname());
-                calleeGetMatch.setCalleeGender(currentUser.getGender());
+                calleeGetMatch.setCalleeName(getMyName());
+                calleeGetMatch.setCalleeNickName(getMyUser().getNickname());
+                calleeGetMatch.setCalleeGender(getMyUser().getGender());
                 calleeGetMatch.setCaller(false);
 
                 this.getMatch = calleeGetMatch;

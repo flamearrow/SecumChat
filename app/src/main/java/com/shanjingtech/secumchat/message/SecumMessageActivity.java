@@ -6,6 +6,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.widget.Toast;
 
+import com.shanjingtech.pnwebrtc.PnRTCListener;
 import com.shanjingtech.secumchat.R;
 import com.shanjingtech.secumchat.SecumBaseActivity;
 import com.shanjingtech.secumchat.util.SecumUtils;
@@ -24,6 +25,8 @@ public class SecumMessageActivity extends SecumBaseActivity implements SwipeRefr
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        initializePubnub();
+
         setContentView(R.layout.secum_message_activity);
         messageRecyclerView = (RecyclerView) findViewById(R.id.message_recycler);
         messageAction = (MessageActionBoxView) findViewById(R.id.message_box);
@@ -33,10 +36,25 @@ public class SecumMessageActivity extends SecumBaseActivity implements SwipeRefr
         initializeRecyclerView();
     }
 
+    private void initializePubnub() {
+        pnRTCClient.attachRTCListener(new PnRTCListener() {
+            @Override
+            public void onMessage(final String message, final long time) {
+                addNewMessage(new Message(message, SecumUtils.getCurrentTime
+                        (time), false));
+            }
+        });
+        pnRTCClient.getPubNub().unsubscribeAll();
+        // subscribe to my regular channel
+        pnRTCClient.subscribeToPubnubChannel(getMyName());
+    }
+
     private void initializeRecyclerView() {
         messageAdapter = new SecumMessageAdapter();
         messageRecyclerView.setAdapter(messageAdapter);
-        messageRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        linearLayoutManager.setStackFromEnd(true);
+        messageRecyclerView.setLayoutManager(linearLayoutManager);
     }
 
     @Override
@@ -48,9 +66,17 @@ public class SecumMessageActivity extends SecumBaseActivity implements SwipeRefr
     @Override
     public void onMessageSent(String text) {
         messageAction.clearText();
-        messageAdapter.addMessage(new Message(text, SecumUtils.getCurrentTime(), true));
-        // TODO: scroll to bottom
-        swipeRefreshLayout.refreshDrawableState();
+        addNewMessage(new Message(text, SecumUtils.getCurrentTime(), true));
+    }
+
+    void addNewMessage(final Message message) {
+        messageRecyclerView.post(new Runnable() {
+            @Override
+            public void run() {
+                messageAdapter.addMessage(message);
+                messageRecyclerView.smoothScrollToPosition(messageAdapter.getItemCount() - 1);
+            }
+        });
     }
 
 }

@@ -8,6 +8,7 @@ import org.json.JSONObject;
 import org.webrtc.MediaConstraints;
 import org.webrtc.MediaStream;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -140,6 +141,14 @@ public class PnRTCClient {
      */
     public void listenOnForce(String channel) {
         this.pcClient.listenOn(channel, true);
+    }
+
+    /**
+     * Only subscribe to pubnub
+     * @param channel
+     */
+    public void subscribeToPubnubChannel(String channel) {
+        mPubNub.subscribe().channels(Arrays.asList(channel)).execute();
     }
 
     /**

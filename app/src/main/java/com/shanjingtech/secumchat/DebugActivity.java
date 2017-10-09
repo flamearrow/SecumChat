@@ -1,13 +1,18 @@
 package com.shanjingtech.secumchat;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
-import com.shanjingtech.secumchat.contacts.ContactsActivity;
+import com.shanjingtech.secumchat.injection.CurrentUserProvider;
+import com.shanjingtech.secumchat.message.SecumMessageActivity;
+import com.shanjingtech.secumchat.model.User;
+import com.shanjingtech.secumchat.net.SecumAPI;
 import com.shanjingtech.secumchat.pushy.PushyInitializer;
 import com.shanjingtech.secumchat.ui.DialingReceivingWaitingLayout;
 import com.shanjingtech.secumchat.ui.HeartMagicLayout;
@@ -17,8 +22,24 @@ import com.shanjingtech.secumchat.util.SecumDebug;
 
 import javax.inject.Inject;
 
-public class DebugActivity extends SecumBaseActivity implements SecumCounter
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+public class DebugActivity extends AppCompatActivity implements SecumCounter
         .SecumCounterListener, PushyInitializer.PushyInitializedCallback {
+    @Inject
+    SharedPreferences sharedPreferences;
+
+    @Inject
+    SecumAPI secumAPI;
+
+    @Inject
+    CurrentUserProvider currentUserProvider;
+
+    @Inject
+    PushyInitializer pushyInitializer;
+
     private final static String TAG = "DebugActivity";
     HeartSecumCounter heartSecumCounter;
     HeartMagicLayout heart;
@@ -28,11 +49,12 @@ public class DebugActivity extends SecumBaseActivity implements SecumCounter
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ((SecumApplication) getApplication()).getNetComponet().inject(this);
         setContentView(R.layout.debug_activity);
 
         // always use phone11's token
-        SecumDebug.enableDebugMode(sharedPreferences);
-        SecumDebug.setDebugUser(sharedPreferences, SecumDebug.USER_11);
+        logInAsUser11();
+
 
         dialingReceivingWaitingLayout = (DialingReceivingWaitingLayout) findViewById(R.id.drw);
         heartSecumCounter = (HeartSecumCounter) findViewById(R.id.chronometer);
@@ -42,6 +64,27 @@ public class DebugActivity extends SecumBaseActivity implements SecumCounter
         // To be used in splash
         initializePushy();
 
+    }
+
+    private void logInAsUser11() {
+        SecumDebug.enableDebugMode(sharedPreferences);
+        SecumDebug.setDebugUser(sharedPreferences, SecumDebug.USER_11);
+        secumAPI.getProfile().enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(Call<User> call, Response<User> response) {
+                if (response.isSuccessful()) {
+                    User user = response.body();
+                    currentUserProvider.setUser(user);
+//                    startActivity(new Intent(DebugActivity.this, SecumChatActivity.class));
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<User> call, Throwable t) {
+
+            }
+        });
     }
 
     private void initializePushy() {
@@ -65,8 +108,9 @@ public class DebugActivity extends SecumBaseActivity implements SecumCounter
     }
 
     public void b2(View view) {
-        Intent intent = new Intent(this, ContactsActivity.class);
+        Intent intent = new Intent(this, SecumMessageActivity.class);
         startActivity(intent);
+
 //        heart.switchState(PairLikeImageView.LikeState.PEER_LIKE);
 //        heart.peerLike();
 //        secumCounter.peerAdd();

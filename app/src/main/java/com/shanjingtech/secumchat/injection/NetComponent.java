@@ -1,5 +1,7 @@
 package com.shanjingtech.secumchat.injection;
 
+import com.shanjingtech.secumchat.DebugActivity;
+import com.shanjingtech.secumchat.LegacyLoginActivity;
 import com.shanjingtech.secumchat.SecumBaseActivity;
 import com.shanjingtech.secumchat.net.SecumNetworkRequester;
 
@@ -12,4 +14,6 @@ import dagger.Component;
 public interface NetComponent {
     void inject(SecumBaseActivity activity);
     void inject(SecumNetworkRequester networkRequester);
+    void inject(LegacyLoginActivity legacyLoginActivity);
+    void inject(DebugActivity debugActivity);
 }

@@ -2,12 +2,18 @@ package com.shanjingtech.secumchat;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.telephony.TelephonyManager;
 import android.view.View;
 
+import com.shanjingtech.secumchat.injection.CurrentUserProvider;
 import com.shanjingtech.secumchat.model.User;
+import com.shanjingtech.secumchat.net.SecumAPI;
 import com.shanjingtech.secumchat.util.SecumDebug;
+
+import javax.inject.Inject;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -17,11 +23,19 @@ import retrofit2.Response;
  * Legacy login activity, direct access to SecumChat and debug api
  */
 
-public class LegacyLoginActivity extends SecumBaseActivity {
+public class LegacyLoginActivity extends AppCompatActivity {
+
+    @Inject
+    SharedPreferences sharedPreferences;
+    @Inject
+    SecumAPI secumAPI;
+    @Inject
+    CurrentUserProvider currentUserProvider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ((SecumApplication) getApplication()).getNetComponet().inject(this);
         setContentView(R.layout.activity_login);
         SecumDebug.enableDebugMode(sharedPreferences);
     }
@@ -45,7 +59,8 @@ public class LegacyLoginActivity extends SecumBaseActivity {
 
     public void button1(View view) {
         useUser11 = true;
-        requestCameraAudioLocationPermissions();
+//        requestCameraAudioLocationPermissions();
+        logInAs11();
     }
 
     private void logInAs11() {
@@ -63,7 +78,8 @@ public class LegacyLoginActivity extends SecumBaseActivity {
 
     public void button2(View view) {
         useUser11 = false;
-        requestCameraAudioLocationPermissions();
+//        requestCameraAudioLocationPermissions();
+        logInAs22();
     }
 
     private void logInAs22() {
@@ -97,14 +113,14 @@ public class LegacyLoginActivity extends SecumBaseActivity {
         });
     }
 
-    @Override
-    protected void onAudioCameraLocationPermissionGranted() {
-        if (useUser11) {
-            logInAs11();
-        } else {
-            logInAs22();
-        }
-    }
+//    @Override
+//    protected void onAudioCameraLocationPermissionGranted() {
+//        if (useUser11) {
+//            logInAs11();
+//        } else {
+//            logInAs22();
+//        }
+//    }
 
     /**
      * TODO udpate this

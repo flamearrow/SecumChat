@@ -9,7 +9,13 @@ import android.widget.Toast;
 import com.shanjingtech.pnwebrtc.PnRTCListener;
 import com.shanjingtech.secumchat.R;
 import com.shanjingtech.secumchat.SecumBaseActivity;
+import com.shanjingtech.secumchat.model.GenericResponse;
+import com.shanjingtech.secumchat.model.SendMessageRequest;
 import com.shanjingtech.secumchat.util.SecumUtils;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Activity to display a 1 on 1 chat thread
@@ -17,6 +23,9 @@ import com.shanjingtech.secumchat.util.SecumUtils;
 
 public class SecumMessageActivity extends SecumBaseActivity implements SwipeRefreshLayout
         .OnRefreshListener, MessageActionBoxView.MessageSendListener {
+    public static final String PEER_USER_NAME = "PEER_USER_NAME";
+
+    private String peerUserName;
     private RecyclerView messageRecyclerView;
     private MessageActionBoxView messageAction;
     private SecumMessageAdapter messageAdapter;
@@ -25,18 +34,13 @@ public class SecumMessageActivity extends SecumBaseActivity implements SwipeRefr
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        initializePubnub();
-
+        peerUserName = getIntent().getStringExtra(PEER_USER_NAME);
         setContentView(R.layout.secum_message_activity);
         messageRecyclerView = (RecyclerView) findViewById(R.id.message_recycler);
         messageAction = (MessageActionBoxView) findViewById(R.id.message_box);
         messageAction.setMessageSentListener(this);
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
         swipeRefreshLayout.setOnRefreshListener(this);
-        initializeRecyclerView();
-    }
-
-    private void initializePubnub() {
         pnRTCClient.attachRTCListener(new PnRTCListener() {
             @Override
             public void onMessage(final String message, final long time) {
@@ -44,9 +48,29 @@ public class SecumMessageActivity extends SecumBaseActivity implements SwipeRefr
                         (time), false));
             }
         });
+        initializeRecyclerView();
+    }
+
+    private void initializePubnub() {
         pnRTCClient.getPubNub().unsubscribeAll();
         // subscribe to my regular channel
         pnRTCClient.subscribeToPubnubChannel(getMyName());
+    }
+
+    /**
+     * TODO: move onResume and onPause to {@link SecumBaseActivity} without fucking
+     * up {@link com.shanjingtech.secumchat.SecumChatActivity}.
+     */
+    @Override
+    protected void onResume() {
+        super.onResume();
+        initializePubnub();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        pnRTCClient.getPubNub().unsubscribeAll();
     }
 
     private void initializeRecyclerView() {
@@ -67,6 +91,20 @@ public class SecumMessageActivity extends SecumBaseActivity implements SwipeRefr
     public void onMessageSent(String text) {
         messageAction.clearText();
         addNewMessage(new Message(text, SecumUtils.getCurrentTime(), true));
+        secumAPI.sendMessage(new SendMessageRequest(peerUserName, text)).enqueue(
+                new Callback<GenericResponse>() {
+
+            @Override
+            public void onResponse(Call<GenericResponse> call, Response<GenericResponse> response) {
+                // dismiss the spinner
+            }
+
+            @Override
+            public void onFailure(Call<GenericResponse> call, Throwable t) {
+                // show some warning
+            }
+        });
+
     }
 
     void addNewMessage(final Message message) {

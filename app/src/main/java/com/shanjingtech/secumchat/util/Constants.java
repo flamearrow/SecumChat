@@ -94,6 +94,8 @@ public class Constants {
     public static final String PATH_BLOCK_CONTACT = "/api/contacts/block/";
     public static final String PATH_DELETE_CONTACT = "/api/contacts/delete/";
     public static final String PATH_REGISTER_NOTIFICATION_TOKEN = "/api/notification_token/register/";
+    public static final String PATH_SEND_MESSAGE = "/api/message/send_msg/";
+    public static final String PATH_PULL_MESSAGE = "/api/message/pull/";
 
 
     public static final String MALE = "male";

@@ -18,6 +18,8 @@ import com.shanjingtech.secumchat.model.PingResponse;
 import com.shanjingtech.secumchat.model.RegisterNotificationTokenRequest;
 import com.shanjingtech.secumchat.model.ReportUserRequest;
 import com.shanjingtech.secumchat.model.ReportUserResponse;
+import com.shanjingtech.secumchat.model.SendMessageRequest;
+import com.shanjingtech.secumchat.model.UnreadMessage;
 import com.shanjingtech.secumchat.model.UpdateUserRequest;
 import com.shanjingtech.secumchat.model.User;
 import com.shanjingtech.secumchat.model.UserRequest;
@@ -132,4 +134,11 @@ public interface SecumAPI {
     @POST(Constants.PATH_REGISTER_NOTIFICATION_TOKEN)
     Call<List<GenericResponse>> registerNotificationToken(@Body RegisterNotificationTokenRequest
                                                                   request);
+    @Headers("Content-Type: application/json")
+    @POST(Constants.PATH_SEND_MESSAGE)
+    Call<GenericResponse> sendMessage(@Body SendMessageRequest request);
+
+    @Headers("Content-Type: application/json")
+    @POST(Constants.PATH_PULL_MESSAGE)
+    Call<List<UnreadMessage>> pullMessage();
 }

@@ -134,3 +134,41 @@ curl -X POST -H "Content-Type: application/json" -H "Authorization: Bearer vUXSN
 
 13. block contact
 curl -X POST -H "Content-Type: application/json" -H "Authorization: Bearer vUXSNoPy3XLb3oh51zrhrYqQoDaVGd" -d '{ "contact_username":"phone_22"}' https://www.shanjingtech.com/api/contacts/block/
+
+14. send message
+curl -X POST -H "Content-Type: application/json" -H "Authorization: Bearer zhvG2zIf4xXFzzFfTJjnfOycXTjBZn"  -d '{"receiver_username": "phone_11", "text": "msg from mock user to hello"}' https://www.shanjingtech.com/api/message/send_msg/
+
+15. pull message from last read
+curl -X POST -H "Content-Type: application/json" -H "Authorization: Bearer vUXSNoPy3XLb3oh51zrhrYqQoDaVGd"  https://www.shanjingtech.com/api/message/pull/
+response:
+
+{
+   "group_messages":[
+      {
+         "message_group_id":1,
+         "receiver_username":null,
+         "sender_username":"phone_22",
+         "user_info":null,
+         "text":"msg from mock user to hello",
+         "emoji":null,
+         "video":null,
+         "picture":null,
+         "item_id":null,
+         "time_created":"2017-11-29T03:39:13.249169Z",
+         "time_updated":"2017-11-29T03:39:13.249189Z"
+      },
+      {
+         "message_group_id":1,
+         "receiver_username":null,
+         "sender_username":"phone_22",
+         "user_info":null,
+         "text":"msg from mock user to hello",
+         "emoji":null,
+         "video":null,
+         "picture":null,
+         "item_id":null,
+         "time_created":"2017-11-29T03:39:15.418821Z",
+         "time_updated":"2017-11-29T03:39:15.418842Z"
+      }
+   ]
+}

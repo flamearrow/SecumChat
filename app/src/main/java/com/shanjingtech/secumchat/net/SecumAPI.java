@@ -13,13 +13,13 @@ import com.shanjingtech.secumchat.model.GenericResponse;
 import com.shanjingtech.secumchat.model.GetMatch;
 import com.shanjingtech.secumchat.model.GetMatchRequest;
 import com.shanjingtech.secumchat.model.GetProfileFromUserNameRequest;
+import com.shanjingtech.secumchat.model.GroupMessages;
 import com.shanjingtech.secumchat.model.ListContactsRequest;
 import com.shanjingtech.secumchat.model.PingResponse;
 import com.shanjingtech.secumchat.model.RegisterNotificationTokenRequest;
 import com.shanjingtech.secumchat.model.ReportUserRequest;
 import com.shanjingtech.secumchat.model.ReportUserResponse;
 import com.shanjingtech.secumchat.model.SendMessageRequest;
-import com.shanjingtech.secumchat.model.UnreadMessage;
 import com.shanjingtech.secumchat.model.UpdateUserRequest;
 import com.shanjingtech.secumchat.model.User;
 import com.shanjingtech.secumchat.model.UserRequest;
@@ -140,5 +140,5 @@ public interface SecumAPI {
 
     @Headers("Content-Type: application/json")
     @POST(Constants.PATH_PULL_MESSAGE)
-    Call<List<UnreadMessage>> pullMessage();
+    Call<GroupMessages> pullMessage();
 }

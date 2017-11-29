@@ -11,6 +11,8 @@ import android.widget.Toast;
 
 import com.shanjingtech.secumchat.injection.CurrentUserProvider;
 import com.shanjingtech.secumchat.message.SecumMessageActivity;
+import com.shanjingtech.secumchat.model.GroupMessages;
+import com.shanjingtech.secumchat.model.UnreadMessage;
 import com.shanjingtech.secumchat.model.User;
 import com.shanjingtech.secumchat.net.SecumAPI;
 import com.shanjingtech.secumchat.pushy.PushyInitializer;
@@ -61,9 +63,30 @@ public class DebugActivity extends AppCompatActivity implements SecumCounter
 //        catHead = (PulseImageView) findViewById(R.id.cat_head);
         heart = (HeartMagicLayout) findViewById(R.id.heart);
 
-        // To be used in splash
+        // TODO: To be used in splash
         initializePushy();
 
+    }
+
+    private void logInAsUser22() {
+        SecumDebug.enableDebugMode(sharedPreferences);
+        SecumDebug.setDebugUser(sharedPreferences, SecumDebug.USER_22);
+        secumAPI.getProfile().enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(Call<User> call, Response<User> response) {
+                if (response.isSuccessful()) {
+                    User user = response.body();
+                    currentUserProvider.setUser(user);
+//                    startActivity(new Intent(DebugActivity.this, SecumChatActivity.class));
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<User> call, Throwable t) {
+
+            }
+        });
     }
 
     private void logInAsUser11() {
@@ -89,7 +112,7 @@ public class DebugActivity extends AppCompatActivity implements SecumCounter
 
     private void initializePushy() {
         pushyInitializer.setPushyInitializedCallback(this);
-//        pushyInitializer.initializePushy();
+        pushyInitializer.initializePushy();
     }
 
     public void clickHeart(View view) {
@@ -97,7 +120,21 @@ public class DebugActivity extends AppCompatActivity implements SecumCounter
     }
 
     public void b1(View view) {
-        pushyInitializer.initializePushy();
+        secumAPI.pullMessage().enqueue(new Callback<GroupMessages>() {
+            @Override
+            public void onResponse(Call<GroupMessages> call, Response<GroupMessages> response) {
+                for (UnreadMessage unreadMessage : response.body().getGroupMessages()) {
+                    Log.d(TAG, "received message '" + unreadMessage.getText() + "' from " +
+                            unreadMessage.getSender_username());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<GroupMessages> call, Throwable t) {
+
+            }
+        });
+//        pushyInitializer.initializePushy();
 //        heartSecumCounter.explode();
 //        secumCounter.initialize();
 //        heart.switchState(PairLikeImageView.LikeState.ME_LIKE);
@@ -109,6 +146,7 @@ public class DebugActivity extends AppCompatActivity implements SecumCounter
 
     public void b2(View view) {
         Intent intent = new Intent(this, SecumMessageActivity.class);
+        intent.putExtra(SecumMessageActivity.PEER_USER_NAME, "phone_22");
         startActivity(intent);
 
 //        heart.switchState(PairLikeImageView.LikeState.PEER_LIKE);

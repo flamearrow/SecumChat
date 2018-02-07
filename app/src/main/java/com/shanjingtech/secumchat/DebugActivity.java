@@ -15,6 +15,7 @@ import com.shanjingtech.secumchat.model.GroupMessages;
 import com.shanjingtech.secumchat.model.UnreadMessage;
 import com.shanjingtech.secumchat.model.User;
 import com.shanjingtech.secumchat.net.SecumAPI;
+import com.shanjingtech.secumchat.net.SecumDebugAPI;
 import com.shanjingtech.secumchat.pushy.PushyInitializer;
 import com.shanjingtech.secumchat.ui.DialingReceivingWaitingLayout;
 import com.shanjingtech.secumchat.ui.HeartMagicLayout;
@@ -47,6 +48,7 @@ public class DebugActivity extends AppCompatActivity implements SecumCounter
     HeartMagicLayout heart;
     DialingReceivingWaitingLayout dialingReceivingWaitingLayout;
 
+    SecumDebugAPI secumDebugAPI = new SecumDebugAPI();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -134,6 +136,22 @@ public class DebugActivity extends AppCompatActivity implements SecumCounter
 
             }
         });
+
+        secumDebugAPI.fakePullMessage(true);
+        secumDebugAPI.pullMessage().enqueue(new Callback<GroupMessages>() {
+            @Override
+            public void onResponse(Call<GroupMessages> call, Response<GroupMessages> response) {
+                // create fake messages
+                GroupMessages groupMessages = new GroupMessages();
+
+            }
+
+            @Override
+            public void onFailure(Call<GroupMessages> call, Throwable t) {
+
+            }
+        });
+
 //        pushyInitializer.initializePushy();
 //        heartSecumCounter.explode();
 //        secumCounter.initialize();

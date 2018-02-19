@@ -78,8 +78,9 @@ public class SecumBaseActivity
                 .setNegativeButton(resources.getString(R.string.cancel), this)
                 .setIcon(R.drawable.cat_head)
                 .create();
-
-        initializeRTCComponents();
+//        This will cause SplashActivity crash
+        // todo: fix this
+//        initializeRTCComponents();
     }
 
     protected void showToast(final String message) {

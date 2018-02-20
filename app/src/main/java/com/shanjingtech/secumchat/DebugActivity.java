@@ -1,7 +1,6 @@
 package com.shanjingtech.secumchat;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -9,39 +8,46 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
-import com.shanjingtech.secumchat.injection.CurrentUserProvider;
+import com.shanjingtech.secumchat.db.ConversationPreview;
+import com.shanjingtech.secumchat.db.Message;
+import com.shanjingtech.secumchat.db.MessageDAO;
+import com.shanjingtech.secumchat.db.TimestampConverter;
+import com.shanjingtech.secumchat.db.UnreadPreview;
 import com.shanjingtech.secumchat.message.SecumMessageActivity;
-import com.shanjingtech.secumchat.model.GroupMessages;
-import com.shanjingtech.secumchat.model.UnreadMessage;
-import com.shanjingtech.secumchat.model.User;
-import com.shanjingtech.secumchat.net.SecumAPI;
 import com.shanjingtech.secumchat.net.SecumDebugAPI;
 import com.shanjingtech.secumchat.pushy.PushyInitializer;
 import com.shanjingtech.secumchat.ui.DialingReceivingWaitingLayout;
 import com.shanjingtech.secumchat.ui.HeartMagicLayout;
 import com.shanjingtech.secumchat.ui.HeartSecumCounter;
 import com.shanjingtech.secumchat.ui.SecumCounter;
-import com.shanjingtech.secumchat.util.SecumDebug;
+
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.inject.Inject;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-
 public class DebugActivity extends AppCompatActivity implements SecumCounter
         .SecumCounterListener, PushyInitializer.PushyInitializedCallback {
-    @Inject
-    SharedPreferences sharedPreferences;
+//    @Inject
+//    SharedPreferences sharedPreferences;
+//
+//    @Inject
+//    SecumAPI secumAPI;
+//
+//    @Inject
+//    CurrentUserProvider currentUserProvider;
+//
+//    @Inject
+//    PushyInitializer pushyInitializer;
+
+//    @Inject
+//    SecumDatabase secumDatabase;
+
+//    @Inject
+//    DBComponent.Builder dbComponentBuilder;
 
     @Inject
-    SecumAPI secumAPI;
-
-    @Inject
-    CurrentUserProvider currentUserProvider;
-
-    @Inject
-    PushyInitializer pushyInitializer;
+    MessageDAO messageDAO;
 
     private final static String TAG = "DebugActivity";
     HeartSecumCounter heartSecumCounter;
@@ -71,50 +77,48 @@ public class DebugActivity extends AppCompatActivity implements SecumCounter
     }
 
     private void logInAsUser22() {
-        SecumDebug.enableDebugMode(sharedPreferences);
-        SecumDebug.setDebugUser(sharedPreferences, SecumDebug.USER_22);
-        secumAPI.getProfile().enqueue(new Callback<User>() {
-            @Override
-            public void onResponse(Call<User> call, Response<User> response) {
-                if (response.isSuccessful()) {
-                    User user = response.body();
-                    currentUserProvider.setUser(user);
-//                    startActivity(new Intent(DebugActivity.this, SecumChatActivity.class));
-
-                }
-            }
-
-            @Override
-            public void onFailure(Call<User> call, Throwable t) {
-
-            }
-        });
+//        SecumDebug.enableDebugMode(sharedPreferences);
+//        SecumDebug.setDebugUser(sharedPreferences, SecumDebug.USER_22);
+//        secumAPI.getProfile().enqueue(new Callback<User>() {
+//            @Override
+//            public void onResponse(Call<User> call, Response<User> response) {
+//                if (response.isSuccessful()) {
+//                    User user = response.body();
+//                    currentUserProvider.setUser(user);
+//
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<User> call, Throwable t) {
+//
+//            }
+//        });
     }
 
     private void logInAsUser11() {
-        SecumDebug.enableDebugMode(sharedPreferences);
-        SecumDebug.setDebugUser(sharedPreferences, SecumDebug.USER_11);
-        secumAPI.getProfile().enqueue(new Callback<User>() {
-            @Override
-            public void onResponse(Call<User> call, Response<User> response) {
-                if (response.isSuccessful()) {
-                    User user = response.body();
-                    currentUserProvider.setUser(user);
-//                    startActivity(new Intent(DebugActivity.this, SecumChatActivity.class));
-
-                }
-            }
-
-            @Override
-            public void onFailure(Call<User> call, Throwable t) {
-
-            }
-        });
+//        SecumDebug.enableDebugMode(sharedPreferences);
+//        SecumDebug.setDebugUser(sharedPreferences, SecumDebug.USER_11);
+//        secumAPI.getProfile().enqueue(new Callback<User>() {
+//            @Override
+//            public void onResponse(Call<User> call, Response<User> response) {
+//                if (response.isSuccessful()) {
+//                    User user = response.body();
+//                    currentUserProvider.setUser(user);
+//
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<User> call, Throwable t) {
+//
+//            }
+//        });
     }
 
     private void initializePushy() {
-        pushyInitializer.setPushyInitializedCallback(this);
-        pushyInitializer.initializePushy();
+//        pushyInitializer.setPushyInitializedCallback(this);
+//        pushyInitializer.initializePushy();
     }
 
     public void clickHeart(View view) {
@@ -122,35 +126,35 @@ public class DebugActivity extends AppCompatActivity implements SecumCounter
     }
 
     public void b1(View view) {
-        secumAPI.pullMessage().enqueue(new Callback<GroupMessages>() {
-            @Override
-            public void onResponse(Call<GroupMessages> call, Response<GroupMessages> response) {
-                for (UnreadMessage unreadMessage : response.body().getGroupMessages()) {
-                    Log.d(TAG, "received message '" + unreadMessage.getText() + "' from " +
-                            unreadMessage.getSender_username());
-                }
-            }
-
-            @Override
-            public void onFailure(Call<GroupMessages> call, Throwable t) {
-
-            }
-        });
-
-        secumDebugAPI.fakePullMessage(true);
-        secumDebugAPI.pullMessage().enqueue(new Callback<GroupMessages>() {
-            @Override
-            public void onResponse(Call<GroupMessages> call, Response<GroupMessages> response) {
-                // create fake messages
-                GroupMessages groupMessages = new GroupMessages();
-
-            }
-
-            @Override
-            public void onFailure(Call<GroupMessages> call, Throwable t) {
-
-            }
-        });
+//        secumAPI.pullMessage().enqueue(new Callback<GroupMessages>() {
+//            @Override
+//            public void onResponse(Call<GroupMessages> call, Response<GroupMessages> response) {
+//                for (UnreadMessage unreadMessage : response.body().getGroupMessages()) {
+//                    Log.d(TAG, "received message '" + unreadMessage.getText() + "' from " +
+//                            unreadMessage.getSender_username());
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<GroupMessages> call, Throwable t) {
+//
+//            }
+//        });
+//
+//        secumDebugAPI.fakePullMessage(true);
+//        secumDebugAPI.pullMessage().enqueue(new Callback<GroupMessages>() {
+//            @Override
+//            public void onResponse(Call<GroupMessages> call, Response<GroupMessages> response) {
+//                // create fake messages
+//                GroupMessages groupMessages = new GroupMessages();
+//
+//            }
+//
+//            @Override
+//            public void onFailure(Call<GroupMessages> call, Throwable t) {
+//
+//            }
+//        });
 
 //        pushyInitializer.initializePushy();
 //        heartSecumCounter.explode();
@@ -178,7 +182,79 @@ public class DebugActivity extends AppCompatActivity implements SecumCounter
 //        secumCounter.peerAdd();
     }
 
+    private List<Message> createTestMessages() {
+        List<Message> messages = new LinkedList<>();
+        messages.add(createMessage("12345", "phone_11", "phone11",
+                "phone22", "phone11 " +
+                        "talks to phone22", "2017-11-29T03:29:13.249169Z", true));
+        messages.add(createMessage("12345", "phone_11", "phone22",
+                "phone11", "phone22 " +
+                        "talks to phone11", "2017-11-29T03:39:13.249169Z", true));
+        messages.add(createMessage("12345", "phone_11", "phone22",
+                "phone11", "phone22 " +
+                        "talks to phone11 unread 1", "2017-11-29T04:19:13.249169Z", false));
+        messages.add(createMessage("12345", "phone_11", "phone22",
+                "phone11", "phone22 " +
+                        "talks to phone11 unread 2", "2017-11-30T03:39:13.249169Z", false));
+
+
+//        messages.add(new Message());
+
+        return messages;
+    }
+
+    private List<Message> createOtherTestMessages() {
+        List<Message> messages = new LinkedList<>();
+        messages.add(createMessage("123456", "phone_11", "phone11",
+                "phone33", "phone11 " +
+                        "talks to phone22", "2017-11-29T03:29:13.249169Z", true));
+        messages.add(createMessage("123456", "phone_11", "phone33",
+                "phone11", "phone33 " +
+                        "talks to phone11", "2017-11-29T03:39:13.249169Z", true));
+        messages.add(createMessage("123456", "phone_11", "phone33",
+                "phone11", "phone33 " +
+                        "talks to phone11 unread 1", "2017-11-29T04:19:13.249169Z", false));
+        messages.add(createMessage("123456", "phone_11", "phone33",
+                "phone11", "phone33 " +
+                        "talks to phone11 unread 2", "2017-11-30T03:39:13.249169Z", false));
+
+
+//        messages.add(new Message());
+
+        return messages;
+    }
+
+    private Message createMessage(String groupId, String ownerName, String from, String to,
+                                  String content, String time, boolean read) {
+        Message m = new Message();
+        m.setGroupId(groupId);
+        m.setOwnerName(ownerName);
+        m.setFrom(from);
+        m.setTo(to);
+        m.setContent(content);
+        m.setTime(TimestampConverter.fromString(time));
+        m.setRead(read);
+        return m;
+    }
+
+
     public void b3(View view) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+//                List<Long> ids = messageDAO.insertMessages(createOtherTestMessages());
+//                List<Long> ids2 = messageDAO.insertMessages(createTestMessages());
+//                List<Message> history = messageDAO.historyWithGroupId("12345");
+                List<UnreadPreview> previews = messageDAO.unreadPreviewOwnedBy("phone_11");
+                List<ConversationPreview> conversationPreviews = messageDAO.conversationPreviewOwnedBy
+                        ("phone_11");
+                int i = 23;
+                int j = 23;
+            }
+        }).start();
+
+
+
 //        heart.switchState(HeartMagicLayout.LikeState.NO_LIKE);
 //        secumCounter.peerAdd();
 //        secumCounter.freeze();
@@ -188,6 +264,18 @@ public class DebugActivity extends AppCompatActivity implements SecumCounter
     }
 
     public void b4(View view) {
+        String s = "2017-11-29T03:39:13.249169Z";
+        long l = TimestampConverter.fromString(s);
+        int i = 23;
+        String ss = TimestampConverter.fromInt(l);
+        int j = 24;
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                List<Message> messages = messageDAO.loadAllMessagesOwnedBy("phone_11");
+//                int i = 23;
+//            }
+//        }).start();
 //        heart.switchState(HeartMagicLayout.LikeState.BOTH_LIKE);
 //        secumCounter.bounce();
 //        secumCounter.freeze();

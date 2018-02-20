@@ -4,6 +4,7 @@ import android.app.Application;
 
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
+import com.facebook.stetho.Stetho;
 import com.shanjingtech.secumchat.injection.AppModule;
 import com.shanjingtech.secumchat.injection.DaggerNetComponent;
 import com.shanjingtech.secumchat.injection.FabricModule;
@@ -29,6 +30,7 @@ public class SecumApplication extends Application {
                 .netModule(new NetModule(SecumAPI.BASE_URL))
                 .fabricModule(new FabricModule())
                 .build();
+        Stetho.initializeWithDefaults(this);
 
     }
 

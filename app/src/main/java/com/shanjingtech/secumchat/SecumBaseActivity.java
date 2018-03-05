@@ -22,6 +22,7 @@ import android.widget.Toast;
 import com.crashlytics.android.answers.Answers;
 import com.shanjingtech.pnwebrtc.PnRTCClient;
 import com.shanjingtech.pnwebrtc.PnSignalingParams;
+import com.shanjingtech.secumchat.db.MessageDAO;
 import com.shanjingtech.secumchat.injection.CurrentUserProvider;
 import com.shanjingtech.secumchat.log.AddTimePairedFactory;
 import com.shanjingtech.secumchat.model.User;
@@ -58,7 +59,8 @@ public class SecumBaseActivity
     protected CurrentUserProvider currentUserProvider;
     @Inject
     PushyInitializer pushyInitializer;
-
+    @Inject
+    MessageDAO messageDAO;
 
     private static final String PERMISSION_TAG = "SecumPermission";
     private AlertDialog permissionAlertDialog;

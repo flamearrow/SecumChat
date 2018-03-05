@@ -267,7 +267,7 @@ public class DebugActivity extends AppCompatActivity implements SecumCounter
         String s = "2017-11-29T03:39:13.249169Z";
         long l = TimestampConverter.fromString(s);
         int i = 23;
-        String ss = TimestampConverter.fromInt(l);
+        String ss = TimestampConverter.fromLong(l);
         int j = 24;
 //        new Thread(new Runnable() {
 //            @Override

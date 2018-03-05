@@ -1,5 +1,6 @@
 package com.shanjingtech.secumchat.db;
 
+import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
@@ -64,9 +65,19 @@ public interface MessageDAO {
      * user etc.
      */
     @Query("SELECT m.from_username, m.group_id, m.content, COUNT(*) AS unread_count, b" +
-            ".total_count FROM MESSAGE m INNER JOIN (SELECT group_id, COUNT(*) as total_count " +
-            "FROM MESSAGE WHERE owner_name = :ownerName GROUP BY group_id) b ON m.group_id = b" +
-            ".group_id WHERE m.owner_name = :ownerName and m.read = 0 GROUP BY m.group_id ORDER" +
-            " BY m.time")
+            ".total_count, m.time FROM MESSAGE m INNER JOIN (SELECT group_id, COUNT(*) as " +
+            "total_count FROM MESSAGE WHERE owner_name = :ownerName GROUP BY group_id) b ON m" +
+            ".group_id = b.group_id WHERE m.owner_name = :ownerName and m.read = 0 GROUP BY m" +
+            ".group_id ORDER BY m.time")
     List<ConversationPreview> conversationPreviewOwnedBy(String ownerName);
+
+    /**
+     * {@link LiveData} version of {@link #conversationPreviewOwnedBy}
+     */
+    @Query("SELECT m.from_username, m.group_id, m.content, COUNT(*) AS unread_count, b" +
+            ".total_count, m.time FROM MESSAGE m INNER JOIN (SELECT group_id, COUNT(*) as " +
+            "total_count FROM MESSAGE WHERE owner_name = :ownerName GROUP BY group_id) b ON m" +
+            ".group_id = b.group_id WHERE m.owner_name = :ownerName and m.read = 0 GROUP BY m" +
+            ".group_id ORDER BY m.time")
+    LiveData<List<ConversationPreview>> liveConversationPreviewOwnedBy(String ownerName);
 }

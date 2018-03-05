@@ -14,6 +14,9 @@ public class TimestampConverter {
     private static final SimpleDateFormat SDF =
             new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSS'Z'");
 
+    private static final SimpleDateFormat SDF_DATE_ONLY =
+            new SimpleDateFormat("yyyy-MM-dd");
+
     @TypeConverter
     public static long fromString(String s) {
         try {
@@ -25,7 +28,13 @@ public class TimestampConverter {
     }
 
     @TypeConverter
-    public static String fromInt(long i) {
+    public static String fromLong(long i) {
         return SDF.format(new Date(i));
+    }
+
+
+    @TypeConverter
+    public static String fromLongDateOnly(long i) {
+        return SDF_DATE_ONLY.format(new Date(i));
     }
 }

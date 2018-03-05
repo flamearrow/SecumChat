@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_column="3"
+            android:layout_margin="5dp"
+            android:layout_row="2"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true">
+
+    <ImageView
+        android:id="@+id/avatar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_rowSpan="2"
+        android:padding="5dp"
+        android:src="@drawable/cat_head"/>
+
+    <TextView
+        android:id="@+id/user_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_column="1"
+        android:layout_row="0"
+        android:text="name"
+        android:textSize="15sp"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:id="@+id/last_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_column="1"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_row="1"
+        android:text="last message"
+        android:textSize="15sp"/>
+
+    <!--<TextView-->
+    <!--android:id="@+id/sent_time"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_row="0"-->
+    <!--android:layout_rowSpan="2"-->
+    <!--android:lines="2"-->
+    <!--android:text="20150505"-->
+    <!--android:textSize="35sp"/>-->
+
+    <TextView
+        android:id="@+id/sent_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_column="2"
+        android:layout_row="0"
+        android:text="20150505"
+        android:textSize="15sp"
+        android:textStyle="italic"/>
+
+    <TextView
+        android:id="@+id/unread_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_column="2"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="5dp"
+        android:layout_row="1"
+        android:text="3"
+        android:textColor="@android:color/holo_red_dark"
+        android:textSize="15sp"
+        android:textStyle="bold"/>
+
+</GridLayout>

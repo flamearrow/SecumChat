@@ -21,6 +21,16 @@ public class ConversationPreview {
     @ColumnInfo(name = "from_username")
     private String from;
 
+    private long time;
+
+    public long getTime() {
+        return time;
+    }
+
+    public void setTime(long time) {
+        this.time = time;
+    }
+
     public String getGroupId() {
         return groupId;
     }

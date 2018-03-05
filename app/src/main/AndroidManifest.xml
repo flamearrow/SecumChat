@@ -70,10 +70,6 @@
         </activity>
 
         <activity android:name=".DebugActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
         </activity>
 
         <activity
@@ -92,6 +88,15 @@
         </activity>
         <activity android:name=".BottomNavActivity"/>
         <activity android:name=".message.SecumMessageActivity">
+        </activity>
+        <activity
+            android:name=".ConversationPreviewActivity"
+            android:theme="@style/ListTheme">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
         </activity>
 
         <meta-data

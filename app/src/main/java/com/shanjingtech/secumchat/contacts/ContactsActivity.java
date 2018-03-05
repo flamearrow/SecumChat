@@ -88,7 +88,7 @@ public class ContactsActivity extends SecumTabbedActivity {
 
     @Override
     protected int getContentResId() {
-        return R.layout.contacts_activity;
+        return R.layout.fullscreen_recyclerview_container;
     }
 
     @Override
@@ -127,7 +127,7 @@ public class ContactsActivity extends SecumTabbedActivity {
     }
 
     private void initializeRecyclerView() {
-        recyclerView = (RecyclerView) findViewById(R.id.contacts_recycler);
+        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         contactsType = getIntent().getStringExtra(CONTACTS_TYPE) == null ?
                 CONTACTS_TYPE_CONTACTS : getIntent().getStringExtra(CONTACTS_TYPE);
         contactsAdapter = new ContactsAdapter(recyclerView, contactsType, secumAPI);

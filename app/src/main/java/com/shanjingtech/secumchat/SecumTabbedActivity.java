@@ -6,7 +6,6 @@ import android.support.annotation.IdRes;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewStub;
 
@@ -38,11 +37,7 @@ public abstract class SecumTabbedActivity extends SecumBaseActivity implements
     @Override
     protected void onResume() {
         super.onResume();
-        Menu menu = bottomNavigationView.getMenu();
-        for (int i = 0, size = menu.size(); i < size; i++) {
-            MenuItem item = menu.getItem(i);
-            item.setChecked(item.getItemId() == getNavigationMenuItemId());
-        }
+        bottomNavigationView.setSelectedItemId(getNavigationMenuItemId());
     }
 
     @Override
@@ -56,17 +51,16 @@ public abstract class SecumTabbedActivity extends SecumBaseActivity implements
     public boolean onNavigationItemSelected(final @NonNull MenuItem item) {
         final int itemId = item.getItemId();
         if (itemId != getNavigationMenuItemId()) {
-            bottomNavigationView.post(new Runnable() {
-                @Override
-                public void run() {
-                    if (itemId == R.id.menu_conversation) {
-                    } else if (itemId == R.id.menu_discover) {
-                        startActivity(new Intent(SecumTabbedActivity.this, SecumChatActivity
-                                .class));
+            bottomNavigationView.post(() -> {
+                if (itemId == R.id.menu_conversation) {
+                    startActivity(new Intent(SecumTabbedActivity.this,
+                            ConversationPreviewActivity.class));
+                } else if (itemId == R.id.menu_discover) {
+                    startActivity(new Intent(SecumTabbedActivity.this, SecumChatActivity
+                            .class));
 
-                    } else if (itemId == R.id.menu_contacts) {
-                        startActivity(new Intent(SecumTabbedActivity.this, ContactsActivity.class));
-                    }
+                } else if (itemId == R.id.menu_contacts) {
+                    startActivity(new Intent(SecumTabbedActivity.this, ContactsActivity.class));
                 }
             });
         }

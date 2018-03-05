@@ -74,6 +74,10 @@ android {
         exclude 'plugin.xml'
         exclude 'plugin.properties'
     }
+    compileOptions {
+        targetCompatibility 1.8
+        sourceCompatibility 1.8
+    }
 }
 
 dependencies {

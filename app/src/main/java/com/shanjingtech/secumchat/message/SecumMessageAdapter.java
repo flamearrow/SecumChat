@@ -2,9 +2,14 @@ package com.shanjingtech.secumchat.message;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.shanjingtech.secumchat.R;
+import com.shanjingtech.secumchat.db.Message;
+import com.shanjingtech.secumchat.db.TimestampConverter;
+import com.shanjingtech.secumchat.ui.CircleImageView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,29 +18,19 @@ import java.util.List;
  * Adapter for chatting, currently only supports text
  * TODO: support image
  */
-public class SecumMessageAdapter extends RecyclerView.Adapter {
+public class SecumMessageAdapter extends RecyclerView.Adapter<SecumMessageAdapter
+        .TextMessageViewHolder> {
     private static final int TYPE_SELF_TEXT_MESSAGE = 0;
     private static final int TYPE_OTHER_TEXT_MESSAGE = 1;
-    List<Message> messageList = new ArrayList<>();
+
+    private final String ownerName;
+
+    private List<Message> messageList;
 
 
-    public SecumMessageAdapter() {
-        initiliazeFakeData();
-    }
-
-    void initiliazeFakeData() {
-        messageList.add(new Message("mlgb", "Aug, 16, 2014", true));
-        messageList.add(new Message("mlgb2", "Aug, 16, 2014", true));
-        messageList.add(new Message("mlgb3", "Aug, 16, 2014", false));
-        messageList.add(new Message("mlgb4", "Aug, 16, 2014", true));
-        messageList.add(new Message("mlgb5", "Aug, 16, 2014", false));
-        messageList.add(new Message("mlgb6", "Aug, 16, 2014", true));
-        messageList.add(new Message("mlgb21", "Aug, 16, 2014", true));
-        messageList.add(new Message("mlgb2", "Aug, 16, 2014", true));
-        messageList.add(new Message("mlgb3", "Aug, 16, 2014", false));
-        messageList.add(new Message("mlgb4", "Aug, 16, 2014", true));
-        messageList.add(new Message("mlgb5", "Aug, 16, 2014", false));
-        messageList.add(new Message("mlgb6", "Aug, 16, 2014", true));
+    public SecumMessageAdapter(String ownerName) {
+        this.ownerName = ownerName;
+        messageList = new ArrayList<>();
     }
 
     public void addMessage(Message message) {
@@ -45,43 +40,61 @@ public class SecumMessageAdapter extends RecyclerView.Adapter {
 
     @Override
     public int getItemViewType(int position) {
-        return messageList.get(position).isSelf ? TYPE_SELF_TEXT_MESSAGE : TYPE_OTHER_TEXT_MESSAGE;
+//        return isSelf(messageList.get(position)) ? TYPE_SELF_TEXT_MESSAGE :
+//                TYPE_OTHER_TEXT_MESSAGE;
+        if(isSelf(messageList.get(position))) {
+            return TYPE_SELF_TEXT_MESSAGE;
+        } else {
+            return TYPE_OTHER_TEXT_MESSAGE;
+        }
+    }
+
+    private boolean isSelf(Message message) {
+        return message.getFrom().equals(ownerName);
     }
 
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public TextMessageViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         if (viewType == TYPE_OTHER_TEXT_MESSAGE) {
-            return new TextMessageViewHolder(inflater.inflate(R.layout.text_message_other, null));
+            return new TextMessageViewHolder(inflater.inflate(R.layout.text_message_other,
+                    parent, false));
         } else if (viewType == TYPE_SELF_TEXT_MESSAGE) {
-            return new TextMessageViewHolder(inflater.inflate(R.layout.text_message_self, null));
+            return new TextMessageViewHolder(inflater.inflate(R.layout.text_message_self,
+                    parent, false));
         } else
             return null;
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(TextMessageViewHolder textMessageViewHolder, int position) {
         Message message = messageList.get(position);
-        TextMessageViewHolder textMessageViewHolder = (TextMessageViewHolder) holder;
-        textMessageViewHolder.txtTime.setText(message.time);
-        textMessageViewHolder.txtContent.setText(message.content);
+        textMessageViewHolder.txtTime.setText(TimestampConverter.fromLong(message.getTime()));
+        textMessageViewHolder.txtContent.setText(message.getContent());
     }
 
     @Override
     public int getItemCount() {
         return messageList.size();
     }
-}
 
-// TODO: rewrite this
-class Message {
-    public Message(String content, String time, boolean isSelf) {
-        this.content = content;
-        this.time = time;
-        this.isSelf = isSelf;
+    public void replaceItems(List<Message> newMessages) {
+        this.messageList = newMessages;
+        notifyDataSetChanged();
     }
 
-    String content;
-    String time;
-    boolean isSelf;
+    final class TextMessageViewHolder extends RecyclerView.ViewHolder {
+
+        TextView txtTime;
+        TextView txtContent;
+        CircleImageView profilePicImage;
+
+        public TextMessageViewHolder(View itemView) {
+            super(itemView);
+            txtTime = itemView.findViewById(R.id.txt_time);
+            txtContent = itemView.findViewById(R.id.txt_content);
+            profilePicImage = itemView.findViewById(R.id.img_user_image);
+        }
+
+    }
 }

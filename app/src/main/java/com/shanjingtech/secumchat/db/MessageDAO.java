@@ -51,6 +51,13 @@ public interface MessageDAO {
     @Query("SELECT * FROM MESSAGE WHERE group_id = :groupId ORDER BY time")
     List<Message> historyWithGroupId(String groupId);
 
+
+    /**
+     * {@link LiveData} version of {@link #historyWithGroupId}
+     */
+    @Query("SELECT * FROM MESSAGE WHERE group_id = :groupId ORDER BY time")
+    LiveData<List<Message>> liveHistoryWithGroupId(String groupId);
+
     /**
      * Group all unread messages, select peerName, group_id, last message and unread count.
      * Used in preview

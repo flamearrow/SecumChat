@@ -1,6 +1,7 @@
 package com.shanjingtech.secumchat;
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -13,6 +14,7 @@ import android.widget.TextView;
 
 import com.shanjingtech.secumchat.db.ConversationPreview;
 import com.shanjingtech.secumchat.db.TimestampConverter;
+import com.shanjingtech.secumchat.message.SecumMessageActivity;
 import com.shanjingtech.secumchat.viewModels.ConversationPreviewListViewModel;
 
 import java.util.ArrayList;
@@ -48,15 +50,15 @@ public class ConversationPreviewActivity extends SecumTabbedActivity {
         recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        // TODO: replace with CurrentUserProvider
-        String userId = "phone_11";
         conversationPreviewListViewModel = ViewModelProviders.of(this).get
                 (ConversationPreviewListViewModel.class);
 
         ConversationAdapter conversationAdapter = new ConversationAdapter();
-        conversationPreviewListViewModel.getConversationPreviews(userId).observe(
-                this,
-                items -> conversationAdapter.replaceItems(items));
+        conversationPreviewListViewModel.getConversationPreviews(currentUserProvider.getUser()
+                .getUsername())
+                .observe(
+                        this,
+                        items -> conversationAdapter.replaceItems(items));
 
         recyclerView.setAdapter(conversationAdapter);
 
@@ -97,6 +99,7 @@ public class ConversationPreviewActivity extends SecumTabbedActivity {
                     .getTime()));
 
             holder.groupId = conversationPreview.getGroupId();
+            holder.peerName = conversationPreview.getFrom();
         }
 
         @Override
@@ -116,12 +119,19 @@ public class ConversationPreviewActivity extends SecumTabbedActivity {
             TextView sentTime;
             TextView unreadCount;
             String groupId;
+            String peerName;
 
             public ConversationPreviewHolder(View itemView) {
                 super(itemView);
                 itemView.setOnClickListener(view -> {
                     // access groupId
                     Log.d(TAG, groupId);
+                    Intent intent = new Intent(
+                            ConversationPreviewActivity.this,
+                            SecumMessageActivity.class);
+                    intent.putExtra(SecumMessageActivity.PEER_USER_NAME, peerName);
+                    intent.putExtra(SecumMessageActivity.GROUP_ID, groupId);
+                    startActivity(intent);
                 });
                 avatar = itemView.findViewById(R.id.avatar);
                 userName = itemView.findViewById(R.id.user_name);

@@ -22,6 +22,14 @@ public interface MessageDAO {
     List<Long> insertMessages(List<Message> messages);
 
     /**
+     * Returns rowId?
+     * @param message
+     * @return
+     */
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    long insertMessage(Message message);
+
+    /**
      * Returns number of rows deleted
      */
     @Delete

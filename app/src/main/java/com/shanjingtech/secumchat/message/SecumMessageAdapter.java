@@ -4,6 +4,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.shanjingtech.secumchat.R;
@@ -33,20 +34,10 @@ public class SecumMessageAdapter extends RecyclerView.Adapter<SecumMessageAdapte
         messageList = new ArrayList<>();
     }
 
-    public void addMessage(Message message) {
-        messageList.add(message);
-        this.notifyDataSetChanged();
-    }
-
     @Override
     public int getItemViewType(int position) {
-//        return isSelf(messageList.get(position)) ? TYPE_SELF_TEXT_MESSAGE :
-//                TYPE_OTHER_TEXT_MESSAGE;
-        if(isSelf(messageList.get(position))) {
-            return TYPE_SELF_TEXT_MESSAGE;
-        } else {
-            return TYPE_OTHER_TEXT_MESSAGE;
-        }
+        return isSelf(messageList.get(position)) ? TYPE_SELF_TEXT_MESSAGE :
+                TYPE_OTHER_TEXT_MESSAGE;
     }
 
     private boolean isSelf(Message message) {
@@ -83,17 +74,20 @@ public class SecumMessageAdapter extends RecyclerView.Adapter<SecumMessageAdapte
         notifyDataSetChanged();
     }
 
-    final class TextMessageViewHolder extends RecyclerView.ViewHolder {
+    public final class TextMessageViewHolder extends RecyclerView.ViewHolder {
 
         TextView txtTime;
         TextView txtContent;
         CircleImageView profilePicImage;
+        // TODO: display/hide this
+        ProgressBar progressBar;
 
         public TextMessageViewHolder(View itemView) {
             super(itemView);
             txtTime = itemView.findViewById(R.id.txt_time);
             txtContent = itemView.findViewById(R.id.txt_content);
             profilePicImage = itemView.findViewById(R.id.img_user_image);
+            progressBar = itemView.findViewById(R.id.sent_indicator);
         }
 
     }

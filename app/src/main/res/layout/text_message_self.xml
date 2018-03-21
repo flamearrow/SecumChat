@@ -13,7 +13,13 @@
         android:layout_toLeftOf="@+id/img_user_image"
         android:layout_toRightOf="@id/txt_time"
         android:gravity="right"
-        android:orientation="vertical">
+        android:orientation="horizontal">
+
+        <ProgressBar
+            android:id="@+id/sent_indicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"/>
 
         <FrameLayout
             android:layout_width="wrap_content"

@@ -5,11 +5,13 @@ import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.shanjingtech.pnwebrtc.PnRTCListener;
 import com.shanjingtech.secumchat.R;
 import com.shanjingtech.secumchat.SecumBaseActivity;
+import com.shanjingtech.secumchat.db.Message;
 import com.shanjingtech.secumchat.model.GenericResponse;
 import com.shanjingtech.secumchat.model.SendMessageRequest;
 import com.shanjingtech.secumchat.viewModels.ChatHistoryViewModel;
@@ -24,22 +26,28 @@ import retrofit2.Response;
 
 public class SecumMessageActivity extends SecumBaseActivity implements SwipeRefreshLayout
         .OnRefreshListener, MessageActionBoxView.MessageSendListener {
+    private static final String TAG = "SecumMessageActivity";
+
     public static final String PEER_USER_NAME = "PEER_USER_NAME";
     // Unique id to identify this chat group
     public static final String GROUP_ID = "GROUP_ID";
 
     private String peerUserName;
+    private String ownerName;
+    private String groupId;
     private RecyclerView messageRecyclerView;
     private MessageActionBoxView messageAction;
     private ChatHistoryViewModel chatHistoryViewModel;
     private SwipeRefreshLayout swipeRefreshLayout;
+    private SecumMessageAdapter secumMessageAdapter;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // TODO: maybe create dagger scope to privde peer user
+        // TODO: maybe create dagger scope to provide peer user
         peerUserName = getIntent().getStringExtra(PEER_USER_NAME);
+        ownerName = currentUserProvider.getUser().getUsername();
 
         setContentView(R.layout.secum_message_activity);
         messageRecyclerView = findViewById(R.id.message_recycler);
@@ -49,11 +57,15 @@ public class SecumMessageActivity extends SecumBaseActivity implements SwipeRefr
         swipeRefreshLayout.setOnRefreshListener(this);
         pnRTCClient.attachRTCListener(new PnRTCListener() {
             @Override
-            public void onMessage(final String message, final long time) {
-//                addNewMessage(new Message(message, SecumUtils.getCurrentTime
-//                        (time), false));
+            public void onMessage(final String content, final long time) {
+                Message message =
+                        new Message.Builder()
+                                .setFrom(peerUserName).setTo(ownerName).setOwnerName(ownerName)
+                                .setTime(time).setGroupId(groupId).setContent(content).build();
+                messageDAO.insertMessage(message);
             }
         });
+
         initializeRecyclerView();
     }
 
@@ -80,14 +92,17 @@ public class SecumMessageActivity extends SecumBaseActivity implements SwipeRefr
     }
 
     private void initializeRecyclerView() {
-        String groupId = getIntent().getStringExtra(GROUP_ID);
+        groupId = getIntent().getStringExtra(GROUP_ID);
         chatHistoryViewModel = ViewModelProviders.of(this).get(ChatHistoryViewModel.class);
 
-        SecumMessageAdapter messageAdapter = new SecumMessageAdapter(currentUserProvider.getUser
-                ().getUsername());
-        chatHistoryViewModel.getLiveHistoryWithGroupId(groupId).observe(this, items ->
-                messageAdapter.replaceItems(items));
-        messageRecyclerView.setAdapter(messageAdapter);
+        secumMessageAdapter = new SecumMessageAdapter(ownerName);
+        chatHistoryViewModel.getLiveHistoryWithGroupId(groupId).observe(this, items -> {
+                    secumMessageAdapter.replaceItems(items);
+                    messageRecyclerView.smoothScrollToPosition(secumMessageAdapter.getItemCount()
+                            - 1);
+                }
+        );
+        messageRecyclerView.setAdapter(secumMessageAdapter);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setStackFromEnd(true);
         messageRecyclerView.setLayoutManager(linearLayoutManager);
@@ -102,29 +117,33 @@ public class SecumMessageActivity extends SecumBaseActivity implements SwipeRefr
     @Override
     public void onMessageSent(String text) {
         messageAction.clearText();
-//        addNewMessage(new Message(text, SecumUtils.getCurrentTime(), true));
+        Message message = new Message.Builder().setFrom(ownerName).setTo(peerUserName)
+                .setOwnerName
+                        (ownerName).setTime(System.currentTimeMillis()).setGroupId(groupId)
+                .setContent
+                        (text).build();
+        new Thread() {
+            @Override
+            public void run() {
+                messageDAO.insertMessage(message);
+            }
+        }.start();
+
         secumAPI.sendMessage(new SendMessageRequest(peerUserName, text)).enqueue(
                 new Callback<GenericResponse>() {
 
                     @Override
                     public void onResponse(Call<GenericResponse> call, Response<GenericResponse>
                             response) {
-                        // dismiss the spinner
+                        Log.d(TAG, "sent success");
                     }
 
                     @Override
                     public void onFailure(Call<GenericResponse> call, Throwable t) {
                         // show some warning
+                        Log.d(TAG, "sent failure");
                     }
                 });
 
     }
-
-//    void addNewMessage(final Message message) {
-//        messageRecyclerView.post(() -> {
-//            messageAdapter.addMessage(message);
-//            messageRecyclerView.smoothScrollToPosition(messageAdapter.getItemCount() - 1);
-//        });
-//    }
-
 }

@@ -16,6 +16,8 @@ import com.shanjingtech.secumchat.model.GenericResponse;
 import com.shanjingtech.secumchat.model.SendMessageRequest;
 import com.shanjingtech.secumchat.viewModels.ChatHistoryViewModel;
 
+import java.util.List;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -66,8 +68,43 @@ public class SecumMessageActivity extends SecumBaseActivity implements SwipeRefr
             }
         });
 
+        groupId = getIntent().getStringExtra(GROUP_ID);
+
         initializeRecyclerView();
+
+        markUnreadMessages();
     }
+
+    private void initializeRecyclerView() {
+        chatHistoryViewModel = ViewModelProviders.of(this).get(ChatHistoryViewModel.class);
+
+        secumMessageAdapter = new SecumMessageAdapter(ownerName);
+        chatHistoryViewModel.getLiveHistoryWithGroupId(groupId).observe(this, items -> {
+                    secumMessageAdapter.replaceItems(items);
+                    messageRecyclerView.smoothScrollToPosition(secumMessageAdapter.getItemCount()
+                            - 1);
+                }
+        );
+        messageRecyclerView.setAdapter(secumMessageAdapter);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        linearLayoutManager.setStackFromEnd(true);
+        messageRecyclerView.setLayoutManager(linearLayoutManager);
+    }
+
+    private void markUnreadMessages() {
+        new Thread() {
+            @Override
+            public void run() {
+                // update messages with group id, mark the read field
+                List<Message> messages = messageDAO.unreadHistoryWithGroupId(groupId);
+                for (Message message : messages) {
+                    message.setRead(true);
+                }
+                messageDAO.updateMessages(messages);
+            }
+        }.start();
+    }
+
 
     private void initializePubnub() {
         pnRTCClient.getPubNub().unsubscribeAll();
@@ -89,23 +126,6 @@ public class SecumMessageActivity extends SecumBaseActivity implements SwipeRefr
     protected void onPause() {
         super.onPause();
         pnRTCClient.getPubNub().unsubscribeAll();
-    }
-
-    private void initializeRecyclerView() {
-        groupId = getIntent().getStringExtra(GROUP_ID);
-        chatHistoryViewModel = ViewModelProviders.of(this).get(ChatHistoryViewModel.class);
-
-        secumMessageAdapter = new SecumMessageAdapter(ownerName);
-        chatHistoryViewModel.getLiveHistoryWithGroupId(groupId).observe(this, items -> {
-                    secumMessageAdapter.replaceItems(items);
-                    messageRecyclerView.smoothScrollToPosition(secumMessageAdapter.getItemCount()
-                            - 1);
-                }
-        );
-        messageRecyclerView.setAdapter(secumMessageAdapter);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-        linearLayoutManager.setStackFromEnd(true);
-        messageRecyclerView.setLayoutManager(linearLayoutManager);
     }
 
     @Override

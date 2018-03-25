@@ -6,6 +6,7 @@ import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
+import android.arch.persistence.room.Update;
 
 import java.util.List;
 
@@ -66,6 +67,19 @@ public interface MessageDAO {
     @Query("SELECT * FROM MESSAGE WHERE group_id = :groupId ORDER BY time")
     LiveData<List<Message>> liveHistoryWithGroupId(String groupId);
 
+
+    /**
+     * Load all unread messages in a group id.
+     */
+    @Query("SELECT * FROM MESSAGE WHERE group_id = :groupId AND read = 0")
+    List<Message> unreadHistoryWithGroupId(String groupId);
+
+    /**
+     * Update the mawfakus.
+     */
+    @Update
+    int updateMessages(List<Message> messages);
+
     /**
      * Group all unread messages, select peerName, group_id, last message and unread count.
      * Used in preview
@@ -74,25 +88,25 @@ public interface MessageDAO {
             "owner_name = :ownerName AND read = 0 GROUP BY group_id ORDER BY time")
     List<UnreadPreview> unreadPreviewOwnedBy(String ownerName);
 
-
     /**
      * Group all unread messages, find unread message count, read message count, last content, peer
      * user etc.
      */
-    @Query("SELECT m.from_username, m.group_id, m.content, COUNT(*) AS unread_count, b" +
-            ".total_count, m.time FROM MESSAGE m INNER JOIN (SELECT group_id, COUNT(*) as " +
-            "total_count FROM MESSAGE WHERE owner_name = :ownerName GROUP BY group_id) b ON m" +
-            ".group_id = b.group_id WHERE m.owner_name = :ownerName and m.read = 0 GROUP BY m" +
-            ".group_id ORDER BY m.time")
+    @Query("SELECT m.from_username, m.group_id, m.content, b.unread_count, COUNT(*) AS " +
+            "total_count, m.time FROM MESSAGE m LEFT JOIN (SELECT group_id, COUNT(*) as " +
+            "unread_count FROM MESSAGE WHERE owner_name = :ownerName AND read = 0 GROUP BY " +
+            "group_id) b ON m.group_id = b.group_id WHERE m.owner_name = :ownerName GROUP BY " +
+            "m.group_id ORDER BY m.time")
     List<ConversationPreview> conversationPreviewOwnedBy(String ownerName);
 
     /**
      * {@link LiveData} version of {@link #conversationPreviewOwnedBy}
      */
-    @Query("SELECT m.from_username, m.group_id, m.content, COUNT(*) AS unread_count, b" +
-            ".total_count, m.time FROM MESSAGE m INNER JOIN (SELECT group_id, COUNT(*) as " +
-            "total_count FROM MESSAGE WHERE owner_name = :ownerName GROUP BY group_id) b ON m" +
-            ".group_id = b.group_id WHERE m.owner_name = :ownerName and m.read = 0 GROUP BY m" +
-            ".group_id ORDER BY m.time")
+    @Query("SELECT m.from_username, m.group_id, m.content, b.unread_count, COUNT(*) AS " +
+            "total_count, m.time FROM MESSAGE m LEFT JOIN (SELECT group_id, COUNT(*) as " +
+            "unread_count FROM MESSAGE WHERE owner_name = :ownerName AND read = 0 GROUP BY " +
+            "group_id) b ON m.group_id = b.group_id WHERE m.owner_name = :ownerName GROUP BY " +
+            "m.group_id ORDER BY m.time")
     LiveData<List<ConversationPreview>> liveConversationPreviewOwnedBy(String ownerName);
+
 }

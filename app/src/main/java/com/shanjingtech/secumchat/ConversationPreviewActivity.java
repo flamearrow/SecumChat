@@ -79,13 +79,12 @@ public class ConversationPreviewActivity extends SecumTabbedActivity {
         @Override
         public ConversationPreviewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             return new ConversationPreviewHolder(LayoutInflater.from(parent.getContext()).inflate
-                    (R.layout.conversation_preview_item, parent, false));
+                    (R.layout.conversation_preview_item_constraint, parent, false));
         }
 
         @Override
         public void onBindViewHolder(ConversationPreviewHolder holder, int position) {
             ConversationPreview conversationPreview = conversationPreviews.get(position);
-//            holder.avatar
             holder.userName.setText(conversationPreview.getFrom());
             holder.lastMessage.setText(conversationPreview.getLastUnreadContent());
             int unreadCount = conversationPreview.getUnreadCount();
@@ -95,8 +94,8 @@ public class ConversationPreviewActivity extends SecumTabbedActivity {
             } else {
                 holder.unreadCount.setVisibility(View.GONE);
             }
-            holder.sentTime.setText(TimestampConverter.fromLongDateOnly(conversationPreview
-                    .getTime()));
+            holder.sentTime.setText(TimestampConverter.fromLongHourMinuteOnly(
+                    conversationPreview.getTime()));
 
             holder.groupId = conversationPreview.getGroupId();
             holder.peerName = conversationPreview.getFrom();

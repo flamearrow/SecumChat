@@ -17,6 +17,9 @@ public class TimestampConverter {
     private static final SimpleDateFormat SDF_DATE_ONLY =
             new SimpleDateFormat("yyyy-MM-dd");
 
+    private static final SimpleDateFormat SDF_HOUR_MINUTE_ONLY =
+            new SimpleDateFormat("HH:mm");
+
     @TypeConverter
     public static long fromString(String s) {
         try {
@@ -36,5 +39,9 @@ public class TimestampConverter {
     @TypeConverter
     public static String fromLongDateOnly(long i) {
         return SDF_DATE_ONLY.format(new Date(i));
+    }
+
+    public static String fromLongHourMinuteOnly(long i) {
+        return SDF_HOUR_MINUTE_ONLY.format(new Date(i));
     }
 }

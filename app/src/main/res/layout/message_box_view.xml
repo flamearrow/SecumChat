@@ -7,14 +7,14 @@
               android:background="@drawable/send_message_border"
               android:id="@+id/linear">
 
-    <ImageButton
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:src="@drawable/send_button"
-        android:background="@android:color/transparent"
-        android:layout_gravity="bottom"
-        android:id="@+id/btn_options"
-        android:padding="10dp"/>
+    <!--<ImageButton-->
+        <!--android:layout_width="48dp"-->
+        <!--android:layout_height="48dp"-->
+        <!--android:src="@drawable/send_button"-->
+        <!--android:background="@android:color/transparent"-->
+        <!--android:layout_gravity="bottom"-->
+        <!--android:id="@+id/btn_options"-->
+        <!--android:padding="10dp"/>-->
 
     <FrameLayout
         android:layout_weight="1"

@@ -24,6 +24,7 @@ public interface MessageDAO {
 
     /**
      * Returns rowId?
+     *
      * @param message
      * @return
      */
@@ -92,7 +93,8 @@ public interface MessageDAO {
      * Group all unread messages, find unread message count, read message count, last content, peer
      * user etc.
      */
-    @Query("SELECT m.from_username, m.group_id, m.content, b.unread_count, COUNT(*) AS " +
+    @Query("SELECT m.from_username, m.to_username, m.owner_name, m.group_id, m.content, b" +
+            ".unread_count, COUNT(*) AS " +
             "total_count, m.time FROM MESSAGE m LEFT JOIN (SELECT group_id, COUNT(*) as " +
             "unread_count FROM MESSAGE WHERE owner_name = :ownerName AND read = 0 GROUP BY " +
             "group_id) b ON m.group_id = b.group_id WHERE m.owner_name = :ownerName GROUP BY " +
@@ -102,7 +104,8 @@ public interface MessageDAO {
     /**
      * {@link LiveData} version of {@link #conversationPreviewOwnedBy}
      */
-    @Query("SELECT m.from_username, m.group_id, m.content, b.unread_count, COUNT(*) AS " +
+    @Query("SELECT m.from_username, m.to_username, m.owner_name, m.group_id, m.content, b" +
+            ".unread_count, COUNT(*) AS " +
             "total_count, m.time FROM MESSAGE m LEFT JOIN (SELECT group_id, COUNT(*) as " +
             "unread_count FROM MESSAGE WHERE owner_name = :ownerName AND read = 0 GROUP BY " +
             "group_id) b ON m.group_id = b.group_id WHERE m.owner_name = :ownerName GROUP BY " +

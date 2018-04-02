@@ -48,7 +48,7 @@ public class SecumMessageAdapter extends RecyclerView.Adapter<SecumMessageAdapte
     public TextMessageViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         if (viewType == TYPE_OTHER_TEXT_MESSAGE) {
-            return new TextMessageViewHolder(inflater.inflate(R.layout.text_message_other,
+            return new TextMessageViewHolder(inflater.inflate(R.layout.text_message_peer,
                     parent, false));
         } else if (viewType == TYPE_SELF_TEXT_MESSAGE) {
             return new TextMessageViewHolder(inflater.inflate(R.layout.text_message_self,
@@ -60,7 +60,8 @@ public class SecumMessageAdapter extends RecyclerView.Adapter<SecumMessageAdapte
     @Override
     public void onBindViewHolder(TextMessageViewHolder textMessageViewHolder, int position) {
         Message message = messageList.get(position);
-        textMessageViewHolder.txtTime.setText(TimestampConverter.fromLong(message.getTime()));
+        textMessageViewHolder.txtTime.setText(TimestampConverter.fromLongHourMinuteOnly(message
+                .getTime()));
         textMessageViewHolder.txtContent.setText(message.getContent());
     }
 

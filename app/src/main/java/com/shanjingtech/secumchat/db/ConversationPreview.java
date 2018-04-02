@@ -21,7 +21,29 @@ public class ConversationPreview {
     @ColumnInfo(name = "from_username")
     private String from;
 
+    @ColumnInfo(name = "to_username")
+    private String to;
+
+    @ColumnInfo(name = "owner_name")
+    private String owner;
+
     private long time;
+
+    public String getTo() {
+        return to;
+    }
+
+    public void setTo(String to) {
+        this.to = to;
+    }
+
+    public String getOwner() {
+        return owner;
+    }
+
+    public void setOwner(String owner) {
+        this.owner = owner;
+    }
 
     public long getTime() {
         return time;
@@ -69,5 +91,10 @@ public class ConversationPreview {
 
     public void setFrom(String from) {
         this.from = from;
+    }
+
+    // return non ownername
+    public String getPeerName() {
+        return owner.equals(from) ? to : from;
     }
 }

@@ -85,7 +85,7 @@ public class ConversationPreviewActivity extends SecumTabbedActivity {
         @Override
         public void onBindViewHolder(ConversationPreviewHolder holder, int position) {
             ConversationPreview conversationPreview = conversationPreviews.get(position);
-            holder.userName.setText(conversationPreview.getFrom());
+            holder.userName.setText(conversationPreview.getPeerName());
             holder.lastMessage.setText(conversationPreview.getLastUnreadContent());
             int unreadCount = conversationPreview.getUnreadCount();
             if (unreadCount > 0) {
@@ -98,7 +98,7 @@ public class ConversationPreviewActivity extends SecumTabbedActivity {
                     conversationPreview.getTime()));
 
             holder.groupId = conversationPreview.getGroupId();
-            holder.peerName = conversationPreview.getFrom();
+            holder.peerName = conversationPreview.getPeerName();
         }
 
         @Override

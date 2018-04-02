@@ -21,7 +21,7 @@ public class MessageActionBoxView extends LinearLayout implements View.OnClickLi
     protected MessageBoxOptionsListener messageBoxOptionsListener;
     protected MessageSendListener messageSendListener;
     protected TextView btnSend;
-    protected ImageButton btnOptions;
+    //    protected ImageButton btnOptions;
     protected EditText etMessage;
     protected PopupWindow optionPopup;
 
@@ -47,7 +47,7 @@ public class MessageActionBoxView extends LinearLayout implements View.OnClickLi
 
     protected void initViews() {
         btnSend = (TextView) findViewById(R.id.send_message);
-        btnOptions = (ImageButton) findViewById(R.id.btn_options);
+//        btnOptions = (ImageButton) findViewById(R.id.btn_options);
         etMessage = (EditText) findViewById(R.id.message_to_send);
     }
 
@@ -61,7 +61,7 @@ public class MessageActionBoxView extends LinearLayout implements View.OnClickLi
 
         btnSend.setOnClickListener(this);
 
-        btnOptions.setOnClickListener(this);
+//        btnOptions.setOnClickListener(this);
 
         etMessage.setOnEditorActionListener(this);
         etMessage.setOnKeyListener(this);

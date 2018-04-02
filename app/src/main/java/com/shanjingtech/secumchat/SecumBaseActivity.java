@@ -21,21 +21,14 @@ import android.widget.Toast;
 
 import com.crashlytics.android.answers.Answers;
 import com.shanjingtech.pnwebrtc.PnRTCClient;
-import com.shanjingtech.pnwebrtc.PnSignalingParams;
 import com.shanjingtech.secumchat.db.MessageDAO;
 import com.shanjingtech.secumchat.injection.CurrentUserProvider;
 import com.shanjingtech.secumchat.log.AddTimePairedFactory;
 import com.shanjingtech.secumchat.model.User;
 import com.shanjingtech.secumchat.net.SecumAPI;
-import com.shanjingtech.secumchat.net.XirSysRequest;
 import com.shanjingtech.secumchat.onboarding.SplashActivity;
 import com.shanjingtech.secumchat.pushy.PushyInitializer;
 import com.shanjingtech.secumchat.util.Constants;
-
-import org.webrtc.PeerConnection;
-import org.webrtc.PeerConnectionFactory;
-
-import java.util.List;
 
 import javax.inject.Inject;
 
@@ -60,13 +53,13 @@ public class SecumBaseActivity
     @Inject
     PushyInitializer pushyInitializer;
     @Inject
-    MessageDAO messageDAO;
+    protected PnRTCClient pnRTCClient;
+    @Inject
+    protected MessageDAO messageDAO;
 
     private static final String PERMISSION_TAG = "SecumPermission";
-    private AlertDialog permissionAlertDialog;
 
-    // Pubhub components
-    protected PnRTCClient pnRTCClient;
+    private AlertDialog permissionAlertDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,8 +74,8 @@ public class SecumBaseActivity
                 .setIcon(R.drawable.cat_head)
                 .create();
 //        This will cause SplashActivity crash
-        // todo: fix this
 //        initializeRTCComponents();
+//        registerMessageReceiver();
     }
 
     protected void showToast(final String message) {
@@ -323,26 +316,21 @@ public class SecumBaseActivity
         return currentUserProvider.getUser();
     }
 
-    protected void initializeRTCComponents() {
-        // First, we initiate the PeerConnectionFactory with our application context and some
-        // options.
-        PeerConnectionFactory.initializeAndroidGlobals(
-                this,  // Context
-                true,  // Audio Enabled
-                true,  // Video Enabled
-                true,  // Hardware Acceleration Enabled
-                null); // Render EGL Context
+    private void initializePubnub() {
+        pnRTCClient.getPubNub().unsubscribeAll();
+        // subscribe to my regular channel
+        pnRTCClient.subscribeToPubnubChannel(getMyName());
+    }
 
-        // init pubnubClient, order matters
-        List<PeerConnection.IceServer> servers = XirSysRequest.getIceServers();
-        if (!servers.isEmpty()) {
-            pnRTCClient = new PnRTCClient(Constants.PUB_KEY, Constants.SUB_KEY, Constants.SEC_KEY,
-                    getMyName(), new
-                    PnSignalingParams(servers));
-        } else {
-            // TODO: revert to use default signal params
-            pnRTCClient = new PnRTCClient(Constants.PUB_KEY, Constants.SUB_KEY, Constants.SEC_KEY,
-                    getMyName());
-        }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        initializePubnub();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        pnRTCClient.getPubNub().unsubscribeAll();
     }
 }

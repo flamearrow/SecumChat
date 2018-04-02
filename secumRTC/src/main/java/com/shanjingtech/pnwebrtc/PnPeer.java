@@ -17,12 +17,12 @@ import org.webrtc.SessionDescription;
 
 public class PnPeer implements SdpObserver, PeerConnection.Observer {
     public static final String TAG = "PnPeer";
-    public static final String STATUS_CONNECTING   = "CONNECTING";
-    public static final String STATUS_CONNECTED    = "CONNECTED"; // TODO: Where to change status to this?
+    public static final String STATUS_CONNECTING = "CONNECTING";
+    public static final String STATUS_CONNECTED = "CONNECTED";
     public static final String STATUS_DISCONNECTED = "DISCONNECTED";
-    public static final String TYPE_NONE           = "NONE";
-    public static final String TYPE_OFFER          = "offer";
-    public static final String TYPE_ANSWER         = "answer";
+    public static final String TYPE_NONE = "NONE";
+    public static final String TYPE_OFFER = "offer";
+    public static final String TYPE_ANSWER = "answer";
 
     private PnPeerConnectionClient pcClient;
     PeerConnection pc;
@@ -46,16 +46,20 @@ public class PnPeer implements SdpObserver, PeerConnection.Observer {
         pc.addStream(pcClient.getLocalMediaStream());
     }
 
-    public synchronized void setStatus(String status){
+    public synchronized void setStatus(String status) {
         this.status = status;
-        pcClient.mRtcListener.onPeerStatusChanged(this);
+        for (PnRTCListener pnRTCListener : pcClient.mRtcListeners) {
+            pnRTCListener.onPeerStatusChanged(this);
+        }
     }
 
     public String getStatus() {
         return status;
     }
 
-    public void setType(String type){this.type = type;}
+    public void setType(String type) {
+        this.type = type;
+    }
 
     public String getType() {
         return type;
@@ -85,7 +89,7 @@ public class PnPeer implements SdpObserver, PeerConnection.Observer {
         return id;
     }
 
-    public void hangup(){
+    public void hangup() {
         if (this.status.equals(STATUS_DISCONNECTED)) return; // Already hung up on.
         this.pcClient.removePeer(this.id);
         setStatus(STATUS_DISCONNECTED);
@@ -136,7 +140,7 @@ public class PnPeer implements SdpObserver, PeerConnection.Observer {
 
     // Todo: Look into what this should be used for
     @Override
-    public void onIceConnectionReceivingChange(boolean iceConnectionReceivingChange){
+    public void onIceConnectionReceivingChange(boolean iceConnectionReceivingChange) {
 
     }
 
@@ -162,14 +166,18 @@ public class PnPeer implements SdpObserver, PeerConnection.Observer {
     public void onAddStream(MediaStream mediaStream) {
         Log.d(TAG, "onAddStream " + mediaStream.label());
         // remote streams are displayed from 1 to MAX_PEER (0 is localStream)
-        pcClient.mRtcListener.onAddRemoteStream(mediaStream, PnPeer.this);
+        for (PnRTCListener pnRTCListener : pcClient.mRtcListeners) {
+            pnRTCListener.onAddRemoteStream(mediaStream, PnPeer.this);
+        }
     }
 
     @Override
     public void onRemoveStream(MediaStream mediaStream) {
         Log.d(TAG, "onRemoveStream " + mediaStream.label());
         PnPeer peer = pcClient.removePeer(id);
-        pcClient.mRtcListener.onRemoveRemoteStream(mediaStream, peer);
+        for (PnRTCListener pnRTCListener : pcClient.mRtcListeners) {
+            pnRTCListener.onRemoveRemoteStream(mediaStream, peer);
+        }
     }
 
     @Override
@@ -183,10 +191,11 @@ public class PnPeer implements SdpObserver, PeerConnection.Observer {
 
     /**
      * Overriding toString for debugging purposes.
+     *
      * @return String representation of a peer.
      */
     @Override
-    public String toString(){
+    public String toString() {
         return this.id + " Status: " + this.status + " Dialed: " + this.dialed +
                 " Received: " + this.received + " Type: " + this.type;
     }

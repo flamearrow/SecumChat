@@ -44,9 +44,7 @@ public class PnRTCClient {
         pnConfiguration.setUuid(UUID);
         this.mPubNub = new PubNub(pnConfiguration);
         this.pnSignalingParams = signalingParams;
-        this.pcClient = new PnPeerConnectionClient(this.mPubNub, this.pnSignalingParams, new
-                PnRTCListener() {
-                });
+        this.pcClient = new PnPeerConnectionClient(this.mPubNub, this.pnSignalingParams);
     }
 
     /**
@@ -112,7 +110,7 @@ public class PnRTCClient {
      * @param listener The listener which extends PnRTCListener to implement callbacks
      */
     public void attachRTCListener(PnRTCListener listener) {
-        this.pcClient.setRTCListener(listener);
+        this.pcClient.addPnRTCListener(listener);
     }
 
     /**
@@ -145,6 +143,7 @@ public class PnRTCClient {
 
     /**
      * Only subscribe to pubnub
+     *
      * @param channel
      */
     public void subscribeToPubnubChannel(String channel) {

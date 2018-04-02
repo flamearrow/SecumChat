@@ -8,7 +8,6 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.shanjingtech.pnwebrtc.PnRTCListener;
 import com.shanjingtech.secumchat.R;
 import com.shanjingtech.secumchat.SecumBaseActivity;
 import com.shanjingtech.secumchat.db.Message;
@@ -57,16 +56,6 @@ public class SecumMessageActivity extends SecumBaseActivity implements SwipeRefr
         messageAction.setMessageSentListener(this);
         swipeRefreshLayout = findViewById(R.id.swipe_refresh_layout);
         swipeRefreshLayout.setOnRefreshListener(this);
-        pnRTCClient.attachRTCListener(new PnRTCListener() {
-            @Override
-            public void onMessage(final String content, final long time) {
-                Message message =
-                        new Message.Builder()
-                                .setFrom(peerUserName).setTo(ownerName).setOwnerName(ownerName)
-                                .setTime(time).setGroupId(groupId).setContent(content).build();
-                messageDAO.insertMessage(message);
-            }
-        });
 
         groupId = getIntent().getStringExtra(GROUP_ID);
 
@@ -103,29 +92,6 @@ public class SecumMessageActivity extends SecumBaseActivity implements SwipeRefr
                 messageDAO.updateMessages(messages);
             }
         }.start();
-    }
-
-
-    private void initializePubnub() {
-        pnRTCClient.getPubNub().unsubscribeAll();
-        // subscribe to my regular channel
-        pnRTCClient.subscribeToPubnubChannel(getMyName());
-    }
-
-    /**
-     * TODO: move onResume and onPause to {@link SecumBaseActivity} without fucking
-     * up {@link com.shanjingtech.secumchat.SecumChatActivity}.
-     */
-    @Override
-    protected void onResume() {
-        super.onResume();
-        initializePubnub();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        pnRTCClient.getPubNub().unsubscribeAll();
     }
 
     @Override

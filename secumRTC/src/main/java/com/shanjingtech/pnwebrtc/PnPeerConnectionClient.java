@@ -22,12 +22,15 @@ import org.webrtc.SessionDescription;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
+import static com.shanjingtech.pnwebrtc.PnRTCMessage.JSON_MESSAGE_GROUP_ID;
 import static com.shanjingtech.pnwebrtc.PnRTCMessage.JSON_SENDER_GENDER;
 import static com.shanjingtech.pnwebrtc.PnRTCMessage.JSON_SENDER_NICK_NAME;
 import static com.shanjingtech.pnwebrtc.PnRTCMessage.META_MSG;
@@ -40,7 +43,7 @@ public class PnPeerConnectionClient {
     private SessionDescription localSdp = null; // either offer or answer SDP
     private MediaStream localMediaStream = null;
     PeerConnectionFactory pcFactory;
-    PnRTCListener mRtcListener;
+    Set<PnRTCListener> mRtcListeners;
     PnSignalingParams signalingParams;
     int MAX_CONNECTIONS = Integer.MAX_VALUE;
 
@@ -49,13 +52,12 @@ public class PnPeerConnectionClient {
     private Map<String, PnPeer> peers;
     private String id;
 
-    public PnPeerConnectionClient(PubNub pubnub, PnSignalingParams signalingParams, PnRTCListener
-            rtcListener) {
+    public PnPeerConnectionClient(PubNub pubnub, PnSignalingParams signalingParams) {
         this.mPubNub = pubnub;
         this.signalingParams = signalingParams;
-        this.mRtcListener = rtcListener;
         this.pcFactory = new PeerConnectionFactory(); // TODO: Check it allowed, else extra param
         this.peers = new HashMap<>();
+        mRtcListeners = Collections.newSetFromMap(new ConcurrentHashMap<PnRTCListener, Boolean>());
         init();
     }
 
@@ -76,13 +78,17 @@ public class PnPeerConnectionClient {
     // if force, enable it to listen on different channels
     boolean listenOn(String myId, boolean force) {  // Todo: return success?
         if (localMediaStream == null) {       // Not true for streaming?
-            mRtcListener.onDebug(new PnRTCMessage("Need to add media stream before you can " +
-                    "connect."));
+            for (PnRTCListener pnRTCListener : mRtcListeners) {
+                pnRTCListener.onDebug(new PnRTCMessage("Need to add media stream before you can " +
+                        "connect."));
+            }
             return false;
         }
         if (!force && this.id != null) {  // Prevent listening on multiple channels.
-            mRtcListener.onDebug(new PnRTCMessage("Already listening on " + this.id + ". Cannot " +
-                    "have multiple connections."));
+            for (PnRTCListener pnRTCListener : mRtcListeners) {
+                pnRTCListener.onDebug(new PnRTCMessage("Already listening on " + this.id + ". " +
+                        "Cannot have multiple connections."));
+            }
             return false;
         }
 
@@ -115,14 +121,16 @@ public class PnPeerConnectionClient {
                 return true;
             }
         }
-        this.mRtcListener.onDebug(new PnRTCMessage("CONNECT FAILED. Duplicate dial or max peer " +
-                "connections exceeded. Max: " + MAX_CONNECTIONS + " Current: " + this.peers.size
-                ()));
+        for (PnRTCListener pnRTCListener : mRtcListeners) {
+            pnRTCListener.onDebug(new PnRTCMessage("CONNECT FAILED. Duplicate dial or max peer " +
+                    "connections exceeded. Max: " + MAX_CONNECTIONS + " Current: " + this.peers
+                    .size()));
+        }
         return false;
     }
 
-    public void setRTCListener(PnRTCListener listener) {
-        this.mRtcListener = listener;
+    public void addPnRTCListener(PnRTCListener listener) {
+        this.mRtcListeners.add(listener);
     }
 
     private void subscribe(String channel) {
@@ -132,7 +140,9 @@ public class PnPeerConnectionClient {
 
     public void setLocalMediaStream(MediaStream localStream) {
         this.localMediaStream = localStream;
-        mRtcListener.onLocalStream(localStream);
+        for (PnRTCListener pnRTCListener : mRtcListeners) {
+            pnRTCListener.onLocalStream(localStream);
+        }
     }
 
     public MediaStream getLocalMediaStream() {
@@ -152,7 +162,7 @@ public class PnPeerConnectionClient {
     }
 
     List<PnPeer> getPeers() {
-        return new ArrayList<PnPeer>(this.peers.values());
+        return new ArrayList<>(this.peers.values());
     }
 
     /**
@@ -168,7 +178,9 @@ public class PnPeerConnectionClient {
             peer.hangup();
             packet.put(PnRTCMessage.JSON_TYPE, PnRTCMessage.JSON_HANGUP);
             transmitMessage(id, packet);
-            mRtcListener.onPeerConnectionClosed(peer);
+            for (PnRTCListener pnRTCListener : mRtcListeners) {
+                pnRTCListener.onPeerConnectionClosed(peer);
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -192,7 +204,10 @@ public class PnPeerConnectionClient {
      */
     void transmitMessage(String toID, JSONObject packet) {
         if (this.id == null) { // Not logged in. Put an error in the debug cb.
-            mRtcListener.onDebug(new PnRTCMessage("Cannot transmit before calling Client.connect"));
+            for (PnRTCListener pnRTCListener : mRtcListeners) {
+                pnRTCListener.onDebug(new PnRTCMessage("Cannot transmit before calling Client" +
+                        ".connect"));
+            }
         }
         try {
             JSONObject message = new JSONObject();
@@ -204,10 +219,14 @@ public class PnPeerConnectionClient {
                 @Override
                 public void onResponse(PNPublishResult result, PNStatus status) {
                     if (status.isError()) {
-                        mRtcListener.onDebug(new PnRTCMessage(status.toString()));
+                        for (PnRTCListener pnRTCListener : mRtcListeners) {
+                            pnRTCListener.onDebug(new PnRTCMessage(status.toString()));
+                        }
                     } else {
-                        mRtcListener.onDebug(new PnRTCMessage(status.toString() + " : " + result
-                                .toString()));
+                        for (PnRTCListener pnRTCListener : mRtcListeners) {
+                            pnRTCListener.onDebug(new PnRTCMessage(status.toString() + " : " +
+                                    result.toString()));
+                        }
                     }
                 }
             });
@@ -289,7 +308,9 @@ public class PnPeerConnectionClient {
             Log.d(PNACTION, "PnUserHangupAction");
             PnPeer peer = peers.get(peerId);
             peer.hangup();
-            mRtcListener.onPeerConnectionClosed(peer);
+            for (PnRTCListener pnRTCListener : mRtcListeners) {
+                pnRTCListener.onPeerConnectionClosed(peer);
+            }
             // Todo: Consider Callback?
         }
     }
@@ -300,8 +321,12 @@ public class PnPeerConnectionClient {
         public void execute(String peerId, JSONObject payload) throws JSONException {
             Log.d(PNACTION, "PnUserMessageAction");
             String message = payload.getString(PnRTCMessage.JSON_MESSAGE);
+            String from = payload.getString(PnRTCMessage.JSON_SENDER_ID);
+            String groupId = payload.getString(JSON_MESSAGE_GROUP_ID);
             long time = payload.getLong(PnRTCMessage.JSON_TIME);
-            mRtcListener.onMessage(message, time);
+            for (PnRTCListener pnRTCListener : mRtcListeners) {
+                pnRTCListener.onMessage(message, from, groupId, time);
+            }
         }
     }
 
@@ -311,7 +336,9 @@ public class PnPeerConnectionClient {
         public void execute(String peerId, JSONObject payload) throws JSONException {
             Log.d(PNACTION, "PnUserAddtimeAction");
             PnPeer peer = peers.get(peerId);
-            mRtcListener.onAddTime(peer);
+            for (PnRTCListener pnRTCListener : mRtcListeners) {
+                pnRTCListener.onAddTime(peer);
+            }
         }
     }
 
@@ -323,7 +350,9 @@ public class PnPeerConnectionClient {
             Log.d(PNACTION, "PnUserDialAction");
             String senderNickName = payload.getString(JSON_SENDER_NICK_NAME);
             String senderGender = payload.getString(JSON_SENDER_GENDER);
-            mRtcListener.onDialed(callerId, senderNickName, senderGender);
+            for (PnRTCListener pnRTCListener : mRtcListeners) {
+                pnRTCListener.onDialed(callerId, senderNickName, senderGender);
+            }
         }
     }
 
@@ -414,17 +443,23 @@ public class PnPeerConnectionClient {
         public void status(PubNub pubnub, PNStatus status) {
             // these are all logging infos
             if (status.isError()) {
-                mRtcListener.onDebug(new PnRTCMessage(new PnRTCMessage(status.toString())));
+                for (PnRTCListener pnRTCListener : mRtcListeners) {
+                    pnRTCListener.onDebug(new PnRTCMessage(new PnRTCMessage(status.toString())));
+                }
             } else if (status.getCategory() == PNStatusCategory.PNConnectedCategory) {
-                mRtcListener.onDebug(new PnRTCMessage(status.toString()));
-                mRtcListener.onChannelSubscribed(pubnub.getSubscribedChannels());
+                for (PnRTCListener pnRTCListener : mRtcListeners) {
+                    pnRTCListener.onDebug(new PnRTCMessage(status.toString()));
+                    pnRTCListener.onChannelSubscribed(pubnub.getSubscribedChannels());
+                }
             }
         }
 
         @Override
         public void message(PubNub pubnub, PNMessageResult message) {
             JSONObject jsonMessage = JSONUtils.convertFrom(message.getMessage());
-            mRtcListener.onDebug(new PnRTCMessage(jsonMessage));
+            for (PnRTCListener pnRTCListener : mRtcListeners) {
+                pnRTCListener.onDebug(new PnRTCMessage(jsonMessage));
+            }
             if (jsonMessage == null) {
                 Log.d(JSONUtils.JSON_TAG, "empty json or json doesn't have call user");
             }
@@ -478,7 +513,9 @@ public class PnPeerConnectionClient {
                 if (packet.has(PnRTCMessage.JSON_SDP)) {
                     if (!peer.received) {
                         peer.setReceived(true);
-                        mRtcListener.onDebug(new PnRTCMessage("SDP - " + peer.toString()));
+                        for (PnRTCListener pnRTCListener : mRtcListeners) {
+                            pnRTCListener.onDebug(new PnRTCMessage("SDP - " + peer.toString()));
+                        }
                         // Todo: reveivercb(peer);
                     }
                     actionMap.get(type).execute(peerId, packet);

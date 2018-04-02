@@ -70,7 +70,7 @@ public abstract class PnRTCListener {
      * Called when a user message is send via {@link com.pubnub.api.PubNub} object.
      *
      */
-    public void onMessage(String message, long time) {
+    public void onMessage(String message, String from, String groupId, long time) {
     }
 
     /**

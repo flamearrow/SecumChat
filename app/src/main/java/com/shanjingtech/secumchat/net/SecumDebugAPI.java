@@ -20,6 +20,7 @@ import com.shanjingtech.secumchat.model.RegisterNotificationTokenRequest;
 import com.shanjingtech.secumchat.model.ReportUserRequest;
 import com.shanjingtech.secumchat.model.ReportUserResponse;
 import com.shanjingtech.secumchat.model.SendMessageRequest;
+import com.shanjingtech.secumchat.model.SendMessageResponse;
 import com.shanjingtech.secumchat.model.UpdateUserRequest;
 import com.shanjingtech.secumchat.model.User;
 import com.shanjingtech.secumchat.model.UserRequest;
@@ -119,7 +120,7 @@ public class SecumDebugAPI implements SecumAPI {
     }
 
     @Override
-    public Call<GenericResponse> sendMessage(SendMessageRequest request) {
+    public Call<SendMessageResponse> sendMessage(SendMessageRequest request) {
         return null;
     }
 

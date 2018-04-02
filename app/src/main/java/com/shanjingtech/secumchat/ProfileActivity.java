@@ -1,7 +1,6 @@
 package com.shanjingtech.secumchat;
 
 import android.app.SearchManager;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
@@ -16,6 +15,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.shanjingtech.secumchat.db.GroupId;
+import com.shanjingtech.secumchat.message.SecumMessageActivity;
 import com.shanjingtech.secumchat.model.AddContactRequest;
 import com.shanjingtech.secumchat.model.BlockContactRequest;
 import com.shanjingtech.secumchat.model.DeleteContactRequest;
@@ -48,14 +49,15 @@ public class ProfileActivity extends SecumBaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.profile_activity);
-        name = (TextView) findViewById(R.id.name);
-        age = (TextView) findViewById(R.id.age);
-        gender = (ImageView) findViewById(R.id.gender);
-        avatar = (ImageView) findViewById(R.id.avatar);
-        chat = (Button) findViewById(R.id.chat_button);
-        video = (Button) findViewById(R.id.video_button);
-        add = (Button) findViewById(R.id.add_button);
+        name = findViewById(R.id.name);
+        age = findViewById(R.id.age);
+        gender = findViewById(R.id.gender);
+        avatar = findViewById(R.id.avatar);
+        chat = findViewById(R.id.chat_button);
+        video = findViewById(R.id.video_button);
+        add = findViewById(R.id.add_button);
         handleIntent(getIntent());
+        overridePendingTransition(R.anim.enter_from_right_full, R.anim.do_nothing);
     }
 
     @Override
@@ -179,17 +181,26 @@ public class ProfileActivity extends SecumBaseActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         Resources resources = this.getResources();
         builder.setMessage(resources.getString(R.string.no_user_found))
-                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        finish();
-                    }
-                })
+                .setPositiveButton(android.R.string.yes, (dialog, which) -> finish())
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .show();
     }
 
     public void chat(View view) {
-
+        new Thread() {
+            @Override
+            public void run() {
+                Intent intent = new Intent(
+                        ProfileActivity.this,
+                        SecumMessageActivity.class);
+                intent.putExtra(SecumMessageActivity.PEER_USER_NAME, profileUserName);
+                GroupId groupId = messageDAO.findChatWithUserOwnedBy(getMyName(), profileUserName);
+                if (groupId != null) {
+                    intent.putExtra(SecumMessageActivity.GROUP_ID, groupId.getGroupId());
+                }
+                startActivity(intent);
+            }
+        }.start();
     }
 
     public void video(View view) {

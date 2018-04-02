@@ -112,4 +112,11 @@ public interface MessageDAO {
             "m.group_id ORDER BY m.time")
     LiveData<List<ConversationPreview>> liveConversationPreviewOwnedBy(String ownerName);
 
+    /**
+     * Find if owner has ever chatted with peer, if so, return the unique groupId.
+     */
+    @Query("SELECT group_id FROM MESSage WHERE owner_name = :ownerName AND " +
+            "(from_username=:peerName OR to_username=:peerName) GROUP BY group_id")
+    GroupId findChatWithUserOwnedBy(String ownerName, String peerName);
+
 }

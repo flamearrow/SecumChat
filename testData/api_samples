@@ -175,5 +175,8 @@ response:
 }
 
 DB samples:
-chat preview for phone_11
+*) chat preview for phone_11
 SELECT m.from_username, m.to_username, m.owner_name, m.group_id, m.content, b.unread_count, COUNT(*) AS total_count, m.time FROM MESSAGE m LEFT JOIN (SELECT group_id, COUNT(*) as unread_count FROM MESSAGE WHERE owner_name = "phone_11" AND read = 0 GROUP BY group_id) b ON m.group_id = b.group_id WHERE m.owner_name = "phone_11" GROUP BY m.group_id ORDER BY m.time
+
+*) find if phone_11 has ever been chat with phone_22, if so, return the group_id
+SELECT group_id FROM MESSage WHERE owner_name = "phone_11" AND (from_username="phone_22" OR to_username="phone_22") GROUP BY group_id

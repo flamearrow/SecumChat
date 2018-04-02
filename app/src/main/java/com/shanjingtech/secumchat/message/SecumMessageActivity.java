@@ -11,8 +11,8 @@ import android.widget.Toast;
 import com.shanjingtech.secumchat.R;
 import com.shanjingtech.secumchat.SecumBaseActivity;
 import com.shanjingtech.secumchat.db.Message;
-import com.shanjingtech.secumchat.model.GenericResponse;
 import com.shanjingtech.secumchat.model.SendMessageRequest;
+import com.shanjingtech.secumchat.model.SendMessageResponse;
 import com.shanjingtech.secumchat.viewModels.ChatHistoryViewModel;
 
 import java.util.List;
@@ -57,6 +57,7 @@ public class SecumMessageActivity extends SecumBaseActivity implements SwipeRefr
         swipeRefreshLayout = findViewById(R.id.swipe_refresh_layout);
         swipeRefreshLayout.setOnRefreshListener(this);
 
+        // groupId is null if it's started from a fresh chat
         groupId = getIntent().getStringExtra(GROUP_ID);
 
         initializeRecyclerView();
@@ -69,16 +70,22 @@ public class SecumMessageActivity extends SecumBaseActivity implements SwipeRefr
         chatHistoryViewModel = ViewModelProviders.of(this).get(ChatHistoryViewModel.class);
 
         secumMessageAdapter = new SecumMessageAdapter(ownerName);
+        if (groupId != null) {
+            observeViewModel();
+        }
+        messageRecyclerView.setAdapter(secumMessageAdapter);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        linearLayoutManager.setStackFromEnd(true);
+        messageRecyclerView.setLayoutManager(linearLayoutManager);
+    }
+
+    private void observeViewModel() {
         chatHistoryViewModel.getLiveHistoryWithGroupId(groupId).observe(this, items -> {
                     secumMessageAdapter.replaceItems(items);
                     messageRecyclerView.smoothScrollToPosition(secumMessageAdapter.getItemCount()
                             - 1);
                 }
         );
-        messageRecyclerView.setAdapter(secumMessageAdapter);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-        linearLayoutManager.setStackFromEnd(true);
-        messageRecyclerView.setLayoutManager(linearLayoutManager);
     }
 
     private void markUnreadMessages() {
@@ -104,29 +111,38 @@ public class SecumMessageActivity extends SecumBaseActivity implements SwipeRefr
     @Override
     public void onMessageSent(String text) {
         messageAction.clearText();
-        Message message = new Message.Builder().setFrom(ownerName).setTo(peerUserName)
-                .setOwnerName
-                        (ownerName).setTime(System.currentTimeMillis()).setGroupId(groupId)
-                .setContent
-                        (text).build();
-        new Thread() {
-            @Override
-            public void run() {
-                messageDAO.insertMessage(message);
-            }
-        }.start();
+
 
         secumAPI.sendMessage(new SendMessageRequest(peerUserName, text)).enqueue(
-                new Callback<GenericResponse>() {
+                new Callback<SendMessageResponse>() {
 
                     @Override
-                    public void onResponse(Call<GenericResponse> call, Response<GenericResponse>
-                            response) {
+                    public void onResponse(Call<SendMessageResponse> call,
+                                           Response<SendMessageResponse> response) {
+                        if (groupId == null) {
+                            groupId = response.body().getGroupId();
+                            // TODO: reattach ViewModel
+                            observeViewModel();
+                        }
+                        Message message = new Message.Builder().setFrom(ownerName).setTo
+                                (peerUserName)
+                                .setOwnerName
+                                        (ownerName).setTime(System.currentTimeMillis())
+                                .setGroupId(groupId)
+                                .setContent
+                                        (text).build();
+
+                        new Thread() {
+                            @Override
+                            public void run() {
+                                messageDAO.insertMessage(message);
+                            }
+                        }.start();
                         Log.d(TAG, "sent success");
                     }
 
                     @Override
-                    public void onFailure(Call<GenericResponse> call, Throwable t) {
+                    public void onFailure(Call<SendMessageResponse> call, Throwable t) {
                         // show some warning
                         Log.d(TAG, "sent failure");
                     }

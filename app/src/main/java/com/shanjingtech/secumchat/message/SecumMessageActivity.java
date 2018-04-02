@@ -62,6 +62,7 @@ public class SecumMessageActivity extends SecumBaseActivity implements SwipeRefr
         initializeRecyclerView();
 
         markUnreadMessages();
+        overridePendingTransition(R.anim.enter_from_right_full, R.anim.do_nothing);
     }
 
     private void initializeRecyclerView() {

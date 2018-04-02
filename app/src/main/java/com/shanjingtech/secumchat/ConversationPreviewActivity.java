@@ -1,5 +1,6 @@
 package com.shanjingtech.secumchat;
 
+import android.app.ActivityOptions;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
@@ -130,6 +131,11 @@ public class ConversationPreviewActivity extends SecumTabbedActivity {
                             SecumMessageActivity.class);
                     intent.putExtra(SecumMessageActivity.PEER_USER_NAME, peerName);
                     intent.putExtra(SecumMessageActivity.GROUP_ID, groupId);
+//                    startActivity(intent,
+//                            ActivityOptions.makeCustomAnimation(
+//                                    getApplicationContext(),
+//                                    R.anim.enter_from_right,
+//                                    R.anim.exit_to_right).toBundle());
                     startActivity(intent);
                 });
                 avatar = itemView.findViewById(R.id.avatar);

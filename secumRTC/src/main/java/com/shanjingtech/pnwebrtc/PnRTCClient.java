@@ -220,4 +220,11 @@ public class PnRTCClient {
         this.mPubNub.unsubscribeAll();
     }
 
+    /**
+     * Unsubscribe all pubnub channels.
+     */
+    public void pubnubUnsubscribeAll() {
+        mPubNub.unsubscribeAll();
+    }
+
 }

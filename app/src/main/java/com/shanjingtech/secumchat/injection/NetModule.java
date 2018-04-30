@@ -1,6 +1,7 @@
 package com.shanjingtech.secumchat.injection;
 
 import android.app.Application;
+import android.arch.lifecycle.ProcessLifecycleOwner;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -13,6 +14,7 @@ import com.shanjingtech.pnwebrtc.PnRTCListener;
 import com.shanjingtech.pnwebrtc.PnSignalingParams;
 import com.shanjingtech.secumchat.db.Message;
 import com.shanjingtech.secumchat.db.MessageDAO;
+import com.shanjingtech.secumchat.lifecycle.PnRTCClientLifecycleObserver;
 import com.shanjingtech.secumchat.net.SecumAPI;
 import com.shanjingtech.secumchat.net.XirSysRequest;
 import com.shanjingtech.secumchat.util.Constants;
@@ -214,6 +216,10 @@ public class NetModule {
                 messageDAO.insertMessage(message);
             }
         });
+
+        //TODO: consider move this to a single provides method and inject it from SecumApplication
+        ProcessLifecycleOwner.get().getLifecycle().addObserver(new PnRTCClientLifecycleObserver
+                (pnRTCClient, currentUserProvider));
 
         return pnRTCClient;
     }

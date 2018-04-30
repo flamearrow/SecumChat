@@ -73,7 +73,7 @@ public class SecumBaseActivity
                 .setNegativeButton(resources.getString(R.string.cancel), this)
                 .setIcon(R.drawable.cat_head)
                 .create();
-//        This will cause SplashActivity crash
+//        TODO: This will cause SplashActivity crash
 //        initializeRTCComponents();
 //        registerMessageReceiver();
     }
@@ -316,21 +316,4 @@ public class SecumBaseActivity
         return currentUserProvider.getUser();
     }
 
-    private void initializePubnub() {
-        pnRTCClient.getPubNub().unsubscribeAll();
-        // subscribe to my regular channel
-        pnRTCClient.subscribeToPubnubChannel(getMyName());
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        initializePubnub();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        pnRTCClient.getPubNub().unsubscribeAll();
-    }
 }

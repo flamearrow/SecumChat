@@ -114,7 +114,7 @@ dependencies {
 
     testCompile 'junit:junit:4.12'
 
-    // For Room database
+    // For Room database and ProcessLifecycleOwner
     // ViewModel and LiveData
     implementation "android.arch.lifecycle:extensions:1.1.0"
     annotationProcessor "android.arch.lifecycle:compiler:1.1.0"

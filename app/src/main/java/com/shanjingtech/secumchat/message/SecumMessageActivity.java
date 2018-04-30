@@ -42,6 +42,17 @@ public class SecumMessageActivity extends SecumBaseActivity implements SwipeRefr
     private SwipeRefreshLayout swipeRefreshLayout;
     private SecumMessageAdapter secumMessageAdapter;
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        currentPeerNameProvider.setPeerUserName(peerUserName);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        currentPeerNameProvider.setPeerUserName(null);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

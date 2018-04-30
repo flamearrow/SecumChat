@@ -15,6 +15,7 @@ import com.shanjingtech.pnwebrtc.PnSignalingParams;
 import com.shanjingtech.secumchat.db.Message;
 import com.shanjingtech.secumchat.db.MessageDAO;
 import com.shanjingtech.secumchat.lifecycle.PnRTCClientLifecycleObserver;
+import com.shanjingtech.secumchat.message.CurrentPeerUserNameProvider;
 import com.shanjingtech.secumchat.net.SecumAPI;
 import com.shanjingtech.secumchat.net.XirSysRequest;
 import com.shanjingtech.secumchat.util.Constants;
@@ -180,7 +181,8 @@ public class NetModule {
     public PnRTCClient providePnRTCClient(
             Application application,
             CurrentUserProvider currentUserProvider,
-            MessageDAO messageDAO) {
+            MessageDAO messageDAO,
+            CurrentPeerUserNameProvider currentPeerUserNameProvider) {
         // First, we initiate the PeerConnectionFactory with our application context and some
         // options.
         PeerConnectionFactory.initializeAndroidGlobals(
@@ -212,7 +214,8 @@ public class NetModule {
                         new Message.Builder()
                                 .setFrom(from).setTo(ownerName).setOwnerName(ownerName)
                                 .setTime(time).setGroupId(groupId).setContent(content)
-                                .setRead(false).build();
+                                .setRead(currentPeerUserNameProvider.isPeerUserNameEqualTo(from))
+                                .build();
                 messageDAO.insertMessage(message);
             }
         });
@@ -222,6 +225,12 @@ public class NetModule {
                 (pnRTCClient, currentUserProvider));
 
         return pnRTCClient;
+    }
+
+    @Provides
+    @Singleton
+    public CurrentPeerUserNameProvider provideCurrentPeerNameProvider() {
+        return new CurrentPeerUserNameProvider();
     }
 
 }

@@ -24,6 +24,12 @@ public class ConversationPreview {
     @ColumnInfo(name = "to_username")
     private String to;
 
+    @ColumnInfo(name = "from_nickname")
+    private String fromNickname;
+
+    @ColumnInfo(name = "to_nickname")
+    private String toNickname;
+
     @ColumnInfo(name = "owner_name")
     private String owner;
 
@@ -95,6 +101,22 @@ public class ConversationPreview {
 
     // return non ownername
     public String getPeerName() {
-        return owner.equals(from) ? to : from;
+        return owner.equals(from) ? toNickname : fromNickname;
+    }
+
+    public String getFromNickname() {
+        return fromNickname;
+    }
+
+    public void setFromNickname(String fromNickname) {
+        this.fromNickname = fromNickname;
+    }
+
+    public String getToNickname() {
+        return toNickname;
+    }
+
+    public void setToNickname(String toNickname) {
+        this.toNickname = toNickname;
     }
 }

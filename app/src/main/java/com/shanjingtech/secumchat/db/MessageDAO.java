@@ -93,23 +93,25 @@ public interface MessageDAO {
      * Group all unread messages, find unread message count, read message count, last content, peer
      * user etc.
      */
-    @Query("SELECT m.from_username, m.to_username, m.owner_name, m.group_id, m.content, b" +
-            ".unread_count, COUNT(*) AS " +
-            "total_count, m.time FROM MESSAGE m LEFT JOIN (SELECT group_id, COUNT(*) as " +
-            "unread_count FROM MESSAGE WHERE owner_name = :ownerName AND read = 0 GROUP BY " +
-            "group_id) b ON m.group_id = b.group_id WHERE m.owner_name = :ownerName GROUP BY " +
-            "m.group_id ORDER BY m.time")
+    @Query("SELECT m.from_username, m.to_username, u.nick_name AS from_nickname, u2.nick_name AS " +
+            "to_nickname, m.owner_name, m.group_id, m.content, b.unread_count, COUNT(*) AS " +
+            "total_count, m.time FROM UserDB u, UserDB u2, MESSAGE m LEFT JOIN (SELECT group_id, " +
+            "COUNT(*) as unread_count FROM MESSAGE WHERE owner_name = :ownerName AND read = 0 " +
+            "GROUP BY group_id) b ON m.group_id = b.group_id WHERE m.owner_name = :ownerName AND " +
+            "m.from_username = u.user_name AND u.owner_name = :ownerName AND m.to_username = " +
+            "u2.user_name AND u2.owner_name = :ownerName GROUP BY m.group_id ORDER BY m.time")
     List<ConversationPreview> conversationPreviewOwnedBy(String ownerName);
 
     /**
      * {@link LiveData} version of {@link #conversationPreviewOwnedBy}
      */
-    @Query("SELECT m.from_username, m.to_username, m.owner_name, m.group_id, m.content, b" +
-            ".unread_count, COUNT(*) AS " +
-            "total_count, m.time FROM MESSAGE m LEFT JOIN (SELECT group_id, COUNT(*) as " +
-            "unread_count FROM MESSAGE WHERE owner_name = :ownerName AND read = 0 GROUP BY " +
-            "group_id) b ON m.group_id = b.group_id WHERE m.owner_name = :ownerName GROUP BY " +
-            "m.group_id ORDER BY m.time")
+    @Query("SELECT m.from_username, m.to_username, u.nick_name AS from_nickname, u2.nick_name AS " +
+            "to_nickname, m.owner_name, m.group_id, m.content, b.unread_count, COUNT(*) AS " +
+            "total_count, m.time FROM UserDB u, UserDB u2, MESSAGE m LEFT JOIN (SELECT group_id, " +
+            "COUNT(*) as unread_count FROM MESSAGE WHERE owner_name = :ownerName AND read = 0 " +
+            "GROUP BY group_id) b ON m.group_id = b.group_id WHERE m.owner_name = :ownerName AND " +
+            "m.from_username = u.user_name AND u.owner_name = :ownerName AND m.to_username = " +
+            "u2.user_name AND u2.owner_name = :ownerName GROUP BY m.group_id ORDER BY m.time")
     LiveData<List<ConversationPreview>> liveConversationPreviewOwnedBy(String ownerName);
 
     /**

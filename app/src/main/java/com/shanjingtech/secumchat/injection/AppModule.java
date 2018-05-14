@@ -7,6 +7,7 @@ import android.content.Context;
 import com.shanjingtech.secumchat.db.MessageDAO;
 import com.shanjingtech.secumchat.db.SecumDBConstants;
 import com.shanjingtech.secumchat.db.SecumDatabase;
+import com.shanjingtech.secumchat.db.UserDAO;
 import com.shanjingtech.secumchat.net.SecumAPI;
 import com.shanjingtech.secumchat.pushy.PushyInitializer;
 
@@ -56,6 +57,12 @@ public class AppModule {
     @Singleton
     MessageDAO providesMessageDAO(SecumDatabase secumDatabase) {
         return secumDatabase.messageDAO();
+    }
+
+    @Provides
+    @Singleton
+    UserDAO providesUserDAO(SecumDatabase secumDatabase) {
+        return secumDatabase.userDAO();
     }
 
 }

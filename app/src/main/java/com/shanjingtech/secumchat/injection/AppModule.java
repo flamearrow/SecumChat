@@ -9,6 +9,7 @@ import com.shanjingtech.secumchat.db.SecumDBConstants;
 import com.shanjingtech.secumchat.db.SecumDatabase;
 import com.shanjingtech.secumchat.db.UserDAO;
 import com.shanjingtech.secumchat.net.SecumAPI;
+import com.shanjingtech.secumchat.net.SecumNetDBSynchronizer;
 import com.shanjingtech.secumchat.pushy.PushyInitializer;
 
 import javax.inject.Singleton;
@@ -63,6 +64,13 @@ public class AppModule {
     @Singleton
     UserDAO providesUserDAO(SecumDatabase secumDatabase) {
         return secumDatabase.userDAO();
+    }
+
+    @Provides
+    @Singleton
+    SecumNetDBSynchronizer providesSecumNetDBSynchronizer(SecumAPI secumAPI, MessageDAO
+            messageDAO, UserDAO userDAO) {
+        return new SecumNetDBSynchronizer(secumAPI, userDAO, messageDAO);
     }
 
 }

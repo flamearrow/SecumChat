@@ -27,6 +27,7 @@ import com.shanjingtech.secumchat.log.AddTimePairedFactory;
 import com.shanjingtech.secumchat.message.CurrentPeerUserNameProvider;
 import com.shanjingtech.secumchat.model.User;
 import com.shanjingtech.secumchat.net.SecumAPI;
+import com.shanjingtech.secumchat.net.SecumNetDBSynchronizer;
 import com.shanjingtech.secumchat.onboarding.SplashActivity;
 import com.shanjingtech.secumchat.pushy.PushyInitializer;
 import com.shanjingtech.secumchat.util.Constants;
@@ -57,10 +58,11 @@ public class SecumBaseActivity
     protected PnRTCClient pnRTCClient;
     @Inject
     protected MessageDAO messageDAO;
-
     // Used to identify if a newly received message should be marked as read or unread.
     @Inject
     protected CurrentPeerUserNameProvider currentPeerNameProvider;
+    @Inject
+    protected SecumNetDBSynchronizer secumNetDBSynchronizer;
 
     private static final String PERMISSION_TAG = "SecumPermission";
 

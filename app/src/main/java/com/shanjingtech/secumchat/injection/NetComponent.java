@@ -5,6 +5,7 @@ import com.shanjingtech.secumchat.LegacyLoginActivity;
 import com.shanjingtech.secumchat.SecumBaseActivity;
 import com.shanjingtech.secumchat.net.SecumNetworkRequester;
 import com.shanjingtech.secumchat.viewModels.ChatHistoryViewModel;
+import com.shanjingtech.secumchat.viewModels.ContactsViewModel;
 import com.shanjingtech.secumchat.viewModels.ConversationPreviewListViewModel;
 
 import javax.inject.Singleton;
@@ -15,9 +16,16 @@ import dagger.Component;
 @Component(modules = {AppModule.class, NetModule.class, FabricModule.class})
 public interface NetComponent {
     void inject(SecumBaseActivity activity);
+
     void inject(SecumNetworkRequester networkRequester);
+
     void inject(LegacyLoginActivity legacyLoginActivity);
+
     void inject(DebugActivity debugActivity);
+
     void inject(ConversationPreviewListViewModel conversationPreviewListViewModel);
+
     void inject(ChatHistoryViewModel chatHistoryViewModel);
+
+    void inject(ContactsViewModel contactsViewModel);
 }

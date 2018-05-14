@@ -11,15 +11,13 @@ import android.widget.Toast;
 
 import com.shanjingtech.secumchat.ProfileActivity;
 import com.shanjingtech.secumchat.R;
+import com.shanjingtech.secumchat.db.UserPreview;
 import com.shanjingtech.secumchat.model.ApproveContactRequest;
-import com.shanjingtech.secumchat.model.Contact;
 import com.shanjingtech.secumchat.model.GenericResponse;
 import com.shanjingtech.secumchat.net.SecumAPI;
 import com.shanjingtech.secumchat.util.Constants;
 
 import java.util.List;
-
-import javax.inject.Inject;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -42,7 +40,7 @@ public class ContactsAdapter extends RecyclerView.Adapter {
     private static final int CONTACTS_LABEL = 1;
     private static final int CONTACTS = 2;
 
-    private List<Contact> contacts;
+    private List<UserPreview> contacts;
 
     private RecyclerView recyclerView;
 
@@ -59,7 +57,7 @@ public class ContactsAdapter extends RecyclerView.Adapter {
         adapterType = type;
     }
 
-    public void updateContacts(List<Contact> contacts) {
+    public void updateContacts(List<UserPreview> contacts) {
         this.contacts = contacts;
         notifyDataSetChanged();
     }
@@ -109,58 +107,52 @@ public class ContactsAdapter extends RecyclerView.Adapter {
 
             if (adapterType.equals(CONTACTS_TYPE_PENDING)) {
                 // add a button to accept pending requests
-                Button button = (Button) view.findViewById(R.id.action_button);
+                Button button = view.findViewById(R.id.action_button);
                 button.setText(context.getText(R.string.approve));
                 button.setVisibility(View.VISIBLE);
-                button.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        int itemPosition = recyclerView.getChildLayoutPosition(view) - 1;
-                        String currentUserName = contacts.get(itemPosition).getContact_username();
-                        secumAPI.approveContact(new ApproveContactRequest(currentUserName))
-                                .enqueue(new Callback<List<GenericResponse>>() {
-                                    @Override
-                                    public void onResponse(Call<List<GenericResponse>> call,
-                                                           Response<List<GenericResponse>>
-                                                                   response) {
-                                        Toast.makeText(context, context.getResources()
-                                                .getString(R.string.add_success), Toast
-                                                .LENGTH_SHORT)
-                                                .show();
-                                        notifyDataSetChanged();
-                                    }
+                button.setOnClickListener(v -> {
+                    int itemPosition = recyclerView.getChildLayoutPosition(view) - 1;
+                    String currentUserName = contacts.get(itemPosition).getUserName();
+                    secumAPI.approveContact(new ApproveContactRequest(currentUserName))
+                            .enqueue(new Callback<List<GenericResponse>>() {
+                                @Override
+                                public void onResponse(Call<List<GenericResponse>> call,
+                                                       Response<List<GenericResponse>>
+                                                               response) {
+                                    Toast.makeText(context, context.getResources()
+                                            .getString(R.string.add_success), Toast
+                                            .LENGTH_SHORT)
+                                            .show();
+                                    notifyDataSetChanged();
+                                }
 
-                                    @Override
-                                    public void onFailure(Call<List<GenericResponse>> call,
-                                                          Throwable t) {
-                                        Toast.makeText(context, context.getResources()
-                                                .getString(R.string.request_fail), Toast
-                                                .LENGTH_SHORT).show();
-                                    }
-                                });
-                    }
+                                @Override
+                                public void onFailure(Call<List<GenericResponse>> call,
+                                                      Throwable t) {
+                                    Toast.makeText(context, context.getResources()
+                                            .getString(R.string.request_fail), Toast
+                                            .LENGTH_SHORT).show();
+                                }
+                            });
                 });
             } else {
                 // for other 3 types, make the item clickable to see the users profile
-                view.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        int itemPosition = 0;
-                        if (adapterType.equals(CONTACTS_TYPE_CONTACTS)) {
-                            // offset pending and label
-                            itemPosition = recyclerView.getChildLayoutPosition(view) - 2;
-                        } else if (adapterType.equals(CONTACTS_TYPE_BLOCKED) || adapterType
-                                .equals(CONTACTS_TYPE_REQUESTED)) {
-                            // offset label
-                            itemPosition = recyclerView.getChildLayoutPosition(view) - 1;
-                        }
-
-                        String currentUserName = contacts.get(itemPosition).getContact_username();
-                        Context context = parent.getContext();
-                        Intent intent = new Intent(context, ProfileActivity.class);
-                        intent.putExtra(Constants.PROFILE_USER_NAME, currentUserName);
-                        context.startActivity(intent);
+                view.setOnClickListener(v -> {
+                    int itemPosition = 0;
+                    if (adapterType.equals(CONTACTS_TYPE_CONTACTS)) {
+                        // offset pending and label
+                        itemPosition = recyclerView.getChildLayoutPosition(view) - 2;
+                    } else if (adapterType.equals(CONTACTS_TYPE_BLOCKED) || adapterType
+                            .equals(CONTACTS_TYPE_REQUESTED)) {
+                        // offset label
+                        itemPosition = recyclerView.getChildLayoutPosition(view) - 1;
                     }
+
+                    String currentUserName = contacts.get(itemPosition).getUserName();
+                    Context context = parent.getContext();
+                    Intent intent = new Intent(context, ProfileActivity.class);
+                    intent.putExtra(Constants.PROFILE_USER_NAME, currentUserName);
+                    context.startActivity(intent);
                 });
             }
             return new ContactViewHolder(view);
@@ -178,12 +170,12 @@ public class ContactsAdapter extends RecyclerView.Adapter {
             case CONTACTS: {
                 if (adapterType == CONTACTS_TYPE_CONTACTS) {
                     // offset label and pending pointer
-                    Contact contact = contacts.get(position - 2);
-                    ((ContactViewHolder) holder).name.setText(contact.getContact_nickname());
+                    UserPreview contact = contacts.get(position - 2);
+                    ((ContactViewHolder) holder).name.setText(contact.getNickName());
                 } else if (contacts != null && contacts.size() > 0) {
                     // offset label
-                    Contact contact = contacts.get((position - 1));
-                    ((ContactViewHolder) holder).name.setText(contact.getContact_nickname());
+                    UserPreview contact = contacts.get((position - 1));
+                    ((ContactViewHolder) holder).name.setText(contact.getNickName());
                 }
                 break;
 
@@ -210,43 +202,31 @@ public class ContactsAdapter extends RecyclerView.Adapter {
             case REQUESTED_POINTER:
                 ((PointerLabelViewHolder) holder).textLabel.setText(context.getString(R.string
                         .requested));
-                ((PointerLabelViewHolder) holder).itemView.setOnClickListener(new View
-                        .OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent intent = new Intent(context, ContactsActivity.class);
-                        intent.putExtra(ContactsActivity.CONTACTS_TYPE,
-                                CONTACTS_TYPE_REQUESTED);
-                        context.startActivity(intent);
-                    }
+                ((PointerLabelViewHolder) holder).itemView.setOnClickListener(v -> {
+                    Intent intent = new Intent(context, ContactsActivity.class);
+                    intent.putExtra(ContactsActivity.CONTACTS_TYPE,
+                            CONTACTS_TYPE_REQUESTED);
+                    context.startActivity(intent);
                 });
                 break;
             case BLOCKED_POINTER:
                 ((PointerLabelViewHolder) holder).textLabel.setText(context.getString(R.string
                         .blocked));
-                ((PointerLabelViewHolder) holder).itemView.setOnClickListener(new View
-                        .OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent intent = new Intent(context, ContactsActivity.class);
-                        intent.putExtra(ContactsActivity.CONTACTS_TYPE,
-                                CONTACTS_TYPE_BLOCKED);
-                        context.startActivity(intent);
-                    }
+                ((PointerLabelViewHolder) holder).itemView.setOnClickListener(v -> {
+                    Intent intent = new Intent(context, ContactsActivity.class);
+                    intent.putExtra(ContactsActivity.CONTACTS_TYPE,
+                            CONTACTS_TYPE_BLOCKED);
+                    context.startActivity(intent);
                 });
                 break;
             case PENDING_POINTER:
                 ((PointerLabelViewHolder) holder).textLabel.setText(context.getString(R.string
                         .pending));
-                ((PointerLabelViewHolder) holder).itemView.setOnClickListener(new View
-                        .OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent intent = new Intent(context, ContactsActivity.class);
-                        intent.putExtra(ContactsActivity.CONTACTS_TYPE,
-                                CONTACTS_TYPE_PENDING);
-                        context.startActivity(intent);
-                    }
+                ((PointerLabelViewHolder) holder).itemView.setOnClickListener(v -> {
+                    Intent intent = new Intent(context, ContactsActivity.class);
+                    intent.putExtra(ContactsActivity.CONTACTS_TYPE,
+                            CONTACTS_TYPE_PENDING);
+                    context.startActivity(intent);
                 });
                 break;
         }

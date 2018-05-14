@@ -11,7 +11,11 @@ import com.shanjingtech.secumchat.util.Constants;
 public class ListContactsRequest {
     public ListContactsRequest() {
         // default check active contacts
-        setStatus(Constants.CONTACT_STATUS_ACTIVE);
+        this(Constants.CONTACT_STATUS_ACTIVE);
+    }
+
+    public ListContactsRequest(String contactsType) {
+        setStatus(contactsType);
     }
 
     public void setStatus(String status) {

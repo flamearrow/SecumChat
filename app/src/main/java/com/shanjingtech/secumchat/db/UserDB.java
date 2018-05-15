@@ -121,12 +121,14 @@ public class UserDB {
     int status;
 
     @IntDef({ContactStatus.CONTACT_STATUS_ACTIVE, ContactStatus.CONTACT_STATUS_REQUESTED,
-            ContactStatus.CONTACT_STATUS_BLOCKED, ContactStatus.CONTACT_STATUS_PENDING})
+            ContactStatus.CONTACT_STATUS_BLOCKED, ContactStatus.CONTACT_STATUS_PENDING,
+            ContactStatus.CONTACT_STATUS_UNKNOWN})
     public @interface ContactStatus {
         int CONTACT_STATUS_ACTIVE = 0;
         int CONTACT_STATUS_REQUESTED = 1;
         int CONTACT_STATUS_BLOCKED = 2;
         int CONTACT_STATUS_PENDING = 3;
+        int CONTACT_STATUS_UNKNOWN = 4;
     }
 
     public String getOwnerName() {

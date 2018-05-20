@@ -7,7 +7,9 @@ import com.shanjingtech.secumchat.db.MessageDAO;
 import com.shanjingtech.secumchat.db.UserDAO;
 import com.shanjingtech.secumchat.db.UserDB;
 import com.shanjingtech.secumchat.model.Contact;
+import com.shanjingtech.secumchat.model.GetProfileFromUserNameRequest;
 import com.shanjingtech.secumchat.model.ListContactsRequest;
+import com.shanjingtech.secumchat.model.User;
 
 import java.util.List;
 
@@ -34,7 +36,6 @@ public class SecumNetDBSynchronizer {
      * Invoke {@link SecumAPI#listContacts(ListContactsRequest)} with all types and insert into
      * {@link UserDB} table
      * <p>
-     * TODO: now send 4 requests in seq, replace with wildcard when server API is available
      */
     public void syncUserDBbyPreview(String ownerName) {
         secumAPI.listContacts(new ListContactsRequest()).enqueue(new Callback<List<Contact>>() {
@@ -68,6 +69,28 @@ public class SecumNetDBSynchronizer {
      * @param userName
      */
     public void syncUserDBFromUserName(String ownerName, String userName) {
+        secumAPI.getProfileFromUserName(new GetProfileFromUserNameRequest(userName)).enqueue(
+                new Callback<User>() {
+                    @Override
+                    public void onResponse(Call<User> call, Response<User> response) {
+                        new Thread(() -> {
+                            User user = response.body();
+                            if (user != null) {
+                                // TODO: let getProfile API return status
+                                int oldStatus = userDAO.getUserStatus(ownerName, userName);
+                                userDAO.insertUser(new UserDB.Builder().setUser(user).setOwnerName
+                                        (ownerName).setStatus(oldStatus).build());
+                            } else {
+                                Log.d(TAG, "no user found for " + userName);
+                            }
+                        }).start();
+                    }
 
+                    @Override
+                    public void onFailure(Call<User> call, Throwable t) {
+                        Log.d(TAG, "failed in SecumNetDBSynchronizer#syncUserDBFromUserName");
+                    }
+                });
     }
+
 }

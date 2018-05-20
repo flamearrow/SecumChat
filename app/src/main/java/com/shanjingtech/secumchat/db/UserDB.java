@@ -6,6 +6,8 @@ import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 
+import com.shanjingtech.secumchat.model.User;
+
 /**
  * Model used for database
  */
@@ -87,6 +89,12 @@ public class UserDB {
             userDB.setGender(gender);
             userDB.setProfileImageUrl(profileImageUrl);
             return userDB;
+        }
+
+        public Builder setUser(User user) {
+            return setAge(user.getAge()).setEmail(user.getEmail()).setPhone(user.getPhone())
+                    .setUserName(user.getUsername()).setNickName(user.getNickname()).setGender
+                            (user.getGender()).setProfileImageUrl(user.getProfile_image_url());
         }
     }
 

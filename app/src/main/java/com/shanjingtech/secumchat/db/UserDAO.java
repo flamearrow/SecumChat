@@ -22,6 +22,9 @@ public interface UserDAO {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void updateUser(UserDB user);
 
+    @Query("SELECT status FROM USERDB WHERE owner_name=:ownerName and user_name=:userName")
+    int getUserStatus(String ownerName, String userName);
+
     @Query("SELECT user_name, nick_name, profile_image_url FROM UserDB WHERE owner_name = " +
             ":ownerName AND status = 0")
     List<UserPreview> getActiveContacts(String ownerName);
@@ -53,5 +56,8 @@ public interface UserDAO {
     @Query("SELECT user_name, nick_name, profile_image_url FROM UserDB WHERE owner_name = " +
             ":ownerName AND status = 3")
     LiveData<List<UserPreview>> getLivePendingContacts(String ownerName);
+
+    @Query("SELECT * FROM USERDB WHERE owner_name=:ownerName and user_name=:userName")
+    LiveData<ProfilePreview> getLiveUserProfile(String ownerName, String userName);
 
 }

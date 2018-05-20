@@ -58,6 +58,8 @@ public class SecumBaseActivity
     protected PnRTCClient pnRTCClient;
     @Inject
     protected MessageDAO messageDAO;
+    @Inject
+    protected MessageDAO userDAO;
     // Used to identify if a newly received message should be marked as read or unread.
     @Inject
     protected CurrentPeerUserNameProvider currentPeerNameProvider;

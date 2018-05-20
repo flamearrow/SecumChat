@@ -7,6 +7,7 @@ import com.shanjingtech.secumchat.net.SecumNetworkRequester;
 import com.shanjingtech.secumchat.viewModels.ChatHistoryViewModel;
 import com.shanjingtech.secumchat.viewModels.ContactsViewModel;
 import com.shanjingtech.secumchat.viewModels.ConversationPreviewListViewModel;
+import com.shanjingtech.secumchat.viewModels.SecumDBViewModel;
 
 import javax.inject.Singleton;
 
@@ -23,9 +24,5 @@ public interface NetComponent {
 
     void inject(DebugActivity debugActivity);
 
-    void inject(ConversationPreviewListViewModel conversationPreviewListViewModel);
-
-    void inject(ChatHistoryViewModel chatHistoryViewModel);
-
-    void inject(ContactsViewModel contactsViewModel);
+    void inject(SecumDBViewModel secumDBViewModel);
 }

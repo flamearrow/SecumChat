@@ -1,11 +1,11 @@
 package com.shanjingtech.secumchat;
 
 import android.app.SearchManager;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -21,9 +21,8 @@ import com.shanjingtech.secumchat.model.AddContactRequest;
 import com.shanjingtech.secumchat.model.BlockContactRequest;
 import com.shanjingtech.secumchat.model.DeleteContactRequest;
 import com.shanjingtech.secumchat.model.GenericResponse;
-import com.shanjingtech.secumchat.model.GetProfileFromUserNameRequest;
-import com.shanjingtech.secumchat.model.User;
 import com.shanjingtech.secumchat.util.Constants;
+import com.shanjingtech.secumchat.viewModels.ProfileViewModel;
 
 import java.util.List;
 
@@ -45,6 +44,8 @@ public class ProfileActivity extends SecumBaseActivity {
     private Button add;
     private boolean isStranger;
 
+    private ProfileViewModel profileViewModel;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,8 +57,9 @@ public class ProfileActivity extends SecumBaseActivity {
         chat = findViewById(R.id.chat_button);
         video = findViewById(R.id.video_button);
         add = findViewById(R.id.add_button);
-        handleIntent(getIntent());
         overridePendingTransition(R.anim.enter_from_right_full, R.anim.do_nothing);
+        profileViewModel = ViewModelProviders.of(this).get(ProfileViewModel.class);
+        handleIntent(getIntent());
     }
 
     @Override
@@ -146,36 +148,56 @@ public class ProfileActivity extends SecumBaseActivity {
             video.setVisibility(View.VISIBLE);
             isStranger = false;
         }
-        pullUser();
-    }
-
-    private void pullUser() {
-        secumAPI.getProfileFromUserName(new GetProfileFromUserNameRequest(profileUserName))
-                .enqueue(new Callback<User>() {
-                    @Override
-                    public void onResponse(Call<User> call, Response<User> response) {
-                        User user = response.body();
-                        if (user == null) {
-                            showNotFoundDialog();
+        profileViewModel.getActiveContactsOwnedBy(getMyName(), profileUserName).observe(this,
+                profilePreview -> {
+                    if (profilePreview == null) {
+                        showNotFoundDialog();
+                    } else {
+                        name.setText(profilePreview.getNickName());
+                        age.setText(profilePreview.getAge());
+                        if (profilePreview.getGender() != null) {
+                            gender.setImageResource(profilePreview.getGender().equals(Constants
+                                    .MALE) ? R
+                                    .drawable.male : R.drawable.female);
+                            gender.setVisibility(View.VISIBLE);
                         } else {
-                            name.setText(user.getNickname());
-                            age.setText(user.getAge());
-                            if (user.getGender() != null) {
-                                gender.setImageResource(user.getGender().equals(Constants.MALE) ? R
-                                        .drawable.male : R.drawable.female);
-                                gender.setVisibility(View.VISIBLE);
-                            } else {
-                                gender.setVisibility(View.GONE);
-                            }
+                            gender.setVisibility(View.GONE);
                         }
-                    }
-
-                    @Override
-                    public void onFailure(Call<User> call, Throwable t) {
-                        Log.d(TAG, "Failure to access user.");
+                        // also has email, phone, status etc
                     }
                 });
+        secumNetDBSynchronizer.syncUserDBFromUserName(getMyName(), profileUserName);
     }
+
+//    private void pullUser() {
+//
+//        secumAPI.getProfileFromUserName(new GetProfileFromUserNameRequest(profileUserName))
+//                .enqueue(new Callback<User>() {
+//                    @Override
+//                    public void onResponse(Call<User> call, Response<User> response) {
+//                        User user = response.body();
+//                        if (user == null) {
+//                            showNotFoundDialog();
+//                        } else {
+//                            name.setText(user.getNickname());
+//                            age.setText(user.getAge());
+//                            if (user.getGender() != null) {
+//                                gender.setImageResource(user.getGender().equals(Constants.MALE)
+// ? R
+//                                        .drawable.male : R.drawable.female);
+//                                gender.setVisibility(View.VISIBLE);
+//                            } else {
+//                                gender.setVisibility(View.GONE);
+//                            }
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onFailure(Call<User> call, Throwable t) {
+//                        Log.d(TAG, "Failure to access user.");
+//                    }
+//                });
+//    }
 
     public void showNotFoundDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -188,7 +210,6 @@ public class ProfileActivity extends SecumBaseActivity {
 
     public void chat(View view) {
         new Thread() {
-            @Override
             public void run() {
                 Intent intent = new Intent(
                         ProfileActivity.this,
@@ -204,7 +225,7 @@ public class ProfileActivity extends SecumBaseActivity {
     }
 
     public void video(View view) {
-
+        // start SecumChatActivity with dialing mode
     }
 
     public void add(View view) {

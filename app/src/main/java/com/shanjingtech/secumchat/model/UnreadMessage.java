@@ -20,6 +20,10 @@ public class UnreadMessage {
         return time_updated;
     }
 
+    public String getMessage_group_id() {
+        return message_group_id;
+    }
+
     @Expose
     @SerializedName("sender_username")
     String sender_username;
@@ -29,4 +33,7 @@ public class UnreadMessage {
     @Expose
     @SerializedName("time_updated")
     String time_updated;
+    @Expose
+    @SerializedName("message_group_id")
+    String message_group_id;
 }

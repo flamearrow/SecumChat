@@ -1,6 +1,7 @@
 package com.shanjingtech.secumchat.injection;
 
 import android.app.Application;
+import android.arch.lifecycle.ProcessLifecycleOwner;
 import android.arch.persistence.room.Room;
 import android.content.Context;
 
@@ -8,6 +9,7 @@ import com.shanjingtech.secumchat.db.MessageDAO;
 import com.shanjingtech.secumchat.db.SecumDBConstants;
 import com.shanjingtech.secumchat.db.SecumDatabase;
 import com.shanjingtech.secumchat.db.UserDAO;
+import com.shanjingtech.secumchat.lifecycle.SecumNetDBLifecycleObserver;
 import com.shanjingtech.secumchat.net.SecumAPI;
 import com.shanjingtech.secumchat.net.SecumNetDBSynchronizer;
 import com.shanjingtech.secumchat.pushy.PushyInitializer;
@@ -69,8 +71,12 @@ public class AppModule {
     @Provides
     @Singleton
     SecumNetDBSynchronizer providesSecumNetDBSynchronizer(SecumAPI secumAPI, MessageDAO
-            messageDAO, UserDAO userDAO) {
-        return new SecumNetDBSynchronizer(secumAPI, userDAO, messageDAO);
+            messageDAO, UserDAO userDAO, CurrentUserProvider currentUserProvider) {
+        SecumNetDBSynchronizer synchronizer = new SecumNetDBSynchronizer(secumAPI, userDAO,
+                messageDAO);
+        ProcessLifecycleOwner.get().getLifecycle().addObserver(new SecumNetDBLifecycleObserver
+                (synchronizer, currentUserProvider));
+        return synchronizer;
     }
 
 }

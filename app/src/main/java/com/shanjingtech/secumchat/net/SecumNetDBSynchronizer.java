@@ -3,12 +3,16 @@ package com.shanjingtech.secumchat.net;
 
 import android.util.Log;
 
+import com.shanjingtech.secumchat.db.Message;
 import com.shanjingtech.secumchat.db.MessageDAO;
+import com.shanjingtech.secumchat.db.TimestampConverter;
 import com.shanjingtech.secumchat.db.UserDAO;
 import com.shanjingtech.secumchat.db.UserDB;
 import com.shanjingtech.secumchat.model.Contact;
 import com.shanjingtech.secumchat.model.GetProfileFromUserNameRequest;
+import com.shanjingtech.secumchat.model.GroupMessages;
 import com.shanjingtech.secumchat.model.ListContactsRequest;
+import com.shanjingtech.secumchat.model.UnreadMessage;
 import com.shanjingtech.secumchat.model.User;
 
 import java.util.List;
@@ -91,6 +95,36 @@ public class SecumNetDBSynchronizer {
                         Log.d(TAG, "failed in SecumNetDBSynchronizer#syncUserDBFromUserName");
                     }
                 });
+    }
+
+    /**
+     * Pull unread messages for owner
+     *
+     * @param ownerName
+     */
+    public void syncUnreadMessageForUser(String ownerName) {
+        secumAPI.pullMessage().enqueue(new Callback<GroupMessages>() {
+            @Override
+            public void onResponse(Call<GroupMessages> call, Response<GroupMessages> response) {
+                new Thread(() -> {
+                    for (UnreadMessage unreadMessage : response.body().getGroupMessages()) {
+                        messageDAO.insertMessage(
+                                new Message.Builder().setOwnerName(ownerName).setGroupId
+                                        (unreadMessage.getMessage_group_id()).setContent
+                                        (unreadMessage.getText()).setFrom(unreadMessage
+                                        .getSender_username()).setTo(ownerName).setTime
+                                        (TimestampConverter.fromString(unreadMessage
+                                                .getTime_updated())).setRead(false).build());
+                    }
+                }
+                ).start();
+            }
+
+            @Override
+            public void onFailure(Call<GroupMessages> call, Throwable t) {
+                Log.d(TAG, "failed in SecumNetDBSynchronizer#synUnreadMessageForUser");
+            }
+        });
     }
 
 }

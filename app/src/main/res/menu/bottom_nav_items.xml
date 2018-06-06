@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/menu_conversation"
-        android:icon="@drawable/penis_filled"
+        android:icon="@drawable/cat_head"
         android:title="@string/conversation"/>
 
     <item

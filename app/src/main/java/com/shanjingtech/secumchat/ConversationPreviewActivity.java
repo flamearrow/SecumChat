@@ -85,7 +85,7 @@ public class ConversationPreviewActivity extends SecumTabbedActivity {
         @Override
         public void onBindViewHolder(ConversationPreviewHolder holder, int position) {
             ConversationPreview conversationPreview = conversationPreviews.get(position);
-            holder.userName.setText(conversationPreview.getPeerName());
+            holder.userName.setText(conversationPreview.getPeerNickName());
             holder.lastMessage.setText(conversationPreview.getLastUnreadContent());
             int unreadCount = conversationPreview.getUnreadCount();
             if (unreadCount > 0) {
@@ -98,7 +98,8 @@ public class ConversationPreviewActivity extends SecumTabbedActivity {
                     conversationPreview.getTime()));
 
             holder.groupId = conversationPreview.getGroupId();
-            holder.peerName = conversationPreview.getPeerName();
+            holder.peerNickName = conversationPreview.getPeerNickName();
+            holder.peerUserName = conversationPreview.getPeerUserName();
         }
 
         @Override
@@ -118,7 +119,8 @@ public class ConversationPreviewActivity extends SecumTabbedActivity {
             TextView sentTime;
             TextView unreadCount;
             String groupId;
-            String peerName;
+            String peerNickName;
+            String peerUserName;
 
             public ConversationPreviewHolder(View itemView) {
                 super(itemView);
@@ -128,7 +130,7 @@ public class ConversationPreviewActivity extends SecumTabbedActivity {
                     Intent intent = new Intent(
                             ConversationPreviewActivity.this,
                             SecumMessageActivity.class);
-                    intent.putExtra(SecumMessageActivity.PEER_USER_NAME, peerName);
+                    intent.putExtra(SecumMessageActivity.PEER_USER_NAME, peerUserName);
                     intent.putExtra(SecumMessageActivity.GROUP_ID, groupId);
                     startActivity(intent);
                 });

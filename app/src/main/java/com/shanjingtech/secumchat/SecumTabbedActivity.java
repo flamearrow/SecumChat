@@ -28,6 +28,7 @@ public abstract class SecumTabbedActivity extends SecumBaseActivity implements
         contentSub.inflate();
         bottomNavigationView = (BottomNavigationView) findViewById(R.id.navigation_bar);
         bottomNavigationView.setOnNavigationItemSelectedListener(this);
+        setTitle(getMyName());
     }
 
 

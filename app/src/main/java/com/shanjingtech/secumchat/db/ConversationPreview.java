@@ -100,8 +100,12 @@ public class ConversationPreview {
     }
 
     // return non ownername
-    public String getPeerName() {
+    public String getPeerNickName() {
         return owner.equals(from) ? toNickname : fromNickname;
+    }
+
+    public String getPeerUserName() {
+        return owner.equals(from) ? to : from;
     }
 
     public String getFromNickname() {

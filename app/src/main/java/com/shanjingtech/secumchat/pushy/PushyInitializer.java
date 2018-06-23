@@ -51,34 +51,31 @@ public class PushyInitializer {
 
     private void registerNotificationToken() {
         // Assign a unique token to this device
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    String deviceToken = Pushy.register(context);
-                    secumAPI.registerNotificationToken(new RegisterNotificationTokenRequest
-                            (deviceToken)).enqueue(new Callback<List<GenericResponse>>() {
-                        @Override
-                        public void onResponse(Call<List<GenericResponse>> call,
-                                               Response<List<GenericResponse>> response) {
+        new Thread(() -> {
+            try {
+                String deviceToken = Pushy.register(context);
+                secumAPI.registerNotificationToken(new RegisterNotificationTokenRequest
+                        (deviceToken)).enqueue(new Callback<List<GenericResponse>>() {
+                    @Override
+                    public void onResponse(Call<List<GenericResponse>> call,
+                                           Response<List<GenericResponse>> response) {
 
-                            if (pushyInitializedCallback == null) {
-                                return;
-                            }
-                            pushyInitializedCallback.onPushyInitialized();
+                        if (pushyInitializedCallback == null) {
+                            return;
                         }
-
-                        @Override
-                        public void onFailure(Call<List<GenericResponse>> call, Throwable t) {
-                            if (pushyInitializedCallback != null) {
-                                pushyInitializedCallback.onPushyInitializeFailed();
-                            }
-                        }
-                    });
-                } catch (Exception exc) {
-                    if (pushyInitializedCallback != null) {
-                        pushyInitializedCallback.onPushyInitializeFailed();
+                        pushyInitializedCallback.onPushyInitialized();
                     }
+
+                    @Override
+                    public void onFailure(Call<List<GenericResponse>> call, Throwable t) {
+                        if (pushyInitializedCallback != null) {
+                            pushyInitializedCallback.onPushyInitializeFailed();
+                        }
+                    }
+                });
+            } catch (Exception exc) {
+                if (pushyInitializedCallback != null) {
+                    pushyInitializedCallback.onPushyInitializeFailed();
                 }
             }
         }).start();

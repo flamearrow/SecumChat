@@ -55,8 +55,6 @@ public class SecumBaseActivity
     @Inject
     PushyInitializer pushyInitializer;
     @Inject
-    protected PnRTCClient pnRTCClient;
-    @Inject
     protected MessageDAO messageDAO;
     @Inject
     protected MessageDAO userDAO;

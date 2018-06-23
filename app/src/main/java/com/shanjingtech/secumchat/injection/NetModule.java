@@ -170,11 +170,6 @@ public class NetModule {
         return retrofit.create(SecumAPI.class);
     }
 
-    @Provides
-    @Singleton
-    public CurrentUserProvider provideCurrentUserProvider() {
-        return new CurrentUserProvider();
-    }
 
     @Provides
     @Singleton

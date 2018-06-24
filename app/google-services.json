@@ -1,0 +1,73 @@
+{
+  "project_info": {
+    "project_number": "18081605232",
+    "firebase_url": "https://miao-android.firebaseio.com",
+    "project_id": "miao-android",
+    "storage_bucket": "miao-android.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:18081605232:android:36350cde02cdcc39",
+        "android_client_info": {
+          "package_name": "com.shanjingtech.secumchat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "18081605232-r63rep642lm2aejj6utu563jtoui68rm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDEpqC7eXjJ7GxflxPjupqX1TAGd8ppBOQ"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:18081605232:android:ce213d058326431f",
+        "android_client_info": {
+          "package_name": "com.shanjingtech.secumchat.dogfood"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "18081605232-r63rep642lm2aejj6utu563jtoui68rm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDEpqC7eXjJ7GxflxPjupqX1TAGd8ppBOQ"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

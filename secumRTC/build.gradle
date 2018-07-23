@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         minSdkVersion 19
-        targetSdkVersion 25
+        targetSdkVersion 27
         versionCode 1
         versionName "1.0"
 
@@ -22,12 +22,12 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+    api fileTree(dir: 'libs', include: ['*.jar'])
+    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile 'com.android.support:appcompat-v7:27.1.1'
-    compile 'io.pristine:libjingle:9694@aar'
-    compile group: 'com.pubnub', name: 'pubnub-gson', version: '4.5.0'
-    testCompile 'junit:junit:4.12'
+    api 'com.android.support:appcompat-v7:27.1.1'
+    api 'io.pristine:libjingle:9694@aar'
+    api group: 'com.pubnub', name: 'pubnub-gson', version: '4.5.0'
+    testImplementation 'junit:junit:4.12'
 }

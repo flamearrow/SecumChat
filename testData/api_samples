@@ -108,13 +108,36 @@ RPC samples:
     }
 
 6. Update user
-  curl -X POST -H "Content-Type: application/json" -u superuser:superuser -d '{"phone": "+16503181659","age": 200, "gender": "male",  "lat": "37.37073050000001", "lng": "-122.01352050000001"}'  http://127.0.0.1:8000/api/users/update_user/
+curl -X POST -H "Content-Type: application/json" -H "Authorization: Bearer zhvG2zIf4xXFzzFfTJjnfOycXTjBZn" -d '{"phone": "+16503181659","age": 200, "gender": "male",  "lat": "37.37073050000001", "lng": "-122.01352050000001", "profile_image_url":"https://firebasestorage.googleapis.com/v0/b/miao-android.appspot.com/o/profile_images%2Fphone_11.png?alt=media&token=0c462fba-efd0-4a70-b2d6-19b6a0e9d381"}'  http://www.shanjingtech.com/api/users/update_user/
+
+Response:
+{
+   "username":"phone_22",
+   "third_party_uid":null,
+   "third_party_auth":null,
+   "email":"",
+   "phone":"+16503181659",
+   "profile_image_url":"https://firebasestorage.googleapis.com/v0/b/miao-android.appspot.com/o/profile_images%2Fphone_11.png?alt=media&token=0c462fba-efd0-4a70-b2d6-19b6a0e9d381",
+   "age":200,
+   "gender":"male",
+   "lat":"37.37073050000001000000",
+   "lng":"-122.01352050000001000000",
+   "nickname":"iamwhoiam",
+   "access_code":null,
+   "num_comments":0,
+   "num_posts":0,
+   "num_following":0,
+   "num_followed":0,
+   "time_created":"2018-05-28T06:12:37.577443Z",
+   "time_updated":"2018-07-22T23:24:51.886817Z"
+}
+
 
 7. Ping
   curl -X POST  -H "Authorization: Bearer ePDqvWydnbT2YqTyoPLYQ92ERaxfw6"  https://www.shanjingtech.com/api/posts/
 
 8. Get profile
-curl -X POST -H "Content-Type: application/json" -H "Authorization: Bearer CIEDnKgErYlwmJKTWxFSgsijnDCuoc"  https://www.shanjingtech.com/api/users/get_profile/
+curl -X POST -H "Content-Type: application/json" -H "Authorization: Bearer vUXSNoPy3XLb3oh51zrhrYqQoDaVGd"  https://www.shanjingtech.com/api/users/get_profile/
 {"username":"phone_+16503181659","third_party_uid":null,"third_party_auth":null,"email":"","phone":"+16503181659","profile_image_url":null,"age":null,"gender":null,"lat":null,"lng":null,"nickname":null,"access_code":null,"num_comments":0,"num_posts":19,"num_following":0,"num_followed":0,"time_created":"2017-03-22T07:07:58.750586Z","time_updated":"2017-03-27T00:19:58.919426Z"}
 
 9. List contacts
@@ -137,7 +160,11 @@ curl -X POST -H "Content-Type: application/json" -H "Authorization: Bearer vUXSN
 curl -X POST -H "Content-Type: application/json" -H "Authorization: Bearer vUXSNoPy3XLb3oh51zrhrYqQoDaVGd" -d '{ "contact_username":"phone_22"}' https://www.shanjingtech.com/api/contacts/block/
 
 14. send message
+22->11
 curl -X POST -H "Content-Type: application/json" -H "Authorization: Bearer zhvG2zIf4xXFzzFfTJjnfOycXTjBZn"  -d '{"receiver_username": "phone_11", "text": "msg from mock user to hello"}' https://www.shanjingtech.com/api/message/send_msg/
+
+11->22
+curl -X POST -H "Content-Type: application/json" -H "Authorization: Bearer vUXSNoPy3XLb3oh51zrhrYqQoDaVGd"  -d '{"receiver_username": "phone_22", "text": "msg from phone22 user to phone11"}' https://www.shanjingtech.com/api/message/send_msg/
 
 15. pull message from last read
 curl -X POST -H "Content-Type: application/json" -H "Authorization: Bearer vUXSNoPy3XLb3oh51zrhrYqQoDaVGd"  https://www.shanjingtech.com/api/message/pull/

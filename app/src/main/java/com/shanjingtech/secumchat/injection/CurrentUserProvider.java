@@ -11,7 +11,9 @@ import javax.inject.Singleton;
 @Singleton
 public class CurrentUserProvider {
     @Inject
-    public CurrentUserProvider() {}
+    public CurrentUserProvider() {
+    }
+
     public User getUser() {
         return user;
     }

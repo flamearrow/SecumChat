@@ -99,4 +99,6 @@
     <string name="no_user_found">No user found!</string>
 
     <string name="send">Send</string>
+    <string name="avatar_update_success">Avatar update success!</string>
+    <string name="avatar_update_failure">Avatar update failure, check your network!</string>
 </resources>

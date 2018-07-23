@@ -73,7 +73,7 @@ public class AppModule {
     SecumNetDBSynchronizer providesSecumNetDBSynchronizer(SecumAPI secumAPI, MessageDAO
             messageDAO, UserDAO userDAO, CurrentUserProvider currentUserProvider) {
         SecumNetDBSynchronizer synchronizer = new SecumNetDBSynchronizer(secumAPI, userDAO,
-                messageDAO);
+                messageDAO, currentUserProvider);
         ProcessLifecycleOwner.get().getLifecycle().addObserver(new SecumNetDBLifecycleObserver
                 (synchronizer, currentUserProvider));
         return synchronizer;

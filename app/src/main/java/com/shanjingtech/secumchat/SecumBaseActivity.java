@@ -20,12 +20,12 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.crashlytics.android.answers.Answers;
-import com.shanjingtech.pnwebrtc.PnRTCClient;
 import com.shanjingtech.secumchat.db.MessageDAO;
 import com.shanjingtech.secumchat.injection.CurrentUserProvider;
 import com.shanjingtech.secumchat.log.AddTimePairedFactory;
 import com.shanjingtech.secumchat.message.CurrentPeerUserNameProvider;
 import com.shanjingtech.secumchat.model.User;
+import com.shanjingtech.secumchat.net.FirebaseImageUploader;
 import com.shanjingtech.secumchat.net.SecumAPI;
 import com.shanjingtech.secumchat.net.SecumNetDBSynchronizer;
 import com.shanjingtech.secumchat.onboarding.SplashActivity;
@@ -63,6 +63,10 @@ public class SecumBaseActivity
     protected CurrentPeerUserNameProvider currentPeerNameProvider;
     @Inject
     protected SecumNetDBSynchronizer secumNetDBSynchronizer;
+
+    @Inject
+    FirebaseImageUploader firebaseImageUploader;
+
 
     private static final String PERMISSION_TAG = "SecumPermission";
 

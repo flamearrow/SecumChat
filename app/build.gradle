@@ -141,6 +141,8 @@ dependencies {
     // Firebase storage
     implementation 'com.google.firebase:firebase-storage:16.0.1'
 
+    // https://github.com/jrvansuita/PickImage
+    compile 'com.github.jrvansuita:PickImage:+'
 
 }
 

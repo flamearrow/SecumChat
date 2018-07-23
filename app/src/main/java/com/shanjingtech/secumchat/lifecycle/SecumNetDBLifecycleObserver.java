@@ -19,6 +19,9 @@ public class SecumNetDBLifecycleObserver implements LifecycleObserver {
 
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
     public void pullUnreadMessages() {
-        secumNetDBSynchronizer.syncUnreadMessageForUser(currentUserProvider.getUser().getUsername());
+        if (currentUserProvider.getUser() != null) {
+            secumNetDBSynchronizer.syncUnreadMessageForUser(currentUserProvider.getUser()
+                    .getUsername());
+        }
     }
 }

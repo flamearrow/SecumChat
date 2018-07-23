@@ -5,6 +5,7 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * {@link com.shanjingtech.secumchat.net.SecumAPI#updateUser(UpdateUserRequest)}
+ * Note: only set the fields that need to be updated, unset fields are not touched.
  */
 public class UpdateUserRequest {
     @Expose
@@ -27,12 +28,18 @@ public class UpdateUserRequest {
     @SerializedName("nickname")
     String nickname;
 
+    @Expose
+    @SerializedName("profile_image_url")
+    String profileImageUrl;
+
     public static class Builder {
         private String age;
         private String gender;
         private String lat;
         private String lng;
         private String nickname;
+        private String profileImageUrl;
+
 
         public UpdateUserRequest build() {
             UpdateUserRequest updateUserRequest = new UpdateUserRequest();
@@ -41,6 +48,7 @@ public class UpdateUserRequest {
             updateUserRequest.lat = lat;
             updateUserRequest.lng = lng;
             updateUserRequest.nickname = nickname;
+            updateUserRequest.profileImageUrl = profileImageUrl;
             return updateUserRequest;
         }
 
@@ -66,6 +74,11 @@ public class UpdateUserRequest {
 
         public Builder setLng(String lng) {
             this.lng = lng;
+            return this;
+        }
+
+        public Builder setProfileImageUrl(String profileImageUrl) {
+            this.profileImageUrl = profileImageUrl;
             return this;
         }
     }

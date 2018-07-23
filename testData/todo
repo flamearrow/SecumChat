@@ -1,0 +1,236 @@
+*) support the send_msg api
+    curl -X POST -H "Content-Type: application/json" -H "Authorization: Bearer zhvG2zIf4xXFzzFfTJjnfOycXTjBZn"  -d '{"receiver_username": "phone_11", "text": "msg from mock user to hello"}' https://www.shanjingtech.com/api/message/send_msg/
+
+*) Support send message-done
+
+new Feature
+
+*) Support pull API and support UI
+    *) support pull message - send dummy message to an logged out user through command line, then
+     log into that user -done
+    *) add UI support for pull
+        *) add conversation activity,
+            *) click on conversation and contacts should go to the same chat thread -done
+                *) save contact - thread in a database -done
+                    *) contacts id - List<Message>
+                        *) one tables
+                            *) Messages - history messages of all users -done
+                                *) String message_id - pk
+                                *) String group_id
+                                *) String ownerName
+                                *) String from
+                                *) String to - 1 now, more later
+                                *) String content
+                                *) String time - convert to Date
+                                *) bool read
+
+                    *) workflow -done
+                        *) When pull, we'll receive a list of UnreadMessage of current logged in
+                        user
+                            *) Sort all UnreadMessage -done
+                                *) Messages
+                                    *) for each UnreadMessage, insert ownerName=loggedinUserName,
+                                    fromUserUame = UnreadMessage.getSender_username, toUserName =
+                                    loggedinUserName, content, time, read=false into Messages
+
+                        *) When user goes to conversations, -done
+                            *) unread preview - parameter: owner_name -done
+                                *) group by peerName/group_id
+                                *) display last message
+                                *) display unread count bubble if it's over 0
+
+                            *) conversation history - parameter: group_id -done
+                                *) create subset
+                                *) select peerName, unreadCont, last unread message, groupId
+
+
+                         *) Upon click on a conversation, pull the full message history with the
+                         peer from Messages -done
+                          from the following 2 queries
+                            *) with owner=loggedInUserName, group_id = group_id order by time
+                            *) sort and display the history
+
+                         *) During chat, when send/receive, update Message -done
+
+                         *) delete chat history - delete where group_id = id
+
+
+                *) Use datasync to with server later -no need -done
+
+
+    *) UI tweak:
+        *) preview: time and unread count is not aligned -done
+        *) mark unread as read once in -done
+            *) create some test to inject new unread messages
+        *) message view: time too long -done
+        *) preview should show peer name always -done
+        *) chat view: time to long -done
+        *) remove the triangle button -done
+        *) open SecumMessageActivity from right to left -done
+
+
+    *) bugs:
+        *) DB fucked up! check MessageDAO#liveConversationPreviewOwnedBy and the way it's
+        inserting -done
+        *) have a centralized PNRtcListener to receive messages, this will inform message receive
+         in both SecumMessageActivity and preview tab, if there's no entry in preview tab, add an
+         entry -done
+        *) open SecumMessageActivty without groupId, update groupId when message is sent -done
+            *) plumb the logic to open chat from contacts activity
+            *) add db to return groupId of a user if it exists
+                *) only inject DB when message sent is success -done
+                *) capture groupId on message receive -done
+                *) when start a chat from contacts, check if groupId exists first -done
+                    *) search for groupId when owner=X and (sender/receiver=peer) -done
+    *) new features
+        *) create a user table
+            *) store nickName and user_name
+            *) replace the nickName in preview
+            *) let ProfileActivity back up by the user table instead of pulling from server
+
+        *) Pubnub sub/unsub has some race condition when going from chatpreview to chat detail
+            *) check out this SO: https://stackoverflow.com/questions/4414171/how-to-detect-when-an-android-app-goes-to-the-background-and-come-back-to-the-fo
+            *) https://developer.android.com/reference/android/arch/lifecycle/ProcessLifecycleOwner.html
+            *) Use ProcessLifeCycleOwner
+        *) when new message is recieved from message view, shouldn't mark it as unread
+            *) either mark unread in messageview onPause
+            *) or think a better way of injecting PnRTCClient
+
+    *) find a UX -done
+
+    *) use threadExecutor to perform all the DB actions
+
+    *) fix the discover tab crash
+
+    *) make splash -> discover working, can switch to conversation
+
+    *) contacts tab redesign - do we need contacts tab?
+
+    *) hook db with UI -done
+        *) In splash activity, after confirming user login, invoke SecumAPI.pullMessage to get a list
+         of UnreadMessages, insert these messages into Message table
+
+        *) In ConversationPreviewActivity, use MessageDAO.conversationPreviewOwnedBy to get a
+        list of ConversationPreview, this will bind to a row in conversation history - sort them
+        by time -done
+            *) implemented with ConversationPreviewActivity, replace the hardcoded userId with
+
+        *) Upon clicking a row in ConversationPreviewActivity, pull the message groupId and query
+        MessageDAO.historyWithGroupId to get all message history, use this to populate
+        SecumMessageActivity
+            *) fix SecumMessageAdapter, replace Message object with the database Message -done
+            *) hook up ChatHistoryViewModel into SecumMessageActivity
+                *) currently SecumMessageActivty starts with groupId and peerName, find a better
+                way to get peerName info, maybe create a dagger scope to inject peerUser
+
+
+
+
+bugs
+
+
+
+*) Splash is unnecessarily initializing RTC components, this needs to be factored out
+    *) !currently it's crashing the app
+*) in SecumMessageActivity onPause and onResume, make sure pubnub is correctly
+subscribed/unsubscribed, this will make sure the send_msg working properly, may need to move the
+subscription call to SecumBaseActivity, don't do this now as it might affect SecumChatActivity
+
+*) make sure pushyInitializer#initializePushy is correctly sent
+
+*) hook up pull and send into SecumMessageActivity - one activity corresponds to one peer
+    *) fake the API, create some fake callback data
+        *) SecumDebugAPI -done
+
+    *) log in as phone11, make sure it has friend phone22
+    *) log out phone11, log in phone22, send phone11 some messages
+    *) log in phone11 again, pull the messages
+    *) display the messages in conversation view
+    *) start with DebugActivity
+
+*) fix the log in issue in SecumBaseActivity, open SecumMessageActivity successfully -done
+*) hook up real Message to SecumMessageAdapter
+
+
+*) vulcan
+    *) fake a response, get that response always later
+
+deliverable:
+*) Feb, 13, 2018 - open app, go to contacts, see chatting thread, click to open -done
+
+
+TODO:
+    *) Pubnub sub/unsub has some race condition when going from chatpreview to chat detail -done
+        *) check out this SO: https://stackoverflow
+        .com/questions/4414171/how-to-detect-when-an-android-app-goes-to-the-background-and-come
+        -back-to-the-fo -done
+        *) Use ProcessLifeCycleOwner -done
+        *) When app goes to backgorund, client unsubs pubnub, what happens if a message is sent?
+            *) server checks client not online(pubnub), so send through pushy -done
+            *) client need to listen to pushy messages all the time, triggers
+            PushyNotificationReceiver -done
+
+    *) formalize a way to inject message -done
+        *) when inject from conversation, needs to be read
+        *) when inject from preview/pushy, needs to be unread
+        *) get two info to check if this message should be marked as read
+            a) is currentActivity SecumMessageActivity
+            b) is currentPeerName the sender of the message
+
+    *) PushyNotificationReceiver needs to be able to inject the message into MessageDAO
+        *) Message needs to be injected as unread-done
+            *) use CurrentPeerUsernameProvider
+        *) doesn't have access to Dagger as it's created randomly -done
+            *) do the injection through the activity PushyNotificationReceiver opens
+        *) pushy message needs to be extended, should at least add 'from' field in addition to
+        'message' field': https://pushy.me/docs/resources/python-backend-sample -done
+            *) no, just display the message, instead rely on pull when app goes foreground
+        *) pull all pending messages for current user when app goes foreground.
+
+
+    *) create a user table -done
+        *) User fields: ownerName, nickName, userName, age, gender, email, phone, contactsStatus
+
+        *) server needs to normalize listContacts to return all of the previous fields -no need
+
+        *) time to update the table:
+            *) when user login
+            *) when user update their profile
+            *) when search for a user through userName
+            *) when approve/reject a friend request
+
+        *) work flow:
+            *) when go to listContacts, just pull contacts of listName and userName, insert into DB
+            if the user is not there -
+                *) might be a bug when user updates nick name and revisits contacts page, but
+                address
+            this later
+            *) when go to any profile page, display the current user in DB(might only have userName
+            and nickName), but also pull the profile of current user
+
+
+        *) let ProfileActivity back up by the user table instead of pulling from server
+        *) will the group_id of a conversation collide between different users?
+
+    *) need to pull unread messages on app start - make it in SecumBaseActivity?
+
+    *) server API change
+        *) contacts status add a 'stranger' status
+        *) getProfile adds a field for contact status, put 'stranger' when needed
+
+    *) UX
+        *) image:
+            *) create API to upload image and return an URI, see example in ProfileActivity
+            *) hook up the API to pick image from phone/use camera, make sure PNG is always used
+            *) pick picture, directly upload, no update
+            *) add picture to conversation
+        *) unread count counts msg sent by myself
+        *) chat history order is wrong
+        *) badge number on app icon doesn't match
+        *) pushy notification is broken
+        *) lifecycle fucked up in prod app, need to start all the observers when CurrentUserProvider
+         actually has something to provide - which is not true in SplashActivity, need to make
+         SplashActivty work, think about use a different different LifeCycleOwner other than
+         ProcessLifecycleOwner to register the observers.
+
+    *) flutter

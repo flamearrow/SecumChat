@@ -19,6 +19,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.shanjingtech.pnwebrtc.PnRTCClient;
 import com.shanjingtech.secumchat.lifecycle.NonRTCMessageController;
 import com.shanjingtech.secumchat.lifecycle.SecumRTCListener;
 import com.shanjingtech.secumchat.model.GetMatch;
@@ -44,6 +45,8 @@ import org.webrtc.VideoTrack;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -61,6 +64,9 @@ public class SecumChatActivity extends SecumTabbedActivity implements
         SecumCounter.SecumCounterListener,
         DialogInterface.OnMultiChoiceClickListener {
 
+    @Inject
+    protected PnRTCClient pnRTCClient;
+
     private GLSurfaceView videoView;
 
     // webRTC components
@@ -71,9 +77,6 @@ public class SecumChatActivity extends SecumTabbedActivity implements
     private AudioTrack localAudioTrack;
 
     private SecumRTCListener secumRTCListener;
-
-//    // Pubhub components
-//    private PnRTCClient pnRTCClient;
 
     // UI
     // The button should be invisible until the user is being called
@@ -414,7 +417,7 @@ public class SecumChatActivity extends SecumTabbedActivity implements
     protected void onResume() {
         super.onResume();
         paused = false;
-        setUpChannels();
+        setUpRTCChannels();
         localVideoSource.restart();
         switchState(State.WARMUP);
     }
@@ -442,7 +445,7 @@ public class SecumChatActivity extends SecumTabbedActivity implements
         return R.id.menu_discover;
     }
 
-    private void setUpChannels() {
+    private void setUpRTCChannels() {
         // subscribe to my channel, hangup all possible RTC peers
         // note it's ok to subscribe to a pubnub channel multiple times
 

@@ -16,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.shanjingtech.secumchat.db.GroupId;
 import com.shanjingtech.secumchat.message.SecumMessageActivity;
 import com.shanjingtech.secumchat.model.AddContactRequest;
@@ -200,7 +201,8 @@ public class ProfileActivity extends SecumBaseActivity implements IPickResult {
                                     } else {
                                         gender.setVisibility(View.GONE);
                                     }
-
+                                    Glide.with(ProfileActivity.this).load(profilePreview
+                                            .getProfileImageUrl()).into(avatar);
                                     // also has email, phone, status etc
                                 }
                             });

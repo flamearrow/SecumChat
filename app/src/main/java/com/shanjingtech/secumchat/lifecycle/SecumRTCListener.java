@@ -70,7 +70,7 @@ public class SecumRTCListener extends PnRTCListener {
                     Log.d(TAG, "no video tracks found on localStream");
                     return;
                 }
-                localStream.videoTracks.get(0).addRenderer(new VideoRenderer(localCallbacks));
+                localStream.videoTracks.get(0).addRenderer(localVideoRenderer);
             }
         });
     }
@@ -83,7 +83,7 @@ public class SecumRTCListener extends PnRTCListener {
             @Override
             public void run() {
                 VideoRendererGui.update(localCallbacks, 0, 0, 100, 100, VideoRendererGui
-                        .ScalingType.SCALE_ASPECT_FILL, false);
+                        .ScalingType.SCALE_ASPECT_FILL, true);
             }
         });
     }

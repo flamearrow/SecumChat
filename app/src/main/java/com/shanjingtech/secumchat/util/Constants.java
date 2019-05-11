@@ -59,7 +59,7 @@ public class Constants {
     public static final String PREF_FILE = "com.shanjingtech.secumchat.PREF_FILE";
 
     // counter
-    public static final int TORA = 9;
+    public static final int TORA = 90;
     // after this point, notify user it's about to expire
     public static final int HANG_UP_TIME = 5;
 

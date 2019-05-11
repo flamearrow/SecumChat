@@ -75,7 +75,9 @@ public class SecumBaseActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ((SecumApplication) getApplication()).getNetComponet().inject(this);
+        if (!shouldDeferInjection()) {
+            ((SecumApplication) getApplication()).getNetComponet().inject(this);
+        }
         Resources resources = getResources();
 
         permissionAlertDialog = new AlertDialog.Builder(this)
@@ -84,9 +86,10 @@ public class SecumBaseActivity
                 .setNegativeButton(resources.getString(R.string.cancel), this)
                 .setIcon(R.drawable.cat_head)
                 .create();
-//        TODO: This will cause SplashActivity crash
-//        initializeRTCComponents();
-//        registerMessageReceiver();
+    }
+
+    protected boolean shouldDeferInjection() {
+        return false;
     }
 
     protected void showToast(final String message) {

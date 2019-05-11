@@ -142,13 +142,17 @@ public class SecumNetworkRequester {
         public void run() {
             Log.d(SecumAPI.TAG, "Posting GetMatch(" + myName + ")");
             answers.logCustom(getMatchSentFactory.create(myName));
+            Location location;
             if (ActivityCompat.checkSelfPermission(activity, Manifest.permission
                     .ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat
                     .checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION) !=
                     PackageManager.PERMISSION_GRANTED) {
-                return;
+                location = null;
+            } else {
+                location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
             }
-            Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
             GetMatchRequest getMatchRequest;
             if (location != null) {
                 getMatchRequest = new GetMatchRequest.Builder().setLat("" + location.getLatitude())

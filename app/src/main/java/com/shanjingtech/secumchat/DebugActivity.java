@@ -80,7 +80,7 @@ public class DebugActivity extends AppCompatActivity implements SecumCounter
         heart = (HeartMagicLayout) findViewById(R.id.heart);
 
         // TODO: To be used in splash
-        initializePushy();
+//        initializePushy();
 
     }
 
@@ -312,6 +312,7 @@ public class DebugActivity extends AppCompatActivity implements SecumCounter
     }
 
     public void b4(View view) {
+        initializePushy();
 //        String s = "2017-11-29T03:39:13.249169Z";
 //        long l = TimestampConverter.fromString(s);
 //        int i = 23;

@@ -28,7 +28,6 @@ public abstract class SecumTabbedActivity extends SecumBaseActivity implements
         contentSub.inflate();
         bottomNavigationView = (BottomNavigationView) findViewById(R.id.navigation_bar);
         bottomNavigationView.setOnNavigationItemSelectedListener(this);
-        setTitle(getMyName());
     }
 
 
@@ -38,6 +37,7 @@ public abstract class SecumTabbedActivity extends SecumBaseActivity implements
     @Override
     protected void onResume() {
         super.onResume();
+        setTitle(getMyName());
         bottomNavigationView.setSelectedItemId(getNavigationMenuItemId());
     }
 
@@ -57,8 +57,10 @@ public abstract class SecumTabbedActivity extends SecumBaseActivity implements
                     startActivity(new Intent(SecumTabbedActivity.this,
                             ConversationPreviewActivity.class));
                 } else if (itemId == R.id.menu_discover) {
-                    startActivity(new Intent(SecumTabbedActivity.this, SecumChatActivity
-                            .class));
+                    Intent i = new Intent(SecumTabbedActivity.this, SecumChatActivity
+                            .class);
+                    i.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                    startActivity(i);
 
                 } else if (itemId == R.id.menu_contacts) {
                     startActivity(new Intent(SecumTabbedActivity.this, ContactsActivity.class));

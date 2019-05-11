@@ -133,6 +133,10 @@ public class PnPeerConnectionClient {
         this.mRtcListeners.add(listener);
     }
 
+    public void removePnRTCListener(PnRTCListener listener) {
+        this.mRtcListeners.remove(listener);
+    }
+
     private void subscribe(String channel) {
 
         mPubNub.subscribe().channels(Arrays.asList(channel)).execute();
@@ -346,10 +350,22 @@ public class PnPeerConnectionClient {
         public static final String TRIGGER = PnRTCMessage.JSON_DIAL;
 
         @Override
-        public void execute(String callerId, JSONObject payload) throws JSONException {
+        public void execute(String callerId, JSONObject payload) {
             Log.d(PNACTION, "PnUserDialAction");
-            String senderNickName = payload.getString(JSON_SENDER_NICK_NAME);
-            String senderGender = payload.getString(JSON_SENDER_GENDER);
+            String senderNickName = null;
+            String senderGender = null;
+            try {
+                senderNickName = payload.getString(JSON_SENDER_NICK_NAME);
+                senderGender = payload.getString(JSON_SENDER_GENDER);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            if (senderNickName == null) {
+                senderNickName = callerId;
+            }
+            if (senderGender == null) {
+                senderGender = "female";
+            }
             for (PnRTCListener pnRTCListener : mRtcListeners) {
                 pnRTCListener.onDialed(callerId, senderNickName, senderGender);
             }

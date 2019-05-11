@@ -113,6 +113,10 @@ public class PnRTCClient {
         this.pcClient.addPnRTCListener(listener);
     }
 
+    public void removeRTCListener(PnRTCListener listener) {
+        this.pcClient.removePnRTCListener(listener);
+    }
+
     /**
      * Set the maximum simultaneous connections allowed
      *

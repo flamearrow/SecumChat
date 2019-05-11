@@ -234,3 +234,9 @@ TODO:
          ProcessLifecycleOwner to register the observers.
 
     *) flutter
+    *) make video chat working
+        *) see if it's possible to defer injection so that sub classes have their own set of objects
+         to inject -no
+        *) pubnub on start fucks up, can't other side occupancies always 0
+        *) on remote stream fucks up
+        *) nexus 6 fucks up on re-entering chatting mode

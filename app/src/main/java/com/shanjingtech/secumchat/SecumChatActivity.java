@@ -64,8 +64,6 @@ public class SecumChatActivity extends SecumTabbedActivity implements
         SecumCounter.SecumCounterListener,
         DialogInterface.OnMultiChoiceClickListener {
 
-    @Inject
-    protected PnRTCClient pnRTCClient;
 
     private GLSurfaceView videoView;
 
@@ -142,11 +140,20 @@ public class SecumChatActivity extends SecumTabbedActivity implements
      */
     private StateErrorRunnable receivingErrorRunnable = new StateErrorRunnable(State.RECEIVING);
 
+    @Inject
+    PnRTCClient pnRTCClient;
+
+    @Override
+    protected boolean shouldDeferInjection() {
+        // defer injection so PnRTCClient can be injected
+        return true;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ((SecumApplication) getApplication()).getNetComponet().inject(this);
 
-        setTitle(getMyUser().getNickname());
         Resources resources = getResources();
 
         reportItemArray = getResources().getTextArray(R.array.report_items);
@@ -433,6 +440,12 @@ public class SecumChatActivity extends SecumTabbedActivity implements
         removeAllHandlerCallbacks();
         pnRTCClient.onDestroy();
         currentState = null;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        pnRTCClient.removeRTCListener(secumRTCListener);
     }
 
     @Override
@@ -810,7 +823,7 @@ public class SecumChatActivity extends SecumTabbedActivity implements
     @Override
     public void onAddTimePaired(int secondsLeft) {
         Log.d(SECUMCOUNTER, "onAddTimePaired: " + secondsLeft);
-        if (getMatch != null) {
+        if (getMatch != null && getMatch.getCaller() != null && getMatch.getCallee() != null) {
             answers.logCustom(addTimePairedFactory.create(getMatch.getCaller(), getMatch
                     .getCallee()));
 

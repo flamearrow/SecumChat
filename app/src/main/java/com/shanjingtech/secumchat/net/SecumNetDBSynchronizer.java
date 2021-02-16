@@ -1,7 +1,7 @@
 package com.shanjingtech.secumchat.net;
 
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.util.Log;
 
 import com.shanjingtech.secumchat.db.Message;

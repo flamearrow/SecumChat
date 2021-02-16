@@ -1,6 +1,6 @@
 package com.shanjingtech.secumchat.db;
 
-import android.arch.persistence.room.ColumnInfo;
+import androidx.room.ColumnInfo;
 
 /**
  * Created by flamearrow on 4/1/18.

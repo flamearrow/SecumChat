@@ -18,7 +18,7 @@ import com.shanjingtech.secumchat.R;
  * An {@code ImageView} that's able to pulse
  */
 
-public class PulseImageView extends android.support.v7.widget.AppCompatImageView {
+public class PulseImageView extends androidx.appcompat.widget.AppCompatImageView {
     public static final String DECELERATE = "decelerate";
     public static final String ACCELERATE_DECELERATE = "accelerate_decelerate";
     public static final String OVERSHOOT = "overshoot";

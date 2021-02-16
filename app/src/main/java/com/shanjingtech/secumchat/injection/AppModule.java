@@ -1,8 +1,8 @@
 package com.shanjingtech.secumchat.injection;
 
 import android.app.Application;
-import android.arch.lifecycle.ProcessLifecycleOwner;
-import android.arch.persistence.room.Room;
+import androidx.lifecycle.ProcessLifecycleOwner;
+import androidx.room.Room;
 import android.content.Context;
 
 import com.shanjingtech.secumchat.db.MessageDAO;

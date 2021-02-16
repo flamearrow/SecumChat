@@ -20,7 +20,7 @@ import android.util.AttributeSet;
 
 import com.shanjingtech.secumchat.R;
 
-public class CircleImageView extends android.support.v7.widget.AppCompatImageView {
+public class CircleImageView extends androidx.appcompat.widget.AppCompatImageView {
 
     private static final ScaleType SCALE_TYPE = ScaleType.CENTER_CROP;
 

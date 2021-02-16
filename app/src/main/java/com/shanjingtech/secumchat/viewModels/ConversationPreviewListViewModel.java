@@ -1,8 +1,8 @@
 package com.shanjingtech.secumchat.viewModels;
 
 import android.app.Application;
-import android.arch.lifecycle.LiveData;
-import android.support.annotation.NonNull;
+import androidx.lifecycle.LiveData;
+import androidx.annotation.NonNull;
 
 import com.shanjingtech.secumchat.SecumApplication;
 import com.shanjingtech.secumchat.db.ConversationPreview;

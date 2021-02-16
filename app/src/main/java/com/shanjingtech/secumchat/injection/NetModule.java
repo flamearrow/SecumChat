@@ -1,7 +1,7 @@
 package com.shanjingtech.secumchat.injection;
 
 import android.app.Application;
-import android.arch.lifecycle.ProcessLifecycleOwner;
+import androidx.lifecycle.ProcessLifecycleOwner;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;

@@ -1,7 +1,7 @@
 package com.shanjingtech.secumchat.viewModels;
 
 import android.app.Application;
-import android.arch.lifecycle.AndroidViewModel;
+import androidx.lifecycle.AndroidViewModel;
 
 import com.shanjingtech.secumchat.SecumApplication;
 import com.shanjingtech.secumchat.db.MessageDAO;

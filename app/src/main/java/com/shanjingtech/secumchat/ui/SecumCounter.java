@@ -16,7 +16,7 @@ import com.shanjingtech.secumchat.util.Constants;
  * A counter with customized shape for back counting, stealing some ideas from
  * {@link android.widget.Chronometer}
  */
-public class SecumCounter extends android.support.v7.widget.AppCompatTextView {
+public class SecumCounter extends androidx.appcompat.widget.AppCompatTextView {
     public static final String SECUMCOUNTER = "SecumCounter";
 
     private static final long MILLIS_IN_SECOND = 1000;

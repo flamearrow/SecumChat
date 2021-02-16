@@ -8,7 +8,7 @@ import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.media.RingtoneManager;
-import android.support.v4.app.NotificationCompat;
+import androidx.core.app.NotificationCompat;
 
 import com.shanjingtech.secumchat.DebugActivity;
 import com.shanjingtech.secumchat.R;

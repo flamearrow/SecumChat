@@ -10,7 +10,7 @@ import com.shanjingtech.secumchat.R;
  * An {@code TextView} that enables itself after a certain period.
  */
 
-public class AutoEnableTextView extends android.support.v7.widget.AppCompatTextView {
+public class AutoEnableTextView extends androidx.appcompat.widget.AppCompatTextView {
     private static final int DEFAULT_COUNT = 60;
     private int count;
     private int residue;

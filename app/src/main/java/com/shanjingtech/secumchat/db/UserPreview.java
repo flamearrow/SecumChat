@@ -1,7 +1,7 @@
 package com.shanjingtech.secumchat.db;
 
 
-import android.arch.persistence.room.ColumnInfo;
+import androidx.room.ColumnInfo;
 
 /**
  * A simplified view for displaying users, used for displaying different types of contacts. See

@@ -1,6 +1,6 @@
 package com.shanjingtech.secumchat.db;
 
-import android.arch.persistence.room.ColumnInfo;
+import androidx.room.ColumnInfo;
 
 /**
  * Used for preview unread messages

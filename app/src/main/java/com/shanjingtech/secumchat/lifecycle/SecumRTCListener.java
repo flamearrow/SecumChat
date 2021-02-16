@@ -1,15 +1,14 @@
 package com.shanjingtech.secumchat.lifecycle;
 
 import android.util.Log;
-import android.widget.Toast;
 
 import com.shanjingtech.pnwebrtc.PnPeer;
 import com.shanjingtech.pnwebrtc.PnRTCListener;
 import com.shanjingtech.pnwebrtc.PnRTCMessage;
-import com.shanjingtech.secumchat.R;
 import com.shanjingtech.secumchat.SecumChatActivity;
 
 import org.webrtc.MediaStream;
+import org.webrtc.RendererCommon;
 import org.webrtc.VideoRenderer;
 import org.webrtc.VideoRendererGui;
 import org.webrtc.VideoTrack;
@@ -43,10 +42,11 @@ public class SecumRTCListener extends PnRTCListener {
 
     public SecumRTCListener(SecumChatActivity secumChatActivity) {
         this.secumChatActivity = secumChatActivity;
-        remoteCallbacks = VideoRendererGui.create(0, 0, 100, 100, VideoRendererGui.ScalingType
-                .SCALE_ASPECT_FILL, false);
-        localCallbacks = VideoRendererGui.create(0, 0, 100, 100, VideoRendererGui.ScalingType
-                .SCALE_ASPECT_FILL, true);
+        remoteCallbacks = VideoRendererGui.create(0, 0, 100, 100,
+                RendererCommon.ScalingType.SCALE_ASPECT_FILL
+                , false);
+        localCallbacks = VideoRendererGui.create(0, 0, 100, 100,
+                RendererCommon.ScalingType.SCALE_ASPECT_FILL, true);
         localVideoRenderer = new VideoRenderer(localCallbacks);
         remoteVideoRenderer = new VideoRenderer(remoteCallbacks);
         rTCPeerListeners = Collections.synchronizedSet(new HashSet<RTCPeerListener>());
@@ -82,7 +82,7 @@ public class SecumRTCListener extends PnRTCListener {
         secumChatActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                VideoRendererGui.update(localCallbacks, 0, 0, 100, 100, VideoRendererGui
+                VideoRendererGui.update(localCallbacks, 0, 0, 100, 100, RendererCommon
                         .ScalingType.SCALE_ASPECT_FILL, true);
             }
         });
@@ -107,9 +107,9 @@ public class SecumRTCListener extends PnRTCListener {
                     videoTrack.removeRenderer(remoteVideoRenderer);
                     videoTrack.addRenderer(remoteVideoRenderer);
 
-                    VideoRendererGui.update(remoteCallbacks, 0, 0, 100, 100, VideoRendererGui
+                    VideoRendererGui.update(remoteCallbacks, 0, 0, 100, 100, RendererCommon
                             .ScalingType.SCALE_ASPECT_FILL, false);
-                    VideoRendererGui.update(localCallbacks, 5, 5, 25, 25, VideoRendererGui
+                    VideoRendererGui.update(localCallbacks, 5, 5, 25, 25, RendererCommon
                             .ScalingType.SCALE_ASPECT_FIT, true);
                     for (RTCPeerListener listener : rTCPeerListeners) {
                         listener.onRemoteStreamAdded();

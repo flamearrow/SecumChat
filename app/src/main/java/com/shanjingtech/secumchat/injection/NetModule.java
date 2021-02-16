@@ -297,8 +297,8 @@ public class NetModule {
                 application.getApplicationContext(),  // Context
                 true,  // Audio Enabled
                 true,  // Video Enabled
-                true,  // Hardware Acceleration Enabled
-                null); // Render EGL Context
+                true  // Hardware Acceleration Enabled
+                ); // Render EGL Context
 
         String currentUserName = currentUserProvider.getUser().getUsername();
         PnRTCClient pnRTCClient;

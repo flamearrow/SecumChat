@@ -35,6 +35,7 @@ import com.shanjingtech.secumchat.util.Constants;
 
 import org.webrtc.AudioSource;
 import org.webrtc.AudioTrack;
+import org.webrtc.CameraEnumerationAndroid;
 import org.webrtc.MediaStream;
 import org.webrtc.PeerConnectionFactory;
 import org.webrtc.VideoCapturer;
@@ -340,9 +341,9 @@ public class SecumChatActivity extends SecumTabbedActivity implements
 
     private void initializeMediaStream() {
         PeerConnectionFactory pcFactory = new PeerConnectionFactory();
-        int camNumber = VideoCapturerAndroid.getDeviceCount();
-        String frontFacingCam = VideoCapturerAndroid.getNameOfFrontFacingDevice();
-        String backFacingCam = VideoCapturerAndroid.getNameOfBackFacingDevice();
+        int camNumber = CameraEnumerationAndroid.getDeviceCount();
+        String frontFacingCam = CameraEnumerationAndroid.getNameOfFrontFacingDevice();
+        String backFacingCam = CameraEnumerationAndroid.getNameOfBackFacingDevice();
 
         // Creates a VideoCapturerAndroid instance for the device name
         VideoCapturer capturer = VideoCapturerAndroid.create(frontFacingCam);

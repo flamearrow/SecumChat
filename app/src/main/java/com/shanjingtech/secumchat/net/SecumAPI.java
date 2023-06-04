@@ -46,10 +46,16 @@ public interface SecumAPI {
 
     public static final String TAG = "SecumAPI";
 
-    String BASE_URL = "https://www.shanjingtech.com/";
-    String USER_NAME = "A7H5tpb2JQ7H66gPxbs6AAAVZgwtU12VPGoZpYUB";
+//    String BASE_URL = "https://www.shanjingtech.com/";
+    String BASE_URL = "https://meichinijiuchiquba.com/";
+//    String USER_NAME = "A7H5tpb2JQ7H66gPxbs6AAAVZgwtU12VPGoZpYUB";
+
+    String USER_NAME = "AlRYzmz0UoFeByEsbo31OejN55prHGNcX6wBAo5Y";
+//    String PASSWORD =
+//            "uVVN0JPW5piZf7nZglh92gleVJWnfAZguILU1Z25UR52yZa2lLFPjOtYJj42PiNF0GTQ32OdP8bQyHAbaHwkRArvhzDZDNVuBZqheflBVACDBjHrbedilUfon5JPIm6R";
+
     String PASSWORD =
-            "uVVN0JPW5piZf7nZglh92gleVJWnfAZguILU1Z25UR52yZa2lLFPjOtYJj42PiNF0GTQ32OdP8bQyHAbaHwkRArvhzDZDNVuBZqheflBVACDBjHrbedilUfon5JPIm6R";
+            "mcMdd8CZQvoJBE2CuSehkrLbkDfOv2LpPOThzC4VFXvruRfEMoBW2dyT57fy9o19yRAYQt9CVuHE11KsIWPDifYQHzmhn8zKcI6GEy8LAirJrz1VBaIrYVixrCogU4Xg";
 
     /**
      * Register a user through phone number and username

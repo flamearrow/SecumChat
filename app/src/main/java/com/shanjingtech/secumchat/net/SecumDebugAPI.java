@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.util.List;
 
 import okhttp3.Request;
+import okio.Timeout;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -180,6 +181,11 @@ public class SecumDebugAPI implements SecumAPI {
 
         @Override
         public Request request() {
+            return null;
+        }
+
+        @Override
+        public Timeout timeout() {
             return null;
         }
     }

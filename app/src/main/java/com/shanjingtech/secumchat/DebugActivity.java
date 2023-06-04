@@ -74,7 +74,7 @@ public class DebugActivity extends AppCompatActivity implements SecumCounter
 //        logInAsUser11();
 
 
-        dialingReceivingWaitingLayout = (DialingReceivingWaitingLayout) findViewById(R.id.drw);
+        dialingReceivingWaitingLayout = findViewById(R.id.drw);
         heartSecumCounter = (HeartSecumCounter) findViewById(R.id.chronometer);
 //        catHead = (PulseImageView) findViewById(R.id.cat_head);
         heart = (HeartMagicLayout) findViewById(R.id.heart);
@@ -128,6 +128,14 @@ public class DebugActivity extends AppCompatActivity implements SecumCounter
             public void onFailure(Call<User> call, Throwable t) {
                 int i = 23;
                 int j = i + 23;
+                Log.d("BGLM", "getting profile failed, continue anyway");
+                User fakeUser = new User();
+                fakeUser.setUsername("mlgb");
+                currentUserProvider.setUser(fakeUser);
+
+                Intent intent = new Intent(DebugActivity.this, ConversationPreviewActivity
+                        .class);
+                startActivity(intent);
 
             }
         });

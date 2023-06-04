@@ -5,27 +5,25 @@ import android.util.Log;
 
 import com.shanjingtech.secumchat.util.Constants;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.webrtc.PeerConnection;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 
 /**
@@ -47,52 +45,70 @@ public class XirSysRequest extends AsyncTask<Void, Void, List<PeerConnection.Ice
 
     public List<PeerConnection.IceServer> doInBackground(Void... params) {
         List<PeerConnection.IceServer> servers = new ArrayList<PeerConnection.IceServer>();
-        HttpClient httpClient = new DefaultHttpClient();
-        HttpPost request = new HttpPost("https://service.xirsys.com/ice");
-        List<NameValuePair> data = new ArrayList<NameValuePair>();
-        data.add(new BasicNameValuePair("room", Constants.XIR_ROOM));
-        data.add(new BasicNameValuePair("application", Constants.XIR_APPLICATION));
-        data.add(new BasicNameValuePair("domain", Constants.XIR_DOMAIN));
-        data.add(new BasicNameValuePair("ident", Constants.XIR_USER));
-        data.add(new BasicNameValuePair("secret", Constants.XIR_SECRET));
-        data.add(new BasicNameValuePair("secure", "1"));
-        //Encoding POST data
-        try {
-            request.setEntity(new UrlEncodedFormEntity(data));
-            HttpResponse response = httpClient.execute(request);
-            // write response to log
-            Log.d("Http Post Response:", response.toString());
+        OkHttpClient client = new OkHttpClient.Builder().build();
 
-            BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity()
-                    .getContent(), "UTF-8"));
-            StringBuilder builder = new StringBuilder();
-            for (String line = null; (line = reader.readLine()) != null; ) {
-                builder.append(line).append("\n");
-            }
-            JSONTokener tokener = new JSONTokener(builder.toString());
-            JSONObject json = new JSONObject(tokener);
-            if (json.isNull("e")) {
-                JSONArray iceServers = json.getJSONObject("d").getJSONArray("iceServers");
-                for (int i = 0; i < iceServers.length(); i++) {
-                    JSONObject srv = iceServers.getJSONObject(i);
-                    PeerConnection.IceServer is;
-                    if (srv.has("username"))
-                        is = new PeerConnection.IceServer(srv.getString("url"),
-                                srv.getString("username"), srv.getString("credential"));
-                    else
-                        is = new PeerConnection.IceServer(srv.getString("url"));
-                    servers.add(is);
+        // Create a form body builder
+        FormBody.Builder formBuilder = new FormBody.Builder();
+
+        // Add name-value pairs to the form body
+        formBuilder.add("room", Constants.XIR_ROOM);
+        formBuilder.add("application", Constants.XIR_APPLICATION);
+        formBuilder.add("domain", Constants.XIR_DOMAIN);
+        formBuilder.add("ident", Constants.XIR_USER);
+        formBuilder.add("secret", Constants.XIR_SECRET);
+        formBuilder.add("secure", "1");
+
+        // Build the form body
+        RequestBody requestBody = formBuilder.build();
+
+
+        // Create a request object with the desired URL
+        Request request = new Request.Builder()
+                .url("https://service.xirsys.com/ice")
+                .post(requestBody)
+                .build();
+
+        try {
+            // Send the request and retrieve the response
+            Response response = client.newCall(request).execute();
+
+            // Get the response body as a string
+            ResponseBody responseBody = response.body();
+            if (responseBody != null) {
+                Log.d("BGLM", "got response: " + responseBody.string());
+                BufferedReader reader = new BufferedReader(new InputStreamReader(responseBody.byteStream(), "UTF-8"));
+                StringBuilder builder = new StringBuilder();
+                for (String line = null; (line = reader.readLine()) != null; ) {
+                    builder.append(line).append("\n");
                 }
+                JSONTokener tokener = new JSONTokener(builder.toString());
+                JSONObject json = new JSONObject(tokener);
+                if (json.isNull("e")) {
+                    JSONArray iceServers = json.getJSONObject("d").getJSONArray("iceServers");
+                    for (int i = 0; i < iceServers.length(); i++) {
+                        JSONObject srv = iceServers.getJSONObject(i);
+                        PeerConnection.IceServer is;
+                        if (srv.has("username"))
+                            is = new PeerConnection.IceServer(srv.getString("url"),
+                                    srv.getString("username"), srv.getString("credential"));
+                        else
+                            is = new PeerConnection.IceServer(srv.getString("url"));
+                        servers.add(is);
+                    }
+                } else {
+                    Log.d("BGLM", "XirSys error" + json);
+                }
+                // Make sure to close the response body
+                responseBody.close();
             }
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        } catch (ClientProtocolException e) {
-            e.printStackTrace();
+
+
         } catch (IOException e) {
             e.printStackTrace();
         } catch (JSONException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
+
         Log.i("XIRSYS", "Servers: " + servers.toString());
         return servers;
     }

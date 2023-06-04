@@ -2,6 +2,7 @@ package com.shanjingtech.secumchat.onboarding;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.shanjingtech.secumchat.SecumBaseActivity;
 import com.shanjingtech.secumchat.SecumChatActivity;
@@ -29,8 +30,13 @@ public class SplashActivity extends SecumBaseActivity {
             e.printStackTrace();
         }
         if (SecumDebug.isDebugMode(sharedPreferences)) {
+            Log.d("BGLM", "debug mode");
+
             startOnboarding();
         } else {
+
+            Log.d("BGLM", "ping secum API");
+
             secumAPI.ping()
                     .enqueue(new Callback<PingResponse>() {
                         @Override

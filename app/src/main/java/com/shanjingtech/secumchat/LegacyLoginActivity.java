@@ -108,7 +108,12 @@ public class LegacyLoginActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<User> call, Throwable t) {
+                User fakeUser = new User();
+                // set some fake values to fakeUser
+                fakeUser.setUsername("fakeUser");
 
+                currentUserProvider.setUser(fakeUser);
+                startActivity(new Intent(LegacyLoginActivity.this, SecumChatActivity.class));
             }
         });
     }

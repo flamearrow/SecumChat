@@ -73,13 +73,12 @@ android {
 
     // this is used for deprecated, HTTPRequest, replace with Volley or whatever later
     useLibrary 'org.apache.http.legacy'
-
     packagingOptions {
-        exclude 'about_files/LICENSE-2.0.txt'
-        exclude 'META-INF/eclipse.inf'
-        exclude 'plugin.xml'
-        exclude 'plugin.properties'
+        resources {
+            excludes += ['about_files/LICENSE-2.0.txt', 'META-INF/eclipse.inf', 'plugin.xml', 'plugin.properties']
+        }
     }
+
     compileOptions {
         targetCompatibility 1.8
         sourceCompatibility 1.8

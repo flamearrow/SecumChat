@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import android.telephony.TelephonyManager;
+import android.util.Log;
 import android.view.View;
 
 import com.shanjingtech.secumchat.injection.CurrentUserProvider;
@@ -99,6 +100,7 @@ public class LegacyLoginActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
                 if (response.isSuccessful()) {
+                    Log.d("BGLM", "getProfile success");
                     User user = response.body();
                     currentUserProvider.setUser(user);
                     startActivity(new Intent(LegacyLoginActivity.this, SecumChatActivity.class));
@@ -109,6 +111,9 @@ public class LegacyLoginActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<User> call, Throwable t) {
                 User fakeUser = new User();
+
+                Log.d("BGLM", "getProfile failure" + t);
+
                 // set some fake values to fakeUser
                 fakeUser.setUsername("fakeUser");
 

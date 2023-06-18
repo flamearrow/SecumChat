@@ -75,7 +75,6 @@ public class XirSysRequest extends AsyncTask<Void, Void, List<PeerConnection.Ice
             // Get the response body as a string
             ResponseBody responseBody = response.body();
             if (responseBody != null) {
-                Log.d("BGLM", "got response: " + responseBody.string());
                 BufferedReader reader = new BufferedReader(new InputStreamReader(responseBody.byteStream(), "UTF-8"));
                 StringBuilder builder = new StringBuilder();
                 for (String line = null; (line = reader.readLine()) != null; ) {
@@ -96,7 +95,6 @@ public class XirSysRequest extends AsyncTask<Void, Void, List<PeerConnection.Ice
                         servers.add(is);
                     }
                 } else {
-                    Log.d("BGLM", "XirSys error" + json);
                 }
                 // Make sure to close the response body
                 responseBody.close();

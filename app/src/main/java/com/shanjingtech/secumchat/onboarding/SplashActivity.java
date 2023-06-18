@@ -30,12 +30,9 @@ public class SplashActivity extends SecumBaseActivity {
             e.printStackTrace();
         }
         if (SecumDebug.isDebugMode(sharedPreferences)) {
-            Log.d("BGLM", "debug mode");
 
             startOnboarding();
         } else {
-
-            Log.d("BGLM", "ping secum API");
 
             secumAPI.ping()
                     .enqueue(new Callback<PingResponse>() {

@@ -128,7 +128,6 @@ public class DebugActivity extends AppCompatActivity implements SecumCounter
             public void onFailure(Call<User> call, Throwable t) {
                 int i = 23;
                 int j = i + 23;
-                Log.d("BGLM", "getting profile failed, continue anyway");
                 User fakeUser = new User();
                 fakeUser.setUsername("mlgb");
                 currentUserProvider.setUser(fakeUser);

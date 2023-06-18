@@ -305,12 +305,10 @@ public class NetModule {
 
         List<PeerConnection.IceServer> servers = XirSysRequest.getIceServers();
         if (!servers.isEmpty()) {
-            Log.d("BGLM", "have xir servers");
             pnRTCClient = new PnRTCClient(Constants.PUB_KEY, Constants.SUB_KEY, Constants.SEC_KEY,
                     currentUserName, new PnSignalingParams(servers));
         } else {
             // TODO: revert to use default signal params
-            Log.d("BGLM", "no xir servers");
             pnRTCClient = new PnRTCClient(Constants.PUB_KEY, Constants.SUB_KEY, Constants.SEC_KEY,
                     currentUserName);
         }

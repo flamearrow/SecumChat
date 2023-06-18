@@ -156,7 +156,6 @@ public class SecumChatActivity extends SecumTabbedActivity implements
         ((SecumApplication) getApplication()).getNetComponet().inject(this);
 
         Resources resources = getResources();
-        Log.d("BGLM", "SecumChat Activity onCreate");
         reportItemArray = getResources().getTextArray(R.array.report_items);
         reportDialog = new AlertDialog.Builder(this)
                 .setTitle(resources.getString(R.string.report_dialog_header))
@@ -374,7 +373,6 @@ public class SecumChatActivity extends SecumTabbedActivity implements
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Log.d("BGLM", "attachLocalMediaStream");
                 pnRTCClient.attachLocalMediaStream(localStream);
             }
         });

@@ -66,6 +66,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/onboarding_side_margin_thin"
             android:inputType="phone"
+            android:text="6314560722"
             android:textSize="25dp"/>
     </GridLayout>
 

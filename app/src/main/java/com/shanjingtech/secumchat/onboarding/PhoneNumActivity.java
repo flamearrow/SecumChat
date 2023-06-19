@@ -16,6 +16,7 @@ import com.shanjingtech.countrycodepicker.CountryCodePicker;
 import com.shanjingtech.secumchat.LegacyLoginActivity;
 import com.shanjingtech.secumchat.R;
 import com.shanjingtech.secumchat.SecumBaseActivity;
+import com.shanjingtech.secumchat.model.NewUser;
 import com.shanjingtech.secumchat.model.User;
 import com.shanjingtech.secumchat.model.UserRequest;
 import com.shanjingtech.secumchat.util.Constants;
@@ -31,7 +32,7 @@ import retrofit2.Response;
  * *) access code from sms
  * b) confirm access code
  * c) name/age/gender
- * d) request access
+ * d) register user
  */
 
 public class PhoneNumActivity extends SecumBaseActivity {
@@ -128,6 +129,7 @@ public class PhoneNumActivity extends SecumBaseActivity {
 
                                     @Override
                                     public void onFailure(Call<User> call, Throwable t) {
+                                        Log.d("BGLM", "register failure" + t);
                                     }
 
                                 });

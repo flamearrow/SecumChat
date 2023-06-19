@@ -15,6 +15,7 @@ import com.shanjingtech.secumchat.model.GetMatchRequest;
 import com.shanjingtech.secumchat.model.GetProfileFromUserNameRequest;
 import com.shanjingtech.secumchat.model.GroupMessages;
 import com.shanjingtech.secumchat.model.ListContactsRequest;
+import com.shanjingtech.secumchat.model.NewUser;
 import com.shanjingtech.secumchat.model.PingResponse;
 import com.shanjingtech.secumchat.model.RegisterNotificationTokenRequest;
 import com.shanjingtech.secumchat.model.ReportUserRequest;
@@ -41,6 +42,11 @@ import retrofit2.Response;
 public class SecumDebugAPI implements SecumAPI {
     @Override
     public Call<User> registerUser(UserRequest request) {
+        return null;
+    }
+
+    @Override
+    public Call<NewUser> registerNewUser(UserRequest request) {
         return null;
     }
 

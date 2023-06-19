@@ -1,5 +1,6 @@
 package com.shanjingtech.secumchat.injection;
 
+import com.shanjingtech.secumchat.model.NewUser;
 import com.shanjingtech.secumchat.model.User;
 
 import javax.inject.Inject;
@@ -20,6 +21,10 @@ public class CurrentUserProvider {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public void setNewUser(NewUser newUser) {
+        this.user = new User(newUser);
     }
 
     private User user;

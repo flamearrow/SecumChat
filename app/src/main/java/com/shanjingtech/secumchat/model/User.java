@@ -10,9 +10,17 @@ import java.io.Serializable;
  */
 public class User implements Serializable {
 
+    public User() {}
+    public User(NewUser newUser) {
+        userId = newUser.userId;
+    }
     public void setUsername(String username) {
         this.username = username;
     }
+
+    @SerializedName("userId")
+    @Expose
+    String userId;
 
     @SerializedName("username")
     @Expose

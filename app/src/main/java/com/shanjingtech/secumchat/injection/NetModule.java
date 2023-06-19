@@ -1,7 +1,11 @@
 package com.shanjingtech.secumchat.injection;
 
+import static okhttp3.Credentials.basic;
+
 import android.app.Application;
+
 import androidx.lifecycle.ProcessLifecycleOwner;
+
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -42,6 +46,7 @@ import dagger.Provides;
 import okhttp3.Authenticator;
 import okhttp3.Cache;
 import okhttp3.Credentials;
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -173,9 +178,31 @@ public class NetModule {
         // chain.proceed() call is blocking and waits the response
         return new OkHttpClient.Builder().cache(cache).authenticator(authenticator)
                 .addInterceptor(chain -> {
+                    Log.d("BGLM", "adding header to request");
                     Response response = chain.proceed(addHeaderToRequest(chain.request(),
                             sharedPreferences));
                     return response;
+                })
+                // remove the string if response is string
+                .addInterceptor(chain -> {
+                    Log.d("BGLM", "removing quotes from response");
+                    Request request = chain.request();
+                    Response originalResponse = chain.proceed(request);
+                    // Get the original response body
+                    ResponseBody responseBody = originalResponse.body();
+                    String originalResponseBodyString = responseBody.string();
+
+                    // Remove double quotes from the response body
+                    String modifiedResponseBodyString = originalResponseBodyString.startsWith("\"") && originalResponseBodyString.endsWith("\"") ?
+                            originalResponseBodyString.substring(1, originalResponseBodyString.length() - 1) : originalResponseBodyString;
+
+
+                    modifiedResponseBodyString = modifiedResponseBodyString.replaceAll("\\\\n", "")
+                            .replaceAll("\\s+", "").replace("\\\"", "\"");;
+
+                    Log.d("BGLM", "modified: " + modifiedResponseBodyString);
+                    ResponseBody modifiedResponseBody = ResponseBody.create(MediaType.parse("application/json"), modifiedResponseBodyString);
+                    return originalResponse.newBuilder().body(modifiedResponseBody).build();
                 })
                 .sslSocketFactory(unSafeSocketFactory)
                 .build();
@@ -183,10 +210,22 @@ public class NetModule {
 
 
     private Request addHeaderToRequest(Request request, SharedPreferences sharedPreferences) {
-        String credential;
-        if (shouldUseBasicCredential(request.url().toString())) {
-            credential = Credentials.basic(SecumAPI.USER_NAME, SecumAPI.PASSWORD);
+        Log.d("BGLM", "-----requesting " + request.url());
+        if (request.url().toString().endsWith(Constants.PATH_GET_ACCESS_CODE) || request.url().toString().endsWith(Constants.PATH_REGISTER_USER)) {
+            // getting ACCCESS_CODE, no login required
+            Log.d("BGLM", "getting access code, no header");
+            return request;
+        }
+        if (request.url().toString().endsWith(Constants.PATH_GET_ACCESS_TOKEN)) {
+            Log.d("BGLM", "adding basic credential");
+            String credential = Credentials.basic(SecumAPI.USER_NAME, SecumAPI.PASSWORD);
+            Log.d("BGLM", "basic credential " + credential);
+            return request.newBuilder()
+                    .header("Authorization", credential)
+                    .build();
         } else {
+            Log.d("BGLM", "adding bearer token");
+            String credential;
             if (SecumDebug.isDebugMode(sharedPreferences)) {
                 // if it's debug mode, hardcode 11 or 22's credential
                 switch (SecumDebug.getCurrentDebugUser(sharedPreferences)) {
@@ -206,18 +245,19 @@ public class NetModule {
                 credential = "Bearer " + bearer;
                 Log.d(TAG, "Bearer: " + bearer);
             }
+
+            // TODO: when token expires, fail fast
+            return request.newBuilder()
+                    .header("Authorization", credential)
+                    .build();
         }
-        // TODO: when token expires, fail fast
-        return request.newBuilder()
-                .header("Authorization", credential)
-                .build();
     }
 
     @Provides
     @Singleton
     Authenticator provideAuthenticator(final SharedPreferences sharedPreferences) {
-        return (route, response) ->
-                addHeaderToRequest(response.request(), sharedPreferences);
+        return (route, response) -> addHeaderToRequest(response.request(), sharedPreferences);
+
     }
 
     /**
@@ -229,9 +269,8 @@ public class NetModule {
      * @return
      */
     private boolean shouldUseBasicCredential(String url) {
-        // basic register/getAccessCode/getAccessToken
         return url.endsWith(Constants.PATH_REGISTER_USER) || url.endsWith(Constants
-                .PATH_GET_ACCESS_CODE) || url.endsWith(Constants.PATH_GET_ACCESS_TOKEN);
+                .PATH_GET_ACCESS_TOKEN);
         // (otherwise) oauth ping/getMatch/endMatch/updateUser
     }
 
@@ -298,7 +337,7 @@ public class NetModule {
                 true,  // Audio Enabled
                 true,  // Video Enabled
                 true  // Hardware Acceleration Enabled
-                ); // Render EGL Context
+        ); // Render EGL Context
 
         String currentUserName = currentUserProvider.getUser().getUsername();
         PnRTCClient pnRTCClient;

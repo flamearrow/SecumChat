@@ -121,31 +121,40 @@ public class MyDetailsActivity extends SecumBaseActivity {
             final String nickname = name.getText().toString();
             String age = agesArray[agePicker.getSelectedItem()];
             String gender = isMale ? Constants.MALE : Constants.FEMALE;
-            secumAPI.updateUser(
-                    new UpdateUserRequest.Builder()
-                            .setNickname(nickname)
-                            .setAge(age)
-                            .setGender(gender)
-                            .build()
-            ).enqueue(new Callback<User>() {
-                @Override
-                public void onResponse(Call<User> call, Response<User> response) {
-                    if (response.isSuccessful()) {
-                        User user = response.body();
-                        currentUserProvider.setUser(user);
-                        Intent intent = new Intent(MyDetailsActivity.this, SecumChatActivity
-                                .class);
-//                        intent.putExtra(Constants.CURRENT_USER, user);
-                        startActivity(intent);
-                        finish();
-                    }
-                }
 
-                @Override
-                public void onFailure(Call<User> call, Throwable t) {
-                    showToast(getResources().getString(R.string.general_error));
-                }
-            });
+            User user = new User();
+            user.setUsername(nickname);
+            currentUserProvider.setUser(user);
+            Intent intent = new Intent(MyDetailsActivity.this, SecumChatActivity
+                    .class);
+//                        intent.putExtra(Constants.CURRENT_USER, user);
+            startActivity(intent);
+
+//            secumAPI.updateUser(
+//                    new UpdateUserRequest.Builder()
+//                            .setNickname(nickname)
+//                            .setAge(age)
+//                            .setGender(gender)
+//                            .build()
+//            ).enqueue(new Callback<User>() {
+//                @Override
+//                public void onResponse(Call<User> call, Response<User> response) {
+//                    if (response.isSuccessful()) {
+//                        User user = response.body();
+//                        currentUserProvider.setUser(user);
+//                        Intent intent = new Intent(MyDetailsActivity.this, SecumChatActivity
+//                                .class);
+////                        intent.putExtra(Constants.CURRENT_USER, user);
+//                        startActivity(intent);
+//                        finish();
+//                    }
+//                }
+//
+//                @Override
+//                public void onFailure(Call<User> call, Throwable t) {
+//                    showToast(getResources().getString(R.string.general_error));
+//                }
+//            });
         }
     }
 

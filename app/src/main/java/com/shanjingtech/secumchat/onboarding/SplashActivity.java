@@ -40,14 +40,18 @@ public class SplashActivity extends SecumBaseActivity {
                         public void onResponse(Call<PingResponse> call, Response<PingResponse>
                                 response) {
                             if (response.isSuccessful()) {
+                                Log.d("BGLM", "ping success");
                                 startSecum();
                             } else {
+                                Log.d("BGLM", "ping fail");
                                 startOnboarding();
                             }
                         }
 
                         @Override
                         public void onFailure(Call<PingResponse> call, Throwable t) {
+
+                            Log.d("BGLM", "ping not aval");
                             startOnboarding();
                         }
                     });
@@ -60,6 +64,7 @@ public class SplashActivity extends SecumBaseActivity {
         secumAPI.getProfile().enqueue(new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
+                Log.d("BGLM", "getProfile success: " + response);
                 if (response.isSuccessful()) {
                     User user = response.body();
                     Intent intent = new Intent(SplashActivity.this, SecumChatActivity.class);
@@ -71,7 +76,7 @@ public class SplashActivity extends SecumBaseActivity {
 
             @Override
             public void onFailure(Call<User> call, Throwable t) {
-
+                Log.d("BGLM", "getProfile error: " + t);
             }
         });
     }

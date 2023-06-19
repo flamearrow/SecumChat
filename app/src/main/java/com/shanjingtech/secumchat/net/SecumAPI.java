@@ -15,6 +15,7 @@ import com.shanjingtech.secumchat.model.GetMatchRequest;
 import com.shanjingtech.secumchat.model.GetProfileFromUserNameRequest;
 import com.shanjingtech.secumchat.model.GroupMessages;
 import com.shanjingtech.secumchat.model.ListContactsRequest;
+import com.shanjingtech.secumchat.model.NewUser;
 import com.shanjingtech.secumchat.model.PingResponse;
 import com.shanjingtech.secumchat.model.RegisterNotificationTokenRequest;
 import com.shanjingtech.secumchat.model.ReportUserRequest;
@@ -32,6 +33,7 @@ import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
+import retrofit2.http.GET;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
 
@@ -67,6 +69,10 @@ public interface SecumAPI {
     @POST(Constants.PATH_REGISTER_USER)
     Call<User> registerUser(@Body UserRequest request);
 
+    @Headers("Content-Type: application/json")
+    @POST(Constants.PATH_REGISTER_USER)
+    Call<NewUser> registerNewUser(@Body UserRequest request);
+
     /**
      * Send access code to user's phone through sms, confirm ownership
      */
@@ -100,7 +106,7 @@ public interface SecumAPI {
 
 
     @Headers("Content-Type: application/json")
-    @POST(Constants.PATH_GET_PROFILE)
+    @GET(Constants.PATH_GET_PROFILE)
     Call<User> getProfile();
 
     @Headers("Content-Type: application/json")

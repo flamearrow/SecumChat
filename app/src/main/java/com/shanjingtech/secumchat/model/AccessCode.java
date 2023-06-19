@@ -9,7 +9,7 @@ import com.google.gson.annotations.SerializedName;
  */
 
 public class AccessCode {
-    @SerializedName("access_code")
+    @SerializedName("accessCode")
     @Expose
     String access_code;
 

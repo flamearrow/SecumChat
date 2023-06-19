@@ -52,10 +52,12 @@ public class AccessCodeActivity extends SecumBaseActivity
         // Passed from PhoneNumActivity
         phoneNo = getIntent().getStringExtra(Constants.PHONE_NUMBER);
         isDebug = SecumDebug.isDebugMode(sharedPreferences);
-        if (!isDebug) {
-            currentUser = currentUserProvider.getUser();
-            correctAccessCode = currentUser.getAccess_code();
-        }
+        Log.d("BGLM", "isDebug? " + isDebug);
+//        if (!isDebug) {
+//            currentUser = currentUserProvider.getUser();
+//            correctAccessCode = currentUser.getAccess_code();
+//        }
+        requestAccessCodeFromServer();
         autoEnableTextView.startCount();
     }
 
@@ -75,10 +77,14 @@ public class AccessCodeActivity extends SecumBaseActivity
                         Log.d(TAG, "send code success");
                         // TODO: buffer it locally, vaidate before send getAccessToken
                         correctAccessCode = response.body().getAccess_code();
+                        Log.d("BGLM", "send code success " + correctAccessCode);
+
                     }
 
                     @Override
                     public void onFailure(Call<AccessCode> call, Throwable t) {
+
+                        Log.d("BGLM", "send code error");
                         // failed to send code, show error and enable resend
                         showToast(getResources().getString(R.string.fail_to_send_code));
                         Log.d(TAG, "send code failed");
@@ -88,6 +94,7 @@ public class AccessCodeActivity extends SecumBaseActivity
     }
 
     private boolean validateAccessCode(String code) {
+        Log.d("BGLM", "comparing " + code + " and correct " + correctAccessCode);
         return code != null && code.equals(correctAccessCode);
     }
 

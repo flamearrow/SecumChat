@@ -125,8 +125,7 @@ public class MyDetailsActivity extends SecumBaseActivity {
             User user = new User();
             user.setUsername(nickname);
             currentUserProvider.setUser(user);
-            Intent intent = new Intent(MyDetailsActivity.this, SecumChatActivity
-                    .class);
+            Intent intent = new Intent(MyDetailsActivity.this, SecumChatActivity.class);
 //                        intent.putExtra(Constants.CURRENT_USER, user);
             startActivity(intent);
 

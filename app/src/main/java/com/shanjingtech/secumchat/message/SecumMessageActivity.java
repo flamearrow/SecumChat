@@ -10,7 +10,9 @@ import android.widget.Toast;
 
 import com.shanjingtech.secumchat.R;
 import com.shanjingtech.secumchat.SecumBaseActivity;
-import com.shanjingtech.secumchat.db.Message;
+import com.shanjingtech.secumchat.model.GroupMessages;
+import com.shanjingtech.secumchat.model.MessageNew;
+import com.shanjingtech.secumchat.model.PullGroupMessagesRequest;
 import com.shanjingtech.secumchat.model.SendMessageRequest;
 import com.shanjingtech.secumchat.model.SendMessageResponse;
 import com.shanjingtech.secumchat.viewModels.ChatHistoryViewModel;
@@ -59,7 +61,8 @@ public class SecumMessageActivity extends SecumBaseActivity implements SwipeRefr
         super.onCreate(savedInstanceState);
         // TODO: maybe create dagger scope to provide peer user
         peerUserName = getIntent().getStringExtra(PEER_USER_NAME);
-        ownerName = currentUserProvider.getUser().getUsername();
+//        ownerName = currentUserProvider.getUser().getUsername();
+        ownerName = "MLGB";
 
         setContentView(R.layout.secum_message_activity);
         messageRecyclerView = findViewById(R.id.message_recycler);
@@ -68,12 +71,12 @@ public class SecumMessageActivity extends SecumBaseActivity implements SwipeRefr
         swipeRefreshLayout = findViewById(R.id.swipe_refresh_layout);
         swipeRefreshLayout.setOnRefreshListener(this);
 
-        // groupId is null if it's started from a fresh chat
         groupId = getIntent().getStringExtra(GROUP_ID);
+        Log.d("BGLM", "groupId: " + groupId);
 
         initializeRecyclerView();
 
-        markUnreadMessages();
+//        markUnreadMessages();
         overridePendingTransition(R.anim.enter_from_right_full, R.anim.do_nothing);
     }
 
@@ -82,7 +85,7 @@ public class SecumMessageActivity extends SecumBaseActivity implements SwipeRefr
 
         secumMessageAdapter = new SecumMessageAdapter(ownerName);
         if (groupId != null) {
-            observeViewModel();
+            refreshMessages();
         }
         messageRecyclerView.setAdapter(secumMessageAdapter);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
@@ -90,33 +93,49 @@ public class SecumMessageActivity extends SecumBaseActivity implements SwipeRefr
         messageRecyclerView.setLayoutManager(linearLayoutManager);
     }
 
-    private void observeViewModel() {
-        chatHistoryViewModel.getLiveHistoryWithGroupId(groupId).observe(this, items -> {
-                    secumMessageAdapter.replaceItems(items);
-                    messageRecyclerView.smoothScrollToPosition(secumMessageAdapter.getItemCount()
-                            - 1);
-                }
-        );
+
+
+    private void refreshMessages() {
+//        chatHistoryViewModel.getLiveHistoryWithGroupId(groupId).observe(this, items -> {
+//                    secumMessageAdapter.replaceItems(items);
+//                    messageRecyclerView.smoothScrollToPosition(secumMessageAdapter.getItemCount()
+//                            - 1);
+//                }
+//        );
+        secumAPI.pullGroupMessages(new PullGroupMessagesRequest(Integer.parseInt(groupId))).enqueue(new Callback<GroupMessages>() {
+            @Override
+            public void onResponse(Call<GroupMessages> call, Response<GroupMessages> response) {
+                Log.d("BGLM", "pull groupe message success: " + response);
+
+                secumMessageAdapter.replaceItems(response.body().messages);
+            }
+
+            @Override
+            public void onFailure(Call<GroupMessages> call, Throwable t) {
+                Log.d("BGLM", "pull groupe message failure");
+            }
+        });
     }
 
-    private void markUnreadMessages() {
-        new Thread() {
-            @Override
-            public void run() {
-                // update messages with group id, mark the read field
-                List<Message> messages = messageDAO.unreadHistoryWithGroupId(groupId);
-                for (Message message : messages) {
-                    message.setRead(true);
-                }
-                messageDAO.updateMessages(messages);
-            }
-        }.start();
-    }
+//    private void markUnreadMessages() {
+//        new Thread() {
+//            @Override
+//            public void run() {
+//                // update messages with group id, mark the read field
+//                List<Message> messages = messageDAO.unreadHistoryWithGroupId(groupId);
+//                for (Message message : messages) {
+//                    message.setRead(true);
+//                }
+//                messageDAO.updateMessages(messages);
+//            }
+//        }.start();
+//    }
 
     @Override
     public void onRefresh() {
         Toast.makeText(this, "onRefresh", Toast.LENGTH_SHORT).show();
         swipeRefreshLayout.setRefreshing(false);
+        refreshMessages();
     }
 
     @Override
@@ -124,31 +143,34 @@ public class SecumMessageActivity extends SecumBaseActivity implements SwipeRefr
         messageAction.clearText();
 
 
-        secumAPI.sendMessage(new SendMessageRequest(peerUserName, text)).enqueue(
+        secumAPI.sendMessage(new SendMessageRequest(groupId, text)).enqueue(
                 new Callback<SendMessageResponse>() {
 
                     @Override
                     public void onResponse(Call<SendMessageResponse> call,
                                            Response<SendMessageResponse> response) {
-                        if (groupId == null) {
-                            groupId = response.body().getGroupId();
-                            // TODO: reattach ViewModel
-                            observeViewModel();
-                        }
-                        Message message = new Message.Builder().setFrom(ownerName).setTo
-                                (peerUserName)
-                                .setOwnerName
-                                        (ownerName).setTime(System.currentTimeMillis())
-                                .setGroupId(groupId)
-                                .setContent
-                                        (text).build();
 
-                        new Thread() {
-                            @Override
-                            public void run() {
-                                messageDAO.insertMessage(message);
-                            }
-                        }.start();
+                        Log.d("BGLM", "send message success: " + response);
+                        refreshMessages();
+//                        if (groupId == null) {
+//                            groupId = response.body().getGroupId();
+//                            // TODO: reattach ViewModel
+//                            observeViewModel();
+//                        }
+//                        Message message = new Message.Builder().setFrom(ownerName).setTo
+//                                (peerUserName)
+//                                .setOwnerName
+//                                        (ownerName).setTime(System.currentTimeMillis())
+//                                .setGroupId(groupId)
+//                                .setContent
+//                                        (text).build();
+
+//                        new Thread() {
+//                            @Override
+//                            public void run() {
+//                                messageDAO.insertMessage(message);
+//                            }
+//                        }.start();
                         Log.d(TAG, "sent success");
                     }
 

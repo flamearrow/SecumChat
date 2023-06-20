@@ -205,27 +205,27 @@ public class SecumNetDBSynchronizer {
         secumAPI.pullMessage().enqueue(new Callback<GroupMessages>() {
             @Override
             public void onResponse(Call<GroupMessages> call, Response<GroupMessages> response) {
-                if (response.isSuccessful()) {
-                    new Thread(() -> {
-                        for (UnreadMessage unreadMessage : response.body().getGroupMessages()) {
-                            messageDAO.insertMessage(
-                                    new Message.Builder().setOwnerName(ownerName).setGroupId
-                                            (unreadMessage.getMessage_group_id()).setContent
-                                            (unreadMessage.getText()).setFrom(unreadMessage
-                                            .getSender_username()).setTo(ownerName).setTime
-                                            (TimestampConverter.fromString(unreadMessage
-                                                    .getTime_updated())).setRead(false).build());
-                        }
-                        if (listener != null) {
-                            listener.onDBOperationSuccess();
-                        }
-                    }
-                    ).start();
-                } else {
-                    if (listener != null) {
-                        listener.onDBOperationFailure();
-                    }
-                }
+//                if (response.isSuccessful()) {
+//                    new Thread(() -> {
+//                        for (UnreadMessage unreadMessage : response.body().getGroupMessages()) {
+//                            messageDAO.insertMessage(
+//                                    new Message.Builder().setOwnerName(ownerName).setGroupId
+//                                            (unreadMessage.getMessage_group_id()).setContent
+//                                            (unreadMessage.getText()).setFrom(unreadMessage
+//                                            .getSender_username()).setTo(ownerName).setTime
+//                                            (TimestampConverter.fromString(unreadMessage
+//                                                    .getTime_updated())).setRead(false).build());
+//                        }
+//                        if (listener != null) {
+//                            listener.onDBOperationSuccess();
+//                        }
+//                    }
+//                    ).start();
+//                } else {
+//                    if (listener != null) {
+//                        listener.onDBOperationFailure();
+//                    }
+//                }
             }
 
             @Override

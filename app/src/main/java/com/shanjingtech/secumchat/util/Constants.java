@@ -48,6 +48,8 @@ public class Constants {
     // intents
     public static final String PHONE_NUMBER = "PHONE_NUMBER";
     public static final String PROFILE_USER_NAME = "PROFILE_USER_NAME";
+
+    public static final String PROFILE_USER_ID = "PROFILE_USER_ID";
     public static final String ACCESS_CODE = "CURRENT_USER";
     public static final String MY_NAME = "USER_NAME";
     public static final String MY_AGE = "USER_AGE";
@@ -95,8 +97,12 @@ public class Constants {
     public static final String PATH_BLOCK_CONTACT = "/api/contacts/block/";
     public static final String PATH_DELETE_CONTACT = "/api/contacts/delete/";
     public static final String PATH_REGISTER_NOTIFICATION_TOKEN = "/api/notification_token/register/";
-    public static final String PATH_SEND_MESSAGE = "/api/message/send_msg/";
+    public static final String PATH_SEND_MESSAGE = "/api/messages/send_msg/";
     public static final String PATH_PULL_MESSAGE = "/api/message/pull/";
+
+    public static final String PATH_PULL_GROUP_MESSAGE = "/api/messages/pull/";
+
+    public static final String PATH_CREATE_GROUP = "/api/messages/create_grp/";
     public static final String PATH_GET_INFO = "/api/users/get_info/";
 
     public static final String MALE = "male";

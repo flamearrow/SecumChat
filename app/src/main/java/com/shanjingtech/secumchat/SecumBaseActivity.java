@@ -33,6 +33,7 @@ import com.shanjingtech.secumchat.pushy.PushyInitializer;
 import com.shanjingtech.secumchat.util.Constants;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 /**
  * Supers all Secum activities, handles dagger injection and permissions
@@ -51,6 +52,7 @@ public class SecumBaseActivity
     @Inject
     protected SharedPreferences sharedPreferences;
     @Inject
+    @Singleton
     protected CurrentUserProvider currentUserProvider;
     @Inject
     PushyInitializer pushyInitializer;

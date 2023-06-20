@@ -1,6 +1,7 @@
 package com.shanjingtech.secumchat.message;
 
 import androidx.recyclerview.widget.RecyclerView;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +11,7 @@ import android.widget.TextView;
 import com.shanjingtech.secumchat.R;
 import com.shanjingtech.secumchat.db.Message;
 import com.shanjingtech.secumchat.db.TimestampConverter;
+import com.shanjingtech.secumchat.model.MessageNew;
 import com.shanjingtech.secumchat.ui.CircleImageView;
 
 import java.util.ArrayList;
@@ -26,7 +28,7 @@ public class SecumMessageAdapter extends RecyclerView.Adapter<SecumMessageAdapte
 
     private final String ownerName;
 
-    private List<Message> messageList;
+    private List<MessageNew> messageList;
 
 
     public SecumMessageAdapter(String ownerName) {
@@ -40,7 +42,7 @@ public class SecumMessageAdapter extends RecyclerView.Adapter<SecumMessageAdapte
                 TYPE_OTHER_TEXT_MESSAGE;
     }
 
-    private boolean isSelf(Message message) {
+    private boolean isSelf(MessageNew message) {
         return message.getFrom().equals(ownerName);
     }
 
@@ -59,7 +61,7 @@ public class SecumMessageAdapter extends RecyclerView.Adapter<SecumMessageAdapte
 
     @Override
     public void onBindViewHolder(TextMessageViewHolder textMessageViewHolder, int position) {
-        Message message = messageList.get(position);
+        MessageNew message = messageList.get(position);
         textMessageViewHolder.txtTime.setText(TimestampConverter.fromLongHourMinuteOnly(message
                 .getTime()));
         textMessageViewHolder.txtContent.setText(message.getContent());
@@ -70,7 +72,7 @@ public class SecumMessageAdapter extends RecyclerView.Adapter<SecumMessageAdapte
         return messageList.size();
     }
 
-    public void replaceItems(List<Message> newMessages) {
+    public void replaceItems(List<MessageNew> newMessages) {
         this.messageList = newMessages;
         notifyDataSetChanged();
     }

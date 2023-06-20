@@ -159,7 +159,7 @@ public class ContactsAdapter extends RecyclerView.Adapter {
                     String currentUserName = contactRequests.get(itemPosition).user.getNickname();
                     Context context = parent.getContext();
                     Intent intent = new Intent(context, ProfileActivity.class);
-                    intent.putExtra(Constants.PROFILE_USER_NAME, currentUserName);
+                    intent.putExtra(Constants.PROFILE_USER_ID, contactRequests.get(itemPosition).user.userId);
                     context.startActivity(intent);
                 });
             }

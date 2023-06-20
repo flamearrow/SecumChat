@@ -20,7 +20,7 @@ public class User implements Serializable {
 
     @SerializedName("userId")
     @Expose
-    String userId;
+    public String userId;
 
     @SerializedName("username")
     @Expose

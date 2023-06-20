@@ -8,14 +8,14 @@ import com.google.gson.annotations.SerializedName;
  */
 
 public class SendMessageRequest {
-    public SendMessageRequest(String receiver_username, String text) {
-        this.receiver_username = receiver_username;
+    public SendMessageRequest(String groupId, String text) {
+        this.msg_grp_id = Integer.parseInt(groupId);
         this.text = text;
     }
 
     @Expose
-    @SerializedName("receiver_username")
-    String receiver_username;
+    @SerializedName("msg_grp_id")
+    int msg_grp_id;
 
 
     @Expose

@@ -1,11 +1,15 @@
 package com.shanjingtech.secumchat;
 
 import android.app.SearchManager;
+
 import androidx.lifecycle.ViewModelProviders;
+
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
+
 import androidx.appcompat.app.AlertDialog;
+
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -21,14 +25,15 @@ import com.shanjingtech.secumchat.db.GroupId;
 import com.shanjingtech.secumchat.message.SecumMessageActivity;
 import com.shanjingtech.secumchat.model.AddContactRequest;
 import com.shanjingtech.secumchat.model.BlockContactRequest;
+import com.shanjingtech.secumchat.model.CreateGroupRequest;
 import com.shanjingtech.secumchat.model.DeleteContactRequest;
 import com.shanjingtech.secumchat.model.GenericResponse;
 import com.shanjingtech.secumchat.model.GetInfoRequest;
+import com.shanjingtech.secumchat.model.MessageGroup;
 import com.shanjingtech.secumchat.model.UpdateUserRequest;
 import com.shanjingtech.secumchat.model.User;
 import com.shanjingtech.secumchat.model.UserPublicInfo;
 import com.shanjingtech.secumchat.net.FirebaseImageUploader;
-import com.shanjingtech.secumchat.net.SecumAPI;
 import com.shanjingtech.secumchat.util.Constants;
 import com.shanjingtech.secumchat.viewModels.ProfileViewModel;
 import com.vansuita.pickimage.bean.PickResult;
@@ -42,6 +47,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static com.shanjingtech.secumchat.util.Constants.PROFILE_USER_ID;
 import static com.shanjingtech.secumchat.util.Constants.PROFILE_USER_NAME;
 
 /**
@@ -57,7 +63,7 @@ public class ProfileActivity extends SecumBaseActivity implements IPickResult {
 
     private String profileUserName;
 
-    private int toAddUserId = -1;
+    private int profileUserId = -1;
     private TextView name;
     private TextView age;
     private ImageView avatar;
@@ -121,8 +127,8 @@ public class ProfileActivity extends SecumBaseActivity implements IPickResult {
                             public void onResponse(Call<List<GenericResponse>> call,
                                                    Response<List<GenericResponse>> response) {
                                 Toast.makeText(ProfileActivity.this, ProfileActivity.this
-                                        .getResources()
-                                        .getString(R.string.block_success), Toast.LENGTH_SHORT)
+                                                .getResources()
+                                                .getString(R.string.block_success), Toast.LENGTH_SHORT)
                                         .show();
                                 finish();
                             }
@@ -130,8 +136,8 @@ public class ProfileActivity extends SecumBaseActivity implements IPickResult {
                             @Override
                             public void onFailure(Call<List<GenericResponse>> call, Throwable t) {
                                 Toast.makeText(ProfileActivity.this, ProfileActivity.this
-                                        .getResources()
-                                        .getString(R.string.request_fail), Toast.LENGTH_SHORT)
+                                                .getResources()
+                                                .getString(R.string.request_fail), Toast.LENGTH_SHORT)
                                         .show();
                                 finish();
                             }
@@ -144,8 +150,8 @@ public class ProfileActivity extends SecumBaseActivity implements IPickResult {
                             public void onResponse(Call<List<GenericResponse>> call,
                                                    Response<List<GenericResponse>> response) {
                                 Toast.makeText(ProfileActivity.this, ProfileActivity.this
-                                        .getResources()
-                                        .getString(R.string.delete_success), Toast.LENGTH_SHORT)
+                                                .getResources()
+                                                .getString(R.string.delete_success), Toast.LENGTH_SHORT)
                                         .show();
                                 finish();
                             }
@@ -153,8 +159,8 @@ public class ProfileActivity extends SecumBaseActivity implements IPickResult {
                             @Override
                             public void onFailure(Call<List<GenericResponse>> call, Throwable t) {
                                 Toast.makeText(ProfileActivity.this, ProfileActivity.this
-                                        .getResources()
-                                        .getString(R.string.request_fail), Toast.LENGTH_SHORT)
+                                                .getResources()
+                                                .getString(R.string.request_fail), Toast.LENGTH_SHORT)
                                         .show();
                                 finish();
                             }
@@ -177,14 +183,15 @@ public class ProfileActivity extends SecumBaseActivity implements IPickResult {
             // TODO: when is resulted from stranger, there's no database
 
 
-            toAddUserId = Integer.parseInt(searchingUserId);
+            profileUserId = Integer.parseInt(searchingUserId);
 
-            secumAPI.getInfo(new GetInfoRequest(toAddUserId)).enqueue(new Callback<UserPublicInfo>() {
+            secumAPI.getInfo(new GetInfoRequest(profileUserId)).enqueue(new Callback<UserPublicInfo>() {
                 @Override
                 public void onResponse(Call<UserPublicInfo> call, Response<UserPublicInfo> response) {
                     Log.d("BGLM", "getInfo succeed" + response);
 
                     UserPublicInfo publicInfo = response.body();
+                    profileUserName = publicInfo.user.getNickname();
                     name.setText(publicInfo.user.getNickname());
                     age.setVisibility(View.GONE);
                     gender.setVisibility(View.GONE);
@@ -199,40 +206,59 @@ public class ProfileActivity extends SecumBaseActivity implements IPickResult {
         }
         // otherwise, is from contacts/requested/blocked or myself
         else {
-            profileUserName = intent.getStringExtra(PROFILE_USER_NAME);
+//            profileUserName = intent.getStringExtra(PROFILE_USER_NAME);
+            profileUserId = Integer.parseInt(intent.getStringExtra(PROFILE_USER_ID));
             add.setVisibility(View.GONE);
             chat.setVisibility(View.VISIBLE);
             video.setVisibility(View.VISIBLE);
 
             // myself
-            if (profileUserName.equals(getMyName())) {
-                owner = IS_MYSELF;
-            } else {
-                owner = IS_CONTACT;
-            }
+//            if (profileUserName.equals(getMyName())) {
+//                owner = IS_MYSELF;
+//            } else {
+//                owner = IS_CONTACT;
+//            }
 
-            profileViewModel.getActiveContactsOwnedBy(getMyName(), profileUserName).observe
-                    (this,
-                            profilePreview -> {
-                                if (profilePreview == null) {
-                                    showNotFoundDialog();
-                                } else {
-                                    name.setText(profilePreview.getNickName());
-                                    age.setText(profilePreview.getAge());
-                                    if (profilePreview.getGender() != null) {
-                                        gender.setImageResource(profilePreview.getGender().equals
-                                                (Constants
-                                                        .MALE) ? R
-                                                .drawable.male : R.drawable.female);
-                                        gender.setVisibility(View.VISIBLE);
-                                    } else {
-                                        gender.setVisibility(View.GONE);
-                                    }
-                                    Glide.with(ProfileActivity.this).load(profilePreview
-                                            .getProfileImageUrl()).into(avatar);
-                                    // also has email, phone, status etc
-                                }
-                            });
+            secumAPI.getInfo(new GetInfoRequest(profileUserId)).enqueue(new Callback<UserPublicInfo>() {
+                @Override
+                public void onResponse(Call<UserPublicInfo> call, Response<UserPublicInfo> response) {
+                    Log.d("BGLM", "getInfo succeed" + response);
+
+                    UserPublicInfo publicInfo = response.body();
+                    profileUserName = publicInfo.user.getNickname();
+                    name.setText(publicInfo.user.getNickname());
+                    age.setVisibility(View.GONE);
+                    gender.setVisibility(View.GONE);
+                }
+
+                @Override
+                public void onFailure(Call<UserPublicInfo> call, Throwable t) {
+                    Log.d("BGLM", "getInfo failed");
+                }
+            });
+
+//            profileViewModel.getActiveContactsOwnedBy(getMyName(), profileUserName).observe
+//                    (this,
+//                            profilePreview -> {
+//                                if (profilePreview == null) {
+//                                    showNotFoundDialog();
+//                                } else {
+//                                    name.setText(profilePreview.getNickName());
+//                                    age.setText(profilePreview.getAge());
+//                                    if (profilePreview.getGender() != null) {
+//                                        gender.setImageResource(profilePreview.getGender().equals
+//                                                (Constants
+//                                                        .MALE) ? R
+//                                                .drawable.male : R.drawable.female);
+//                                        gender.setVisibility(View.VISIBLE);
+//                                    } else {
+//                                        gender.setVisibility(View.GONE);
+//                                    }
+//                                    Glide.with(ProfileActivity.this).load(profilePreview
+//                                            .getProfileImageUrl()).into(avatar);
+//                                    // also has email, phone, status etc
+//                                }
+//                            });
         }
 
     }
@@ -247,19 +273,36 @@ public class ProfileActivity extends SecumBaseActivity implements IPickResult {
     }
 
     public void chat(View view) {
-        new Thread() {
-            public void run() {
+        secumAPI.createGroup(new CreateGroupRequest(profileUserId)).enqueue(new Callback<MessageGroup>() {
+            @Override
+            public void onResponse(Call<MessageGroup> call, Response<MessageGroup> response) {
+                Log.d("BGLM", "create group success:" + response);
                 Intent intent = new Intent(
                         ProfileActivity.this,
                         SecumMessageActivity.class);
                 intent.putExtra(SecumMessageActivity.PEER_USER_NAME, profileUserName);
-                GroupId groupId = messageDAO.findChatWithUserOwnedBy(getMyName(), profileUserName);
-                if (groupId != null) {
-                    intent.putExtra(SecumMessageActivity.GROUP_ID, groupId.getGroupId());
-                }
+                intent.putExtra(SecumMessageActivity.GROUP_ID, response.body().msgGrpId);
                 startActivity(intent);
             }
-        }.start();
+
+            @Override
+            public void onFailure(Call<MessageGroup> call, Throwable t) {
+                Log.d("BGLM", "create group failure");
+            }
+        });
+//        new Thread() {
+//            public void run() {
+//                Intent intent = new Intent(
+//                        ProfileActivity.this,
+//                        SecumMessageActivity.class);
+//                intent.putExtra(SecumMessageActivity.PEER_USER_NAME, profileUserName);
+//                GroupId groupId = messageDAO.findChatWithUserOwnedBy(getMyName(), profileUserName);
+//                if (groupId != null) {
+//                    intent.putExtra(SecumMessageActivity.GROUP_ID, groupId.getGroupId());
+//                }
+//                startActivity(intent);
+//            }
+//        }.start();
     }
 
     public void video(View view) {
@@ -267,7 +310,7 @@ public class ProfileActivity extends SecumBaseActivity implements IPickResult {
     }
 
     public void add(View view) {
-        secumAPI.addContact(new AddContactRequest(toAddUserId)).enqueue(new Callback<GenericResponse>() {
+        secumAPI.addContact(new AddContactRequest(profileUserId)).enqueue(new Callback<GenericResponse>() {
             @Override
             public void onResponse(Call<GenericResponse> call, Response<GenericResponse> response) {
                 Log.d("BGLM", "add success:  " + response);
@@ -320,8 +363,8 @@ public class ProfileActivity extends SecumBaseActivity implements IPickResult {
                                             .avatar_update_success), Toast.LENGTH_SHORT).show();
                                 } else {
                                     Toast.makeText(ProfileActivity.this, getResources().getString
-                                            (R.string
-                                                    .avatar_update_failure), Toast.LENGTH_SHORT)
+                                                    (R.string
+                                                            .avatar_update_failure), Toast.LENGTH_SHORT)
                                             .show();
                                 }
                             }

@@ -178,7 +178,7 @@ public class NetModule {
         // chain.proceed() call is blocking and waits the response
         return new OkHttpClient.Builder().cache(cache).authenticator(authenticator)
                 .addInterceptor(chain -> {
-                    Log.d("BGLM", "adding header to request");
+                    Log.d("BGLM", "adding header to request: " + chain.request().body() );
                     Response response = chain.proceed(addHeaderToRequest(chain.request(),
                             sharedPreferences));
                     return response;

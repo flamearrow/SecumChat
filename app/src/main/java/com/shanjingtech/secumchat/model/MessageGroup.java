@@ -3,12 +3,10 @@ package com.shanjingtech.secumchat.model;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-/**
- * Created by flamearrow on 4/1/18.
- */
+import java.util.List;
 
-public class SendMessageResponse {
+public class MessageGroup {
     @Expose
-    @SerializedName("messageId")
-    String messageId;
+    @SerializedName("msgGrpId")
+    public String msgGrpId;
 }

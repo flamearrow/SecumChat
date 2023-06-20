@@ -8,6 +8,7 @@ import com.shanjingtech.secumchat.model.ApproveContactRequest;
 import com.shanjingtech.secumchat.model.BlockContactRequest;
 import com.shanjingtech.secumchat.model.Contact;
 import com.shanjingtech.secumchat.model.ContactInfos;
+import com.shanjingtech.secumchat.model.CreateGroupRequest;
 import com.shanjingtech.secumchat.model.DeleteContactRequest;
 import com.shanjingtech.secumchat.model.EndMatch;
 import com.shanjingtech.secumchat.model.GenericResponse;
@@ -17,9 +18,11 @@ import com.shanjingtech.secumchat.model.GetMatchRequest;
 import com.shanjingtech.secumchat.model.GetProfileFromUserNameRequest;
 import com.shanjingtech.secumchat.model.GroupMessages;
 import com.shanjingtech.secumchat.model.ListContactsRequest;
+import com.shanjingtech.secumchat.model.MessageGroup;
 import com.shanjingtech.secumchat.model.NewUser;
 import com.shanjingtech.secumchat.model.PendingRequests;
 import com.shanjingtech.secumchat.model.PingResponse;
+import com.shanjingtech.secumchat.model.PullGroupMessagesRequest;
 import com.shanjingtech.secumchat.model.RegisterNotificationTokenRequest;
 import com.shanjingtech.secumchat.model.ReportUserRequest;
 import com.shanjingtech.secumchat.model.ReportUserResponse;
@@ -167,6 +170,15 @@ public interface SecumAPI {
     @Headers("Content-Type: application/json")
     @POST(Constants.PATH_PULL_MESSAGE)
     Call<GroupMessages> pullMessage();
+
+
+    @Headers("Content-Type: application/json")
+    @POST(Constants.PATH_PULL_GROUP_MESSAGE)
+    Call<GroupMessages> pullGroupMessages(@Body PullGroupMessagesRequest request);
+
+    @Headers("Content-Type: application/json")
+    @POST(Constants.PATH_CREATE_GROUP)
+    Call<MessageGroup> createGroup(@Body CreateGroupRequest request);
 
 
 }

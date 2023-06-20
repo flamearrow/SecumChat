@@ -4,18 +4,22 @@ import com.shanjingtech.secumchat.model.AccessCode;
 import com.shanjingtech.secumchat.model.AccessCodeRequest;
 import com.shanjingtech.secumchat.model.AccessToken;
 import com.shanjingtech.secumchat.model.AddContactRequest;
+import com.shanjingtech.secumchat.model.AddContactResponse;
 import com.shanjingtech.secumchat.model.ApproveContactRequest;
 import com.shanjingtech.secumchat.model.BlockContactRequest;
 import com.shanjingtech.secumchat.model.Contact;
+import com.shanjingtech.secumchat.model.ContactInfos;
 import com.shanjingtech.secumchat.model.DeleteContactRequest;
 import com.shanjingtech.secumchat.model.EndMatch;
 import com.shanjingtech.secumchat.model.GenericResponse;
+import com.shanjingtech.secumchat.model.GetInfoRequest;
 import com.shanjingtech.secumchat.model.GetMatch;
 import com.shanjingtech.secumchat.model.GetMatchRequest;
 import com.shanjingtech.secumchat.model.GetProfileFromUserNameRequest;
 import com.shanjingtech.secumchat.model.GroupMessages;
 import com.shanjingtech.secumchat.model.ListContactsRequest;
 import com.shanjingtech.secumchat.model.NewUser;
+import com.shanjingtech.secumchat.model.PendingRequests;
 import com.shanjingtech.secumchat.model.PingResponse;
 import com.shanjingtech.secumchat.model.RegisterNotificationTokenRequest;
 import com.shanjingtech.secumchat.model.ReportUserRequest;
@@ -24,6 +28,7 @@ import com.shanjingtech.secumchat.model.SendMessageRequest;
 import com.shanjingtech.secumchat.model.SendMessageResponse;
 import com.shanjingtech.secumchat.model.UpdateUserRequest;
 import com.shanjingtech.secumchat.model.User;
+import com.shanjingtech.secumchat.model.UserPublicInfo;
 import com.shanjingtech.secumchat.model.UserRequest;
 
 import java.io.IOException;
@@ -81,6 +86,11 @@ public class SecumDebugAPI implements SecumAPI {
     }
 
     @Override
+    public Call<UserPublicInfo> getInfo(GetInfoRequest request) {
+        return null;
+    }
+
+    @Override
     public Call<User> updateUser(UpdateUserRequest request) {
         return null;
     }
@@ -91,7 +101,12 @@ public class SecumDebugAPI implements SecumAPI {
     }
 
     @Override
-    public Call<List<Contact>> listContacts(ListContactsRequest request) {
+    public Call<ContactInfos> listContacts() {
+        return null;
+    }
+
+    @Override
+    public Call<PendingRequests> listPendingRequests() {
         return null;
     }
 
@@ -101,12 +116,12 @@ public class SecumDebugAPI implements SecumAPI {
     }
 
     @Override
-    public Call<List<GenericResponse>> addContact(AddContactRequest request) {
+    public Call<GenericResponse> addContact(AddContactRequest request) {
         return null;
     }
 
     @Override
-    public Call<List<GenericResponse>> approveContact(ApproveContactRequest request) {
+    public Call<GenericResponse> approveContact(ApproveContactRequest request) {
         return null;
     }
 

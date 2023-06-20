@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/menu_conversation"
+        android:icon="@drawable/cat_head"
+        android:title="@string/conversation"/>
+
+    <item
+        android:id="@+id/menu_contacts"
+        android:icon="@drawable/female_filled"
+        android:title="@string/contacts"/>
+</menu>

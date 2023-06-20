@@ -60,39 +60,39 @@ public class SecumNetDBSynchronizer {
      */
     public void syncUserDBbyPreview(String ownerName, @Nullable SecumNetDBSynchronizerListener
             listener) {
-        secumAPI.listContacts(new ListContactsRequest()).enqueue(new Callback<List<Contact>>() {
-            @Override
-            public void onResponse(Call<List<Contact>> call, Response<List<Contact>> response) {
-                if (response.isSuccessful()) {
-
-                    new Thread(() -> {
-                        for (Contact contact : response.body()) {
-                            userDAO.insertUser(
-                                    new UserDB.Builder()
-                                            .setUserName(contact.getContact_username())
-                                            .setNickName(contact.getContact_nickname())
-                                            .setStatus(contact.getContactStatus())
-                                            .setOwnerName(ownerName).build());
-                        }
-                        if (listener != null) {
-                            listener.onDBOperationSuccess();
-                        }
-                    }).start();
-                } else {
-                    if (listener != null) {
-                        listener.onDBOperationFailure();
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<Contact>> call, Throwable t) {
-                Log.d(TAG, "failed in SecumNetDBSynchronizer#syncUserDBbyPreview");
-                if (listener != null) {
-                    listener.onDBOperationFailure();
-                }
-            }
-        });
+//        secumAPI.listContacts(new ListContactsRequest()).enqueue(new Callback<List<Contact>>() {
+//            @Override
+//            public void onResponse(Call<List<Contact>> call, Response<List<Contact>> response) {
+//                if (response.isSuccessful()) {
+//
+//                    new Thread(() -> {
+//                        for (Contact contact : response.body()) {
+//                            userDAO.insertUser(
+//                                    new UserDB.Builder()
+//                                            .setUserName(contact.getContact_username())
+//                                            .setNickName(contact.getContact_nickname())
+//                                            .setStatus(contact.getContactStatus())
+//                                            .setOwnerName(ownerName).build());
+//                        }
+//                        if (listener != null) {
+//                            listener.onDBOperationSuccess();
+//                        }
+//                    }).start();
+//                } else {
+//                    if (listener != null) {
+//                        listener.onDBOperationFailure();
+//                    }
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<List<Contact>> call, Throwable t) {
+//                Log.d(TAG, "failed in SecumNetDBSynchronizer#syncUserDBbyPreview");
+//                if (listener != null) {
+//                    listener.onDBOperationFailure();
+//                }
+//            }
+//        });
 
     }
 

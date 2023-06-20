@@ -2,7 +2,10 @@ package com.shanjingtech.secumchat.contacts;
 
 import android.content.Context;
 import android.content.Intent;
+
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,9 +14,10 @@ import android.widget.Toast;
 
 import com.shanjingtech.secumchat.ProfileActivity;
 import com.shanjingtech.secumchat.R;
-import com.shanjingtech.secumchat.db.UserPreview;
 import com.shanjingtech.secumchat.model.ApproveContactRequest;
+import com.shanjingtech.secumchat.model.ContactRequest;
 import com.shanjingtech.secumchat.model.GenericResponse;
+import com.shanjingtech.secumchat.model.User;
 import com.shanjingtech.secumchat.net.SecumAPI;
 import com.shanjingtech.secumchat.util.Constants;
 
@@ -40,7 +44,7 @@ public class ContactsAdapter extends RecyclerView.Adapter {
     private static final int CONTACTS_LABEL = 1;
     private static final int CONTACTS = 2;
 
-    private List<UserPreview> contacts;
+    private List<ContactRequest> contactRequests;
 
     private RecyclerView recyclerView;
 
@@ -57,8 +61,8 @@ public class ContactsAdapter extends RecyclerView.Adapter {
         adapterType = type;
     }
 
-    public void updateContacts(List<UserPreview> contacts) {
-        this.contacts = contacts;
+    public void updateContacts(List<ContactRequest> contacts) {
+        this.contactRequests = contacts;
         notifyDataSetChanged();
     }
 
@@ -79,7 +83,7 @@ public class ContactsAdapter extends RecyclerView.Adapter {
          * 2+activeSize: requested label
          * 3+activeSize: blocked label
          */
-        int contactsCount = contacts == null ? 0 : contacts.size();
+        int contactsCount = contactRequests == null ? 0 : contactRequests.size();
         if (position == 0) {
             return PENDING_POINTER;
         } else if (position == 1) {
@@ -112,23 +116,27 @@ public class ContactsAdapter extends RecyclerView.Adapter {
                 button.setVisibility(View.VISIBLE);
                 button.setOnClickListener(v -> {
                     int itemPosition = recyclerView.getChildLayoutPosition(view) - 1;
-                    String currentUserName = contacts.get(itemPosition).getUserName();
-                    secumAPI.approveContact(new ApproveContactRequest(currentUserName))
-                            .enqueue(new Callback<List<GenericResponse>>() {
+                    ContactRequest currentRequest = contactRequests.get(itemPosition);
+
+                    secumAPI.approveContact(new ApproveContactRequest(Integer.parseInt(currentRequest.contactRequestId)))
+                            .enqueue(new Callback<GenericResponse>() {
                                 @Override
-                                public void onResponse(Call<List<GenericResponse>> call,
-                                                       Response<List<GenericResponse>>
+                                public void onResponse(Call<GenericResponse> call,
+                                                       Response<GenericResponse>
                                                                response) {
+
+                                    Log.d("BGLM", "add success: " + response);
                                     Toast.makeText(context, context.getResources()
-                                            .getString(R.string.add_success), Toast
-                                            .LENGTH_SHORT)
+                                                    .getString(R.string.add_success), Toast
+                                                    .LENGTH_SHORT)
                                             .show();
                                     notifyDataSetChanged();
                                 }
 
                                 @Override
-                                public void onFailure(Call<List<GenericResponse>> call,
+                                public void onFailure(Call<GenericResponse> call,
                                                       Throwable t) {
+                                    Log.d("BGLM", "add failure: " + t);
                                     Toast.makeText(context, context.getResources()
                                             .getString(R.string.request_fail), Toast
                                             .LENGTH_SHORT).show();
@@ -148,7 +156,7 @@ public class ContactsAdapter extends RecyclerView.Adapter {
                         itemPosition = recyclerView.getChildLayoutPosition(view) - 1;
                     }
 
-                    String currentUserName = contacts.get(itemPosition).getUserName();
+                    String currentUserName = contactRequests.get(itemPosition).user.getNickname();
                     Context context = parent.getContext();
                     Intent intent = new Intent(context, ProfileActivity.class);
                     intent.putExtra(Constants.PROFILE_USER_NAME, currentUserName);
@@ -170,12 +178,12 @@ public class ContactsAdapter extends RecyclerView.Adapter {
             case CONTACTS: {
                 if (adapterType == CONTACTS_TYPE_CONTACTS) {
                     // offset label and pending pointer
-                    UserPreview contact = contacts.get(position - 2);
-                    ((ContactViewHolder) holder).name.setText(contact.getNickName());
-                } else if (contacts != null && contacts.size() > 0) {
+                    User contact = contactRequests.get(position - 2).user;
+                    ((ContactViewHolder) holder).name.setText(contact.getNickname());
+                } else if (contactRequests != null && contactRequests.size() > 0) {
                     // offset label
-                    UserPreview contact = contacts.get((position - 1));
-                    ((ContactViewHolder) holder).name.setText(contact.getNickName());
+                    User contact = contactRequests.get((position - 1)).user;
+                    ((ContactViewHolder) holder).name.setText(contact.getNickname());
                 }
                 break;
 
@@ -235,9 +243,9 @@ public class ContactsAdapter extends RecyclerView.Adapter {
     @Override
     public int getItemCount() {
         if (adapterType.equals(CONTACTS_TYPE_CONTACTS)) {
-            return 4 + (contacts == null ? 0 : contacts.size());
+            return 4 + (contactRequests == null ? 0 : contactRequests.size());
         } else {
-            return 1 + (contacts == null ? 0 : contacts.size());
+            return 1 + (contactRequests == null ? 0 : contactRequests.size());
         }
     }
 }

@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.shanjingtech.secumchat.ConversationPreviewActivity;
 import com.shanjingtech.secumchat.SecumBaseActivity;
 import com.shanjingtech.secumchat.SecumChatActivity;
 import com.shanjingtech.secumchat.model.PingResponse;
@@ -67,7 +68,8 @@ public class SplashActivity extends SecumBaseActivity {
                 Log.d("BGLM", "getProfile success: " + response);
                 if (response.isSuccessful()) {
                     User user = response.body();
-                    Intent intent = new Intent(SplashActivity.this, SecumChatActivity.class);
+                    Intent intent = new Intent(SplashActivity.this, ConversationPreviewActivity.class);
+                    Log.d("BGLM", "setting user:" + user);
                     currentUserProvider.setUser(user);
                     startActivity(intent);
 

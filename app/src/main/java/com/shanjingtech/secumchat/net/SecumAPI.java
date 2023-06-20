@@ -7,15 +7,18 @@ import com.shanjingtech.secumchat.model.AddContactRequest;
 import com.shanjingtech.secumchat.model.ApproveContactRequest;
 import com.shanjingtech.secumchat.model.BlockContactRequest;
 import com.shanjingtech.secumchat.model.Contact;
+import com.shanjingtech.secumchat.model.ContactInfos;
 import com.shanjingtech.secumchat.model.DeleteContactRequest;
 import com.shanjingtech.secumchat.model.EndMatch;
 import com.shanjingtech.secumchat.model.GenericResponse;
+import com.shanjingtech.secumchat.model.GetInfoRequest;
 import com.shanjingtech.secumchat.model.GetMatch;
 import com.shanjingtech.secumchat.model.GetMatchRequest;
 import com.shanjingtech.secumchat.model.GetProfileFromUserNameRequest;
 import com.shanjingtech.secumchat.model.GroupMessages;
 import com.shanjingtech.secumchat.model.ListContactsRequest;
 import com.shanjingtech.secumchat.model.NewUser;
+import com.shanjingtech.secumchat.model.PendingRequests;
 import com.shanjingtech.secumchat.model.PingResponse;
 import com.shanjingtech.secumchat.model.RegisterNotificationTokenRequest;
 import com.shanjingtech.secumchat.model.ReportUserRequest;
@@ -24,6 +27,7 @@ import com.shanjingtech.secumchat.model.SendMessageRequest;
 import com.shanjingtech.secumchat.model.SendMessageResponse;
 import com.shanjingtech.secumchat.model.UpdateUserRequest;
 import com.shanjingtech.secumchat.model.User;
+import com.shanjingtech.secumchat.model.UserPublicInfo;
 import com.shanjingtech.secumchat.model.UserRequest;
 import com.shanjingtech.secumchat.util.Constants;
 
@@ -110,6 +114,10 @@ public interface SecumAPI {
     Call<User> getProfile();
 
     @Headers("Content-Type: application/json")
+    @POST(Constants.PATH_GET_INFO)
+    Call<UserPublicInfo> getInfo(@Body GetInfoRequest request);
+
+    @Headers("Content-Type: application/json")
     @POST(Constants.PATH_UPDATE_USER)
     Call<User> updateUser(@Body UpdateUserRequest request);
 
@@ -118,8 +126,13 @@ public interface SecumAPI {
     Call<ReportUserResponse> reportUser(@Body ReportUserRequest request);
 
     @Headers("Content-Type: application/json")
-    @POST(Constants.PATH_LIST_CONTACTS)
-    Call<List<Contact>> listContacts(@Body ListContactsRequest request);
+    @GET(Constants.PATH_LIST_CONTACTS)
+    Call<ContactInfos> listContacts();
+
+
+    @Headers("Content-Type: application/json")
+    @GET(Constants.PATH_LIST_PENDING_REQUESTS)
+    Call<PendingRequests> listPendingRequests();
 
     @Headers("Content-Type: application/json")
     @POST(Constants.PATH_PROFILE_FROM_USERNAME)
@@ -127,11 +140,11 @@ public interface SecumAPI {
 
     @Headers("Content-Type: application/json")
     @POST(Constants.PATH_ADD_CONTACT)
-    Call<List<GenericResponse>> addContact(@Body AddContactRequest request);
+    Call<GenericResponse> addContact(@Body AddContactRequest request);
 
     @Headers("Content-Type: application/json")
     @POST(Constants.PATH_APPROVE_CONTACT)
-    Call<List<GenericResponse>> approveContact(@Body ApproveContactRequest request);
+    Call<GenericResponse> approveContact(@Body ApproveContactRequest request);
 
 
     @Headers("Content-Type: application/json")
@@ -154,4 +167,6 @@ public interface SecumAPI {
     @Headers("Content-Type: application/json")
     @POST(Constants.PATH_PULL_MESSAGE)
     Call<GroupMessages> pullMessage();
+
+
 }

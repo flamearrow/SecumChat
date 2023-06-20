@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.RadioButton;
 
+import com.shanjingtech.secumchat.ConversationPreviewActivity;
 import com.shanjingtech.secumchat.R;
 import com.shanjingtech.secumchat.SecumBaseActivity;
 import com.shanjingtech.secumchat.SecumChatActivity;
@@ -125,7 +126,7 @@ public class MyDetailsActivity extends SecumBaseActivity {
             User user = new User();
             user.setUsername(nickname);
             currentUserProvider.setUser(user);
-            Intent intent = new Intent(MyDetailsActivity.this, SecumChatActivity.class);
+            Intent intent = new Intent(MyDetailsActivity.this, ConversationPreviewActivity.class);
 //                        intent.putExtra(Constants.CURRENT_USER, user);
             startActivity(intent);
 

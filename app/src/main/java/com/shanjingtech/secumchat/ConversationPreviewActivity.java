@@ -54,11 +54,11 @@ public class ConversationPreviewActivity extends SecumTabbedActivity {
                 (ConversationPreviewListViewModel.class);
 
         ConversationAdapter conversationAdapter = new ConversationAdapter();
-        conversationPreviewListViewModel.getConversationPreviews(currentUserProvider.getUser()
-                .getUsername())
-                .observe(
-                        this,
-                        items -> conversationAdapter.replaceItems(items));
+//        conversationPreviewListViewModel.getConversationPreviews(currentUserProvider.getUser()
+//                .getUsername())
+//                .observe(
+//                        this,
+//                        items -> conversationAdapter.replaceItems(items));
 
         recyclerView.setAdapter(conversationAdapter);
 

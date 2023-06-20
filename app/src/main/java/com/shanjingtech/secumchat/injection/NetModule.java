@@ -198,7 +198,8 @@ public class NetModule {
 
 
                     modifiedResponseBodyString = modifiedResponseBodyString.replaceAll("\\\\n", "")
-                            .replaceAll("\\s+", "").replace("\\\"", "\"");;
+                            .replaceAll("\\s+", "").replace("\\\"", "\"");
+                    ;
 
                     Log.d("BGLM", "modified: " + modifiedResponseBodyString);
                     ResponseBody modifiedResponseBody = ResponseBody.create(MediaType.parse("application/json"), modifiedResponseBodyString);
@@ -213,18 +214,18 @@ public class NetModule {
         Log.d("BGLM", "-----requesting " + request.url());
         if (request.url().toString().endsWith(Constants.PATH_GET_ACCESS_CODE) || request.url().toString().endsWith(Constants.PATH_REGISTER_USER)) {
             // getting ACCCESS_CODE, no login required
-            Log.d("BGLM", "getting access code, no header");
+//            Log.d("BGLM", "getting access code, no header");
             return request;
         }
         if (request.url().toString().endsWith(Constants.PATH_GET_ACCESS_TOKEN)) {
-            Log.d("BGLM", "adding basic credential");
+//            Log.d("BGLM", "adding basic credential");
             String credential = Credentials.basic(SecumAPI.USER_NAME, SecumAPI.PASSWORD);
-            Log.d("BGLM", "basic credential " + credential);
+//            Log.d("BGLM", "basic credential " + credential);
             return request.newBuilder()
                     .header("Authorization", credential)
                     .build();
         } else {
-            Log.d("BGLM", "adding bearer token");
+//            Log.d("BGLM", "adding bearer token");
             String credential;
             if (SecumDebug.isDebugMode(sharedPreferences)) {
                 // if it's debug mode, hardcode 11 or 22's credential
@@ -243,7 +244,7 @@ public class NetModule {
                 String bearer = sharedPreferences.getString(Constants
                         .SHARED_PREF_ACCESS_TOKEN, "mlgb");
                 credential = "Bearer " + bearer;
-                Log.d(TAG, "Bearer: " + bearer);
+                Log.d("BGLM", "Bearer: " + bearer);
             }
 
             // TODO: when token expires, fail fast

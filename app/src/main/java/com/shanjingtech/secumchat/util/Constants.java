@@ -87,16 +87,17 @@ public class Constants {
     public static final String PATH_GET_PROFILE = "/api/users/get_profile/";
     public static final String PATH_UPDATE_USER = "/api/users/update_user/";
     public static final String PATH_REPORT = "/api/report/";
-    public static final String PATH_LIST_CONTACTS = "/api/contacts/my/";
+    public static final String PATH_LIST_CONTACTS = "/api/contacts/list_contact/";
+    public static final String PATH_LIST_PENDING_REQUESTS = "/api/contacts/my/";
     public static final String PATH_PROFILE_FROM_USERNAME = "/api/contacts/get_profile/";
     public static final String PATH_ADD_CONTACT = "/api/contacts/add/";
-    public static final String PATH_APPROVE_CONTACT = "/api/contacts/approve/";
+    public static final String PATH_APPROVE_CONTACT = "/api/contacts/resolve/";
     public static final String PATH_BLOCK_CONTACT = "/api/contacts/block/";
     public static final String PATH_DELETE_CONTACT = "/api/contacts/delete/";
     public static final String PATH_REGISTER_NOTIFICATION_TOKEN = "/api/notification_token/register/";
     public static final String PATH_SEND_MESSAGE = "/api/message/send_msg/";
     public static final String PATH_PULL_MESSAGE = "/api/message/pull/";
-
+    public static final String PATH_GET_INFO = "/api/users/get_info/";
 
     public static final String MALE = "male";
     public static final String FEMALE = "female";

@@ -22,7 +22,8 @@ public abstract class SecumTabbedActivity extends SecumBaseActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.secum_tabbed_activity);
+//        setContentView(R.layout.secum_tabbed_activity);
+        setContentView(R.layout.secum_tabbed_activity_no_discover);
         ViewStub contentSub = (ViewStub) findViewById(R.id.content);
         contentSub.setLayoutResource(getContentResId());
         contentSub.inflate();
@@ -56,13 +57,15 @@ public abstract class SecumTabbedActivity extends SecumBaseActivity implements
                 if (itemId == R.id.menu_conversation) {
                     startActivity(new Intent(SecumTabbedActivity.this,
                             ConversationPreviewActivity.class));
-                } else if (itemId == R.id.menu_discover) {
+                }
+                else if (itemId == R.id.menu_discover) {
                     Intent i = new Intent(SecumTabbedActivity.this, SecumChatActivity
                             .class);
                     i.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                     startActivity(i);
 
-                } else if (itemId == R.id.menu_contacts) {
+                }
+                else if (itemId == R.id.menu_contacts) {
                     startActivity(new Intent(SecumTabbedActivity.this, ContactsActivity.class));
                 }
             });

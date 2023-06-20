@@ -4,11 +4,11 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 public class AddContactRequest {
-    public AddContactRequest(String contact_username) {
-        this.contact_username = contact_username;
+    public AddContactRequest(int contact_username) {
+        this.contact_user_id = contact_user_id;
     }
 
     @Expose
-    @SerializedName("contact_username")
-    String contact_username;
+    @SerializedName("contact_user_id")
+    int contact_user_id;
 }

@@ -23,9 +23,12 @@ import com.shanjingtech.secumchat.model.AddContactRequest;
 import com.shanjingtech.secumchat.model.BlockContactRequest;
 import com.shanjingtech.secumchat.model.DeleteContactRequest;
 import com.shanjingtech.secumchat.model.GenericResponse;
+import com.shanjingtech.secumchat.model.GetInfoRequest;
 import com.shanjingtech.secumchat.model.UpdateUserRequest;
 import com.shanjingtech.secumchat.model.User;
+import com.shanjingtech.secumchat.model.UserPublicInfo;
 import com.shanjingtech.secumchat.net.FirebaseImageUploader;
+import com.shanjingtech.secumchat.net.SecumAPI;
 import com.shanjingtech.secumchat.util.Constants;
 import com.shanjingtech.secumchat.viewModels.ProfileViewModel;
 import com.vansuita.pickimage.bean.PickResult;
@@ -53,6 +56,8 @@ public class ProfileActivity extends SecumBaseActivity implements IPickResult {
     private static final int IS_STRANGER = 2;
 
     private String profileUserName;
+
+    private int toAddUserId = -1;
     private TextView name;
     private TextView age;
     private ImageView avatar;
@@ -163,12 +168,34 @@ public class ProfileActivity extends SecumBaseActivity implements IPickResult {
     private void handleIntent(Intent intent) {
         // started by search, is stranger
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            profileUserName = Constants.ACCOUNT_PREFIX + intent.getStringExtra(SearchManager.QUERY);
+            String searchingUserId = intent.getStringExtra(SearchManager.QUERY);
+            profileUserName = Constants.ACCOUNT_PREFIX + searchingUserId;
             add.setVisibility(View.VISIBLE);
             chat.setVisibility(View.GONE);
             video.setVisibility(View.GONE);
             owner = IS_STRANGER;
             // TODO: when is resulted from stranger, there's no database
+
+
+            toAddUserId = Integer.parseInt(searchingUserId);
+
+            secumAPI.getInfo(new GetInfoRequest(toAddUserId)).enqueue(new Callback<UserPublicInfo>() {
+                @Override
+                public void onResponse(Call<UserPublicInfo> call, Response<UserPublicInfo> response) {
+                    Log.d("BGLM", "getInfo succeed" + response);
+
+                    UserPublicInfo publicInfo = response.body();
+                    name.setText(publicInfo.user.getNickname());
+                    age.setVisibility(View.GONE);
+                    gender.setVisibility(View.GONE);
+                }
+
+                @Override
+                public void onFailure(Call<UserPublicInfo> call, Throwable t) {
+                    Log.d("BGLM", "getInfo failed");
+                }
+            });
+
         }
         // otherwise, is from contacts/requested/blocked or myself
         else {
@@ -240,18 +267,17 @@ public class ProfileActivity extends SecumBaseActivity implements IPickResult {
     }
 
     public void add(View view) {
-        secumAPI.addContact(new AddContactRequest(profileUserName)).enqueue(new Callback<List<GenericResponse>>() {
-
+        secumAPI.addContact(new AddContactRequest(toAddUserId)).enqueue(new Callback<GenericResponse>() {
             @Override
-            public void onResponse(Call<List<GenericResponse>> call,
-                                   Response<List<GenericResponse>> response) {
+            public void onResponse(Call<GenericResponse> call, Response<GenericResponse> response) {
+                Log.d("BGLM", "add success:  " + response);
                 Toast.makeText(ProfileActivity.this, ProfileActivity.this.getResources()
                         .getString(R.string.requested), Toast.LENGTH_SHORT).show();
                 finish();
             }
 
             @Override
-            public void onFailure(Call<List<GenericResponse>> call, Throwable t) {
+            public void onFailure(Call<GenericResponse> call, Throwable t) {
                 Toast.makeText(ProfileActivity.this, ProfileActivity.this.getResources()
                         .getString(R.string.request_fail), Toast.LENGTH_SHORT).show();
                 finish();

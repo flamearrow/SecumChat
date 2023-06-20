@@ -1,14 +1,20 @@
 package com.shanjingtech.secumchat.contacts;
 
 import android.app.SearchManager;
+
 import androidx.lifecycle.ViewModelProviders;
+
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+
 import androidx.core.view.MenuItemCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.SearchView;
+
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -16,7 +22,19 @@ import android.view.MenuItem;
 import com.shanjingtech.secumchat.ProfileActivity;
 import com.shanjingtech.secumchat.R;
 import com.shanjingtech.secumchat.SecumTabbedActivity;
+import com.shanjingtech.secumchat.model.ContactInfos;
+import com.shanjingtech.secumchat.model.ContactInfosValue;
+import com.shanjingtech.secumchat.model.ContactRequest;
+import com.shanjingtech.secumchat.model.PendingRequests;
+import com.shanjingtech.secumchat.model.User;
 import com.shanjingtech.secumchat.viewModels.ContactsViewModel;
+
+import java.util.LinkedList;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Show your contacts.
@@ -90,25 +108,68 @@ public class ContactsActivity extends SecumTabbedActivity {
     }
 
     private void observeContacts() {
+
         switch (contactsType) {
             case CONTACTS_TYPE_BLOCKED:
-                contactsViewModel.getBlockedContactsOwnedBy(getMyName()).observe(this, contacts ->
-                        contactsAdapter.updateContacts(contacts));
+//                        contactsAdapter.updateContacts(contacts));
+
                 break;
             case CONTACTS_TYPE_PENDING:
-                contactsViewModel.getPendingContactsOwnedBy(getMyName()).observe(this, contacts ->
-                        contactsAdapter.updateContacts(contacts));
+                secumAPI.listPendingRequests().enqueue(new Callback<PendingRequests>() {
+                    @Override
+                    public void onResponse(Call<PendingRequests> call, Response<PendingRequests> response) {
+                        PendingRequests pendingRequests = response.body();
+                        Log.d("BGLM", "pending requests: " + pendingRequests);
+                        contactsAdapter.updateContacts(pendingRequests.incomingContactRequests);
+                    }
+
+                    @Override
+                    public void onFailure(Call<PendingRequests> call, Throwable t) {
+                        Log.d("BGLM", "getting requests error" + t);
+                    }
+                });
+
                 break;
             case CONTACTS_TYPE_REQUESTED:
-                contactsViewModel.getRequestedContactsOwnedBy(getMyName()).observe(this, contacts ->
-                        contactsAdapter.updateContacts(contacts));
+                secumAPI.listPendingRequests().enqueue(new Callback<PendingRequests>() {
+                    @Override
+                    public void onResponse(Call<PendingRequests> call, Response<PendingRequests> response) {
+                        PendingRequests pendingRequests = response.body();
+                        Log.d("BGLM", "pending requests: " + pendingRequests);
+                        contactsAdapter.updateContacts(pendingRequests.outgoingContactRequests);
+                    }
+
+                    @Override
+                    public void onFailure(Call<PendingRequests> call, Throwable t) {
+                        Log.d("BGLM", "getting requests error" + t);
+                    }
+                });
                 break;
             case CONTACTS_TYPE_CONTACTS:
             default:
-                contactsViewModel.getActiveContactsOwnedBy(getMyName()).observe(this, contacts ->
-                        contactsAdapter.updateContacts(contacts));
+                secumAPI.listContacts().enqueue(new Callback<ContactInfos>() {
+                    @Override
+                    public void onResponse(Call<ContactInfos> call, Response<ContactInfos> response) {
+                        Log.d("BGLM", "getting contacts success" + response);
+                        ContactInfos contactInfos = response.body();
+                        List<ContactRequest> adaptedContactRequests = new LinkedList<>();
+                        for(ContactInfosValue value : contactInfos.contactInfosValues) {
+                            Log.d("BGLM", "adding user with nickname" + value.user.getNickname());
+                            adaptedContactRequests.add(new ContactRequest(value.user));
+                        }
+                        contactsAdapter.updateContacts(adaptedContactRequests);
+                    }
+
+                    @Override
+                    public void onFailure(Call<ContactInfos> call, Throwable t) {
+
+                    }
+                });
+//                        contactsViewModel.getActiveContactsOwnedBy(getMyName()).observe(this, contacts ->
+//                                contactsAdapter.updateContacts(contacts));
                 break;
         }
+
     }
 
     private void initializeRecyclerView() {

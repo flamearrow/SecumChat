@@ -29,6 +29,7 @@ import com.shanjingtech.secumchat.model.PendingRequests;
 import com.shanjingtech.secumchat.model.User;
 import com.shanjingtech.secumchat.viewModels.ContactsViewModel;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -152,8 +153,13 @@ public class ContactsActivity extends SecumTabbedActivity {
                     public void onResponse(Call<ContactInfos> call, Response<ContactInfos> response) {
                         Log.d("BGLM", "getting contacts success" + response);
                         ContactInfos contactInfos = response.body();
+                        List<ContactInfosValue> contactInfosValues = contactInfos.contactInfosValues;
+                        if(contactInfosValues == null){
+                            Log.d("BGLM", "contact infos value is " + null);
+                            contactInfosValues = new ArrayList<>();
+                        }
                         List<ContactRequest> adaptedContactRequests = new LinkedList<>();
-                        for(ContactInfosValue value : contactInfos.contactInfosValues) {
+                        for(ContactInfosValue value : contactInfosValues) {
                             Log.d("BGLM", "adding user with nickname" + value.user.getNickname());
                             adaptedContactRequests.add(new ContactRequest(value.user));
                         }

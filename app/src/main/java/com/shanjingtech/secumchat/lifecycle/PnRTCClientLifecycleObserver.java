@@ -27,9 +27,11 @@ public class PnRTCClientLifecycleObserver implements LifecycleObserver {
 
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
     public void connectPubnub() {
-        Log.d(TAG, "initializePubnub");
+//        Log.d(TAG, "initializePubnub with channel: " + currentUserProvider.getUser().getNickname());
+
+        Log.d(TAG, "initializePubnub with channel: " + currentUserProvider.getUser().userId);
         pnRTCClient.pubnubUnsubscribeAll();
-        pnRTCClient.subscribeToPubnubChannel(currentUserProvider.getUser().getUsername());
+        pnRTCClient.subscribeToPubnubChannel(currentUserProvider.getUser().userId);
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)

@@ -31,6 +31,7 @@ import com.shanjingtech.secumchat.model.SendMessageRequest;
 import com.shanjingtech.secumchat.model.SendMessageResponse;
 import com.shanjingtech.secumchat.model.UpdateUserRequest;
 import com.shanjingtech.secumchat.model.User;
+import com.shanjingtech.secumchat.model.UserNew;
 import com.shanjingtech.secumchat.model.UserPublicInfo;
 import com.shanjingtech.secumchat.model.UserRequest;
 
@@ -84,7 +85,7 @@ public class SecumDebugAPI implements SecumAPI {
     }
 
     @Override
-    public Call<User> getProfile() {
+    public Call<UserNew> getProfile() {
         return null;
     }
 

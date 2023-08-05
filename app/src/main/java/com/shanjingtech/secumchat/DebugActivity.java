@@ -16,6 +16,7 @@ import com.shanjingtech.secumchat.db.UserDAO;
 import com.shanjingtech.secumchat.db.UserDB;
 import com.shanjingtech.secumchat.injection.CurrentUserProvider;
 import com.shanjingtech.secumchat.model.User;
+import com.shanjingtech.secumchat.model.UserNew;
 import com.shanjingtech.secumchat.net.SecumAPI;
 import com.shanjingtech.secumchat.net.SecumNetDBSynchronizer;
 import com.shanjingtech.secumchat.pushy.PushyInitializer;
@@ -87,11 +88,11 @@ public class DebugActivity extends AppCompatActivity implements SecumCounter
     private void logInAsUser22() {
         SecumDebug.enableDebugMode(sharedPreferences);
         SecumDebug.setDebugUser(sharedPreferences, SecumDebug.USER_22);
-        secumAPI.getProfile().enqueue(new Callback<User>() {
+        secumAPI.getProfile().enqueue(new Callback<UserNew>() {
             @Override
-            public void onResponse(Call<User> call, Response<User> response) {
+            public void onResponse(Call<UserNew> call, Response<UserNew> response) {
                 if (response.isSuccessful()) {
-                    User user = response.body();
+                    User user = response.body().userInfo;
                     currentUserProvider.setUser(user);
 
                     Intent intent = new Intent(DebugActivity.this, ConversationPreviewActivity
@@ -101,7 +102,7 @@ public class DebugActivity extends AppCompatActivity implements SecumCounter
             }
 
             @Override
-            public void onFailure(Call<User> call, Throwable t) {
+            public void onFailure(Call<UserNew> call, Throwable t) {
                 int i = 23;
                 int j = i + 23;
             }
@@ -111,11 +112,11 @@ public class DebugActivity extends AppCompatActivity implements SecumCounter
     private void logInAsUser11() {
         SecumDebug.enableDebugMode(sharedPreferences);
         SecumDebug.setDebugUser(sharedPreferences, SecumDebug.USER_11);
-        secumAPI.getProfile().enqueue(new Callback<User>() {
+        secumAPI.getProfile().enqueue(new Callback<UserNew>() {
             @Override
-            public void onResponse(Call<User> call, Response<User> response) {
+            public void onResponse(Call<UserNew> call, Response<UserNew> response) {
                 if (response.isSuccessful()) {
-                    User user = response.body();
+                    User user = response.body().userInfo;
                     currentUserProvider.setUser(user);
 
                     Intent intent = new Intent(DebugActivity.this, ConversationPreviewActivity
@@ -125,7 +126,7 @@ public class DebugActivity extends AppCompatActivity implements SecumCounter
             }
 
             @Override
-            public void onFailure(Call<User> call, Throwable t) {
+            public void onFailure(Call<UserNew> call, Throwable t) {
                 int i = 23;
                 int j = i + 23;
                 User fakeUser = new User();

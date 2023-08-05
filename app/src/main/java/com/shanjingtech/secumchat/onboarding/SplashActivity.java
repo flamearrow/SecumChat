@@ -9,6 +9,7 @@ import com.shanjingtech.secumchat.SecumBaseActivity;
 import com.shanjingtech.secumchat.SecumChatActivity;
 import com.shanjingtech.secumchat.model.PingResponse;
 import com.shanjingtech.secumchat.model.User;
+import com.shanjingtech.secumchat.model.UserNew;
 import com.shanjingtech.secumchat.util.SecumDebug;
 
 import retrofit2.Call;
@@ -62,14 +63,15 @@ public class SplashActivity extends SecumBaseActivity {
 
 
     private void startSecum() {
-        secumAPI.getProfile().enqueue(new Callback<User>() {
+        secumAPI.getProfile().enqueue(new Callback<UserNew>() {
             @Override
-            public void onResponse(Call<User> call, Response<User> response) {
+            public void onResponse(Call<UserNew> call, Response<UserNew> response) {
                 Log.d("BGLM", "getProfile success: " + response);
                 if (response.isSuccessful()) {
-                    User user = response.body();
+                    User user = response.body().userInfo;
                     Intent intent = new Intent(SplashActivity.this, ConversationPreviewActivity.class);
-                    Log.d("BGLM", "setting user:" + user);
+//                    user.setNickname("phone_+16314560722");
+                    Log.d("BGLM", "setting user with nickame:" + user.getNickname());
                     currentUserProvider.setUser(user);
                     startActivity(intent);
 
@@ -77,7 +79,7 @@ public class SplashActivity extends SecumBaseActivity {
             }
 
             @Override
-            public void onFailure(Call<User> call, Throwable t) {
+            public void onFailure(Call<UserNew> call, Throwable t) {
                 Log.d("BGLM", "getProfile error: " + t);
             }
         });

@@ -138,6 +138,10 @@ public class User implements Serializable {
         return nickname;
     }
 
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
     public String getAccess_code() {
         return access_code;
     }

@@ -4,6 +4,7 @@ import com.shanjingtech.secumchat.DebugActivity;
 import com.shanjingtech.secumchat.LegacyLoginActivity;
 import com.shanjingtech.secumchat.SecumBaseActivity;
 import com.shanjingtech.secumchat.SecumChatActivity;
+import com.shanjingtech.secumchat.message.SecumMessageActivity;
 import com.shanjingtech.secumchat.net.SecumNetworkRequester;
 import com.shanjingtech.secumchat.viewModels.SecumDBViewModel;
 
@@ -17,6 +18,8 @@ public interface NetComponent {
     void inject(SecumBaseActivity activity);
 
     void inject(SecumChatActivity activity);
+
+    void inject(SecumMessageActivity activity);
 
     void inject(SecumNetworkRequester networkRequester);
 

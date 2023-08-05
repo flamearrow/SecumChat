@@ -76,6 +76,10 @@ public class SecumMessageAdapter extends RecyclerView.Adapter<SecumMessageAdapte
         this.messageList = newMessages;
         notifyDataSetChanged();
     }
+    public void appendItems(List<MessageNew> newMessages) {
+        this.messageList.addAll(newMessages);
+        notifyDataSetChanged();
+    }
 
     public final class TextMessageViewHolder extends RecyclerView.ViewHolder {
 

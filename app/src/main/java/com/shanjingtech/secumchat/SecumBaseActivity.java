@@ -322,8 +322,7 @@ public class SecumBaseActivity
      * @return my username
      */
     protected String getMyName() {
-        return "MLGB";
-//        return currentUserProvider.getUser().getUsername();
+        return currentUserProvider.getUser().getNickname();
     }
 
     /**

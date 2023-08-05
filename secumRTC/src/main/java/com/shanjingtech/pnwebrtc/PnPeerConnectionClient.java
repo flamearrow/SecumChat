@@ -472,6 +472,7 @@ public class PnPeerConnectionClient {
 
         @Override
         public void message(PubNub pubnub, PNMessageResult message) {
+            Log.d("BGLM", "got some message!");
             JSONObject jsonMessage = JSONUtils.convertFrom(message.getMessage());
             for (PnRTCListener pnRTCListener : mRtcListeners) {
                 pnRTCListener.onDebug(new PnRTCMessage(jsonMessage));

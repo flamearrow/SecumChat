@@ -30,6 +30,7 @@ import com.shanjingtech.secumchat.model.SendMessageRequest;
 import com.shanjingtech.secumchat.model.SendMessageResponse;
 import com.shanjingtech.secumchat.model.UpdateUserRequest;
 import com.shanjingtech.secumchat.model.User;
+import com.shanjingtech.secumchat.model.UserNew;
 import com.shanjingtech.secumchat.model.UserPublicInfo;
 import com.shanjingtech.secumchat.model.UserRequest;
 import com.shanjingtech.secumchat.util.Constants;
@@ -114,7 +115,7 @@ public interface SecumAPI {
 
     @Headers("Content-Type: application/json")
     @GET(Constants.PATH_GET_PROFILE)
-    Call<User> getProfile();
+    Call<UserNew> getProfile();
 
     @Headers("Content-Type: application/json")
     @POST(Constants.PATH_GET_INFO)

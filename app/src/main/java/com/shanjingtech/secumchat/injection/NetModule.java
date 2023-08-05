@@ -178,14 +178,12 @@ public class NetModule {
         // chain.proceed() call is blocking and waits the response
         return new OkHttpClient.Builder().cache(cache).authenticator(authenticator)
                 .addInterceptor(chain -> {
-                    Log.d("BGLM", "adding header to request: " + chain.request().body() );
                     Response response = chain.proceed(addHeaderToRequest(chain.request(),
                             sharedPreferences));
                     return response;
                 })
                 // remove the string if response is string
                 .addInterceptor(chain -> {
-                    Log.d("BGLM", "removing quotes from response");
                     Request request = chain.request();
                     Response originalResponse = chain.proceed(request);
                     // Get the original response body
@@ -193,16 +191,19 @@ public class NetModule {
                     String originalResponseBodyString = responseBody.string();
 
                     // Remove double quotes from the response body
-                    String modifiedResponseBodyString = originalResponseBodyString.startsWith("\"") && originalResponseBodyString.endsWith("\"") ?
-                            originalResponseBodyString.substring(1, originalResponseBodyString.length() - 1) : originalResponseBodyString;
+//                    String modifiedResponseBodyString = originalResponseBodyString.startsWith("\"") && originalResponseBodyString.endsWith("\"") ?
+//                            originalResponseBodyString.substring(1, originalResponseBodyString.length() - 1) : originalResponseBodyString;
+//
+//                    Log.d("BGLM", "before removing qutoes from response: " + originalResponseBodyString);
+//
+//                    modifiedResponseBodyString = modifiedResponseBodyString.replaceAll("\\\\n", "")
+//                            .replaceAll("\\s+", "").replace("\\\"", "\"");
+//                    ;
+//
+//                    Log.d("BGLM", "after removing qutoes from response: " + modifiedResponseBodyString);
 
 
-                    modifiedResponseBodyString = modifiedResponseBodyString.replaceAll("\\\\n", "")
-                            .replaceAll("\\s+", "").replace("\\\"", "\"");
-                    ;
-
-                    Log.d("BGLM", "modified: " + modifiedResponseBodyString);
-                    ResponseBody modifiedResponseBody = ResponseBody.create(MediaType.parse("application/json"), modifiedResponseBodyString);
+                    ResponseBody modifiedResponseBody = ResponseBody.create(MediaType.parse("application/json"), originalResponseBodyString);
                     return originalResponse.newBuilder().body(modifiedResponseBody).build();
                 })
                 .sslSocketFactory(unSafeSocketFactory)
@@ -213,19 +214,14 @@ public class NetModule {
     private Request addHeaderToRequest(Request request, SharedPreferences sharedPreferences) {
         Log.d("BGLM", "-----requesting " + request.url());
         if (request.url().toString().endsWith(Constants.PATH_GET_ACCESS_CODE) || request.url().toString().endsWith(Constants.PATH_REGISTER_USER)) {
-            // getting ACCCESS_CODE, no login required
-//            Log.d("BGLM", "getting access code, no header");
             return request;
         }
         if (request.url().toString().endsWith(Constants.PATH_GET_ACCESS_TOKEN)) {
-//            Log.d("BGLM", "adding basic credential");
             String credential = Credentials.basic(SecumAPI.USER_NAME, SecumAPI.PASSWORD);
-//            Log.d("BGLM", "basic credential " + credential);
             return request.newBuilder()
                     .header("Authorization", credential)
                     .build();
         } else {
-//            Log.d("BGLM", "adding bearer token");
             String credential;
             if (SecumDebug.isDebugMode(sharedPreferences)) {
                 // if it's debug mode, hardcode 11 or 22's credential

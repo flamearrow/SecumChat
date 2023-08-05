@@ -16,6 +16,7 @@ import com.shanjingtech.secumchat.model.GroupMessages;
 import com.shanjingtech.secumchat.model.ListContactsRequest;
 import com.shanjingtech.secumchat.model.UnreadMessage;
 import com.shanjingtech.secumchat.model.User;
+import com.shanjingtech.secumchat.model.UserNew;
 
 import java.util.List;
 
@@ -157,12 +158,12 @@ public class SecumNetDBSynchronizer {
      * @param listener
      */
     public void syncUserDBFromCurrentToken(@Nullable SecumNetDBSynchronizerListener listener) {
-        secumAPI.getProfile().enqueue(new Callback<User>() {
+        secumAPI.getProfile().enqueue(new Callback<UserNew>() {
             @Override
-            public void onResponse(Call<User> call, Response<User> response) {
+            public void onResponse(Call<UserNew> call, Response<UserNew> response) {
                 if (response.isSuccessful()) {
                     new Thread(() -> {
-                        User user = response.body();
+                        User user = response.body().userInfo;
                         if (user != null) {
                             currentUserProvider.setUser(user);
                             userDAO.updateUser(new UserDB.Builder().setUser(user)
@@ -182,7 +183,7 @@ public class SecumNetDBSynchronizer {
             }
 
             @Override
-            public void onFailure(Call<User> call, Throwable t) {
+            public void onFailure(Call<UserNew> call, Throwable t) {
                 Log.d(TAG, "failed in SecumNetDBSynchronizer#syncUserDBFromCurrentToken");
                 if (listener != null) {
                     listener.onDBOperationFailure();

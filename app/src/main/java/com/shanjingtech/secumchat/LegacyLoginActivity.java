@@ -11,6 +11,7 @@ import android.view.View;
 
 import com.shanjingtech.secumchat.injection.CurrentUserProvider;
 import com.shanjingtech.secumchat.model.User;
+import com.shanjingtech.secumchat.model.UserNew;
 import com.shanjingtech.secumchat.net.SecumAPI;
 import com.shanjingtech.secumchat.util.SecumDebug;
 
@@ -96,12 +97,12 @@ public class LegacyLoginActivity extends AppCompatActivity {
     }
 
     private void logInAsCurrentuser() {
-        secumAPI.getProfile().enqueue(new Callback<User>() {
+        secumAPI.getProfile().enqueue(new Callback<UserNew>() {
             @Override
-            public void onResponse(Call<User> call, Response<User> response) {
+            public void onResponse(Call<UserNew> call, Response<UserNew> response) {
                 if (response.isSuccessful()) {
                     Log.d("BGLM", "getProfile success");
-                    User user = response.body();
+                    User user = response.body().userInfo;
                     currentUserProvider.setUser(user);
                     startActivity(new Intent(LegacyLoginActivity.this, SecumChatActivity.class));
 
@@ -109,7 +110,7 @@ public class LegacyLoginActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<User> call, Throwable t) {
+            public void onFailure(Call<UserNew> call, Throwable t) {
                 User fakeUser = new User();
 
                 Log.d("BGLM", "getProfile failure" + t);

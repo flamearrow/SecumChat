@@ -11,7 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="5dp"
-        android:src="@drawable/cat_head"/>
+        android:src="@drawable/icon_bot"/>
 
     <TextView
         android:id="@+id/name"

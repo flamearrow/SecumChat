@@ -1,23 +1,19 @@
 package com.shanjingtech.secumchat.contacts;
 
 import android.app.SearchManager;
-
-import androidx.lifecycle.ViewModelProviders;
-
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.core.view.MenuItemCompat;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.appcompat.widget.SearchView;
-
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+
+import androidx.appcompat.widget.SearchView;
+import androidx.core.view.MenuItemCompat;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.shanjingtech.secumchat.ProfileActivity;
 import com.shanjingtech.secumchat.R;
@@ -26,7 +22,6 @@ import com.shanjingtech.secumchat.model.ContactInfos;
 import com.shanjingtech.secumchat.model.ContactInfosValue;
 import com.shanjingtech.secumchat.model.ContactRequest;
 import com.shanjingtech.secumchat.model.PendingRequests;
-import com.shanjingtech.secumchat.model.User;
 import com.shanjingtech.secumchat.viewModels.ContactsViewModel;
 
 import java.util.ArrayList;
@@ -43,7 +38,7 @@ import retrofit2.Response;
 
 public class ContactsActivity extends SecumTabbedActivity {
     private RecyclerView recyclerView;
-    private ContactsAdapter contactsAdapter;
+    private BotsAdapter contactsAdapter;
     private String contactsType;
     private ContactsViewModel contactsViewModel;
 
@@ -154,12 +149,12 @@ public class ContactsActivity extends SecumTabbedActivity {
                         Log.d("BGLM", "getting contacts success" + response);
                         ContactInfos contactInfos = response.body();
                         List<ContactInfosValue> contactInfosValues = contactInfos.contactInfosValues;
-                        if(contactInfosValues == null){
+                        if (contactInfosValues == null) {
                             Log.d("BGLM", "contact infos value is " + null);
                             contactInfosValues = new ArrayList<>();
                         }
                         List<ContactRequest> adaptedContactRequests = new LinkedList<>();
-                        for(ContactInfosValue value : contactInfosValues) {
+                        for (ContactInfosValue value : contactInfosValues) {
                             Log.d("BGLM", "adding user with nickname" + value.user.getNickname());
                             adaptedContactRequests.add(new ContactRequest(value.user));
                         }
@@ -179,12 +174,12 @@ public class ContactsActivity extends SecumTabbedActivity {
     }
 
     private void initializeRecyclerView() {
-        contactsViewModel = ViewModelProviders.of(this).get(ContactsViewModel.class);
+        contactsViewModel = new ViewModelProvider(this).get(ContactsViewModel.class);
 
         recyclerView = findViewById(R.id.recycler_view);
         contactsType = getIntent().getStringExtra(CONTACTS_TYPE) == null ?
                 CONTACTS_TYPE_CONTACTS : getIntent().getStringExtra(CONTACTS_TYPE);
-        contactsAdapter = new ContactsAdapter(recyclerView, contactsType, secumAPI);
+        contactsAdapter = new BotsAdapter(recyclerView, secumAPI);
         recyclerView.setAdapter(contactsAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }

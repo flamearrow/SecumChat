@@ -1,26 +1,21 @@
 package com.shanjingtech.secumchat.message;
 
-import androidx.lifecycle.ViewModelProviders;
 import android.os.Bundle;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.shanjingtech.pnwebrtc.PnRTCClient;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
+import com.pubnub.api.PubNub;
 import com.shanjingtech.secumchat.R;
 import com.shanjingtech.secumchat.SecumApplication;
 import com.shanjingtech.secumchat.SecumBaseActivity;
-import com.shanjingtech.secumchat.db.Message;
-import com.shanjingtech.secumchat.model.GroupMessages;
-import com.shanjingtech.secumchat.model.MessageNew;
-import com.shanjingtech.secumchat.model.PullGroupMessagesRequest;
 import com.shanjingtech.secumchat.model.SendMessageRequest;
 import com.shanjingtech.secumchat.model.SendMessageResponse;
 import com.shanjingtech.secumchat.viewModels.ChatHistoryViewModel;
-
-import java.util.List;
 
 import javax.inject.Inject;
 
@@ -54,9 +49,7 @@ public class SecumMessageActivity extends SecumBaseActivity implements SwipeRefr
      * Once this is declared, PnRTCClientLifecycleObserver would trigger and subscribe to the pn channel
      */
     @Inject
-    PnRTCClient pnRTCClient;
-
-
+    PubNub pubNub;
 
     @Override
     protected boolean shouldDeferInjection() {
@@ -84,8 +77,7 @@ public class SecumMessageActivity extends SecumBaseActivity implements SwipeRefr
 
         // TODO: maybe create dagger scope to provide peer user
         peerUserName = getIntent().getStringExtra(PEER_USER_NAME);
-//        ownerName = currentUserProvider.getUser().getUsername();
-        ownerName = "MLGB";
+        ownerName = currentUserProvider.getUser().userId;
 
         setContentView(R.layout.secum_message_activity);
         messageRecyclerView = findViewById(R.id.message_recycler);
@@ -95,21 +87,17 @@ public class SecumMessageActivity extends SecumBaseActivity implements SwipeRefr
         swipeRefreshLayout.setOnRefreshListener(this);
 
         groupId = getIntent().getStringExtra(GROUP_ID);
-        Log.d("BGLM", "groupId: " + groupId);
 
         initializeRecyclerView();
+        observeForMessages();
 
 //        markUnreadMessages();
         overridePendingTransition(R.anim.enter_from_right_full, R.anim.do_nothing);
     }
 
     private void initializeRecyclerView() {
-        chatHistoryViewModel = ViewModelProviders.of(this).get(ChatHistoryViewModel.class);
-
+        chatHistoryViewModel = new ViewModelProvider(this).get(ChatHistoryViewModel.class);
         secumMessageAdapter = new SecumMessageAdapter(ownerName);
-//        if (groupId != null) {
-//            refreshMessages();
-//        }
         messageRecyclerView.setAdapter(secumMessageAdapter);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setStackFromEnd(true);
@@ -117,39 +105,31 @@ public class SecumMessageActivity extends SecumBaseActivity implements SwipeRefr
     }
 
     private void observeForMessages() {
-        chatHistoryViewModel.getLiveHistoryWithGroupId(groupId).observe(this, items -> {
-            // to verify if this works when new messages come in
-//                    secumMessageAdapter.replaceItems(items);
-//                    messageRecyclerView.smoothScrollToPosition(secumMessageAdapter.getItemCount()
-//                            - 1);
-                }
-        );
+        chatHistoryViewModel.getLiveHistoryWithGroupId(groupId).observe(this, messages -> {
+            secumMessageAdapter.replaceItems(messages);
+            messageRecyclerView.smoothScrollToPosition(secumMessageAdapter.getItemCount()
+                    - 1);
+        });
     }
 
     private void refreshMessages() {
-//        chatHistoryViewModel.getLiveHistoryWithGroupId(groupId).observe(this, items -> {
-//                    secumMessageAdapter.replaceItems(items);
-//                    messageRecyclerView.smoothScrollToPosition(secumMessageAdapter.getItemCount()
-//                            - 1);
-//                }
-//        );
-        secumAPI.pullGroupMessages(new PullGroupMessagesRequest(Integer.parseInt(groupId))).enqueue(new Callback<GroupMessages>() {
-            @Override
-            public void onResponse(Call<GroupMessages> call, Response<GroupMessages> response) {
-                Log.d("BGLM", "pull groupe message success: " + response);
-
-                Log.d("BGLM", "pulled sg: " + response.body().messages);
-
-//                secumMessageAdapter.replaceItems(response.body().mfdasessages);
-                secumMessageAdapter.appendItems(response.body().messages);
-
-            }
-
-            @Override
-            public void onFailure(Call<GroupMessages> call, Throwable t) {
-                Log.d("BGLM", "pull groupe message failure");
-            }
-        });
+//        secumAPI.pullGroupMessages(new PullGroupMessagesRequest(Integer.parseInt(groupId))).enqueue(new Callback<GroupMessages>() {
+//            @Override
+//            public void onResponse(Call<GroupMessages> call, Response<GroupMessages> response) {
+//                Log.d("BGLM", "pull groupe message success: " + response);
+//
+//                Log.d("BGLM", "pulled sg: " + response.body().messages);
+//
+////                secumMessageAdapter.replaceItems(response.body().mfdasessages);
+//                secumMessageAdapter.appendItems(response.body().messages);
+//
+//            }
+//
+//            @Override
+//            public void onFailure(Call<GroupMessages> call, Throwable t) {
+//                Log.d("BGLM", "pull groupe message failure");
+//            }
+//        });
     }
 
 //    private void markUnreadMessages() {
@@ -185,37 +165,11 @@ public class SecumMessageActivity extends SecumBaseActivity implements SwipeRefr
                     public void onResponse(Call<SendMessageResponse> call,
                                            Response<SendMessageResponse> response) {
 
-                        Log.d("BGLM", "send message success: " + response);
-                        // don't refresh, just made sure it send success
-
-                        // insert to dao upon message received from PN
-
-//                        refreshMessages();
-//                        if (groupId == null) {
-//                            groupId = response.body().getGroupId();
-//                            // TODO: reattach ViewModel
-//                            observeViewModel();
-//                        }
-//                        Message message = new Message.Builder().setFrom(ownerName).setTo
-//                                (peerUserName)
-//                                .setOwnerName
-//                                        (ownerName).setTime(System.currentTimeMillis())
-//                                .setGroupId(groupId)
-//                                .setContent
-//                                        (text).build();
-
-//                        new Thread() {
-//                            @Override
-//                            public void run() {
-//                                messageDAO.insertMessage(message);
-//                            }
-//                        }.start();
                         Log.d(TAG, "sent success");
                     }
 
                     @Override
                     public void onFailure(Call<SendMessageResponse> call, Throwable t) {
-                        // show some warning
                         Log.d(TAG, "sent failure");
                     }
                 });

@@ -4,6 +4,9 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import com.google.gson.JsonObject;
+import com.pubnub.api.models.consumer.pubsub.PNMessageResult;
+
 /**
  * Message table to save meta data of all messages.
  */
@@ -164,6 +167,32 @@ public class Message {
 
     public void setRead(boolean read) {
         this.read = read;
+    }
+
+
+
+    // Create from this
+//    {
+//        "packet": {
+//        "senderId": 6,
+//                "message": "messages sent",
+//                "time": 1691277478838,
+//                "type": "usermsg",
+//                "msgGroupId": 68
+//    },
+//        "senderId": 6
+//    }
+    public static Message fromPNMessageResult(PNMessageResult pnMessageResult) {
+        JsonObject packet = ((JsonObject) pnMessageResult.getMessage()).get("packet").getAsJsonObject();
+        return new Builder()
+                .setContent(packet.get("message").getAsString())
+                .setFrom(packet.get("senderId").getAsString())
+                .setTo(pnMessageResult.getChannel())
+                .setOwnerName(pnMessageResult.getChannel())
+                .setGroupId(packet.get("msgGroupId").getAsString())
+                .setTime(packet.get("time").getAsLong())
+                .setRead(false)
+                .build();
     }
 
 }

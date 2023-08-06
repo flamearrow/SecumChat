@@ -1,26 +1,28 @@
 package com.shanjingtech.secumchat.injection;
 
-import static okhttp3.Credentials.basic;
-
 import android.app.Application;
-
-import androidx.lifecycle.ProcessLifecycleOwner;
-
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import androidx.lifecycle.ProcessLifecycleOwner;
+
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.pubnub.api.PNConfiguration;
+import com.pubnub.api.PubNub;
+import com.pubnub.api.PubNubException;
+import com.pubnub.api.UserId;
 import com.shanjingtech.pnwebrtc.PnRTCClient;
 import com.shanjingtech.pnwebrtc.PnRTCListener;
 import com.shanjingtech.pnwebrtc.PnSignalingParams;
 import com.shanjingtech.secumchat.db.Message;
 import com.shanjingtech.secumchat.db.MessageDAO;
-import com.shanjingtech.secumchat.lifecycle.PnRTCClientLifecycleObserver;
+import com.shanjingtech.secumchat.lifecycle.PubnubLifecycleObserver;
 import com.shanjingtech.secumchat.message.CurrentPeerUserNameProvider;
 import com.shanjingtech.secumchat.net.SecumAPI;
+import com.shanjingtech.secumchat.net.SimpleChatPnListener;
 import com.shanjingtech.secumchat.net.XirSysRequest;
 import com.shanjingtech.secumchat.util.Constants;
 import com.shanjingtech.secumchat.util.SecumDebug;
@@ -79,8 +81,7 @@ public class NetModule {
     @Singleton
     Cache provideOkHttpCache(Application application) {
         int cacheSize = 10 * 1024 * 1024; // 10 MiB
-        Cache cache = new Cache(application.getCacheDir(), cacheSize);
-        return cache;
+        return new Cache(application.getCacheDir(), cacheSize);
     }
 
     @Provides
@@ -132,21 +133,17 @@ public class NetModule {
     @Provides
     @Singleton
     SSLSocketFactory provideDisablingSSLSocketFactory() {
-        TrustManager[] trustAllCertsTrustManagers = new TrustManager[]{
-                new X509TrustManager() {
-                    public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-                        return new X509Certificate[0];
-                    }
+        TrustManager[] trustAllCertsTrustManagers = new TrustManager[]{new X509TrustManager() {
+            public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                return new X509Certificate[0];
+            }
 
-                    public void checkClientTrusted(
-                            java.security.cert.X509Certificate[] certs, String authType) {
-                    }
+            public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType) {
+            }
 
-                    public void checkServerTrusted(
-                            java.security.cert.X509Certificate[] certs, String authType) {
-                    }
-                }
-        };
+            public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType) {
+            }
+        }};
         SSLContext sslContext = null;
         try {
             sslContext = SSLContext.getInstance("TLS");
@@ -168,18 +165,13 @@ public class NetModule {
 
     @Provides
     @Singleton
-    OkHttpClient provideOkHttpClient(Cache cache,
-                                     Authenticator authenticator,
-                                     SharedPreferences sharedPreferences
-            , SSLSocketFactory unSafeSocketFactory
+    OkHttpClient provideOkHttpClient(Cache cache, Authenticator authenticator, SharedPreferences sharedPreferences, SSLSocketFactory unSafeSocketFactory
 //                                     X509TrustManager x509TrustManager
     ) {
         // Interceptor modifies outgoing request and touches incoming response
         // chain.proceed() call is blocking and waits the response
-        return new OkHttpClient.Builder().cache(cache).authenticator(authenticator)
-                .addInterceptor(chain -> {
-                    Response response = chain.proceed(addHeaderToRequest(chain.request(),
-                            sharedPreferences));
+        return new OkHttpClient.Builder().cache(cache).authenticator(authenticator).addInterceptor(chain -> {
+                    Response response = chain.proceed(addHeaderToRequest(chain.request(), sharedPreferences));
                     return response;
                 })
                 // remove the string if response is string
@@ -205,9 +197,8 @@ public class NetModule {
 
                     ResponseBody modifiedResponseBody = ResponseBody.create(MediaType.parse("application/json"), originalResponseBodyString);
                     return originalResponse.newBuilder().body(modifiedResponseBody).build();
-                })
-                .sslSocketFactory(unSafeSocketFactory)
-                .build();
+//                }).sslSocketFactory(unSafeSocketFactory).build();
+                }).build();
     }
 
 
@@ -218,9 +209,7 @@ public class NetModule {
         }
         if (request.url().toString().endsWith(Constants.PATH_GET_ACCESS_TOKEN)) {
             String credential = Credentials.basic(SecumAPI.USER_NAME, SecumAPI.PASSWORD);
-            return request.newBuilder()
-                    .header("Authorization", credential)
-                    .build();
+            return request.newBuilder().header("Authorization", credential).build();
         } else {
             String credential;
             if (SecumDebug.isDebugMode(sharedPreferences)) {
@@ -237,16 +226,13 @@ public class NetModule {
                         Log.d(TAG, "No debug user credential found");
                 }
             } else {
-                String bearer = sharedPreferences.getString(Constants
-                        .SHARED_PREF_ACCESS_TOKEN, "mlgb");
+                String bearer = sharedPreferences.getString(Constants.SHARED_PREF_ACCESS_TOKEN, "mlgb");
                 credential = "Bearer " + bearer;
                 Log.d("BGLM", "Bearer: " + bearer);
             }
 
             // TODO: when token expires, fail fast
-            return request.newBuilder()
-                    .header("Authorization", credential)
-                    .build();
+            return request.newBuilder().header("Authorization", credential).build();
         }
     }
 
@@ -266,8 +252,7 @@ public class NetModule {
      * @return
      */
     private boolean shouldUseBasicCredential(String url) {
-        return url.endsWith(Constants.PATH_REGISTER_USER) || url.endsWith(Constants
-                .PATH_GET_ACCESS_TOKEN);
+        return url.endsWith(Constants.PATH_REGISTER_USER) || url.endsWith(Constants.PATH_GET_ACCESS_TOKEN);
         // (otherwise) oauth ping/getMatch/endMatch/updateUser
     }
 
@@ -276,10 +261,8 @@ public class NetModule {
      */
     class NullOnEmptyConverterFactory extends Converter.Factory {
         @Override
-        public Converter<ResponseBody, ?> responseBodyConverter(Type type, Annotation
-                [] annotations, Retrofit retrofit) {
-            final Converter<ResponseBody, ?> delegate = retrofit
-                    .nextResponseBodyConverter(this, type, annotations);
+        public Converter<ResponseBody, ?> responseBodyConverter(Type type, Annotation[] annotations, Retrofit retrofit) {
+            final Converter<ResponseBody, ?> delegate = retrofit.nextResponseBodyConverter(this, type, annotations);
             return (Converter<ResponseBody, Object>) body -> {
                 if (body.contentLength() == 0) return null;
                 return delegate.convert(body);
@@ -291,26 +274,16 @@ public class NetModule {
     @Singleton
     public Retrofit provideRetrofit(OkHttpClient okHttpClient) {
         // might not need client
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(apiBaseUrl)
-                .client(okHttpClient)
-                .addConverterFactory(new Converter.Factory() {
-                    @Override
-                    public Converter<ResponseBody, ?> responseBodyConverter(Type type,
-                                                                            Annotation[]
-                                                                                    annotations,
-                                                                            Retrofit retrofit) {
-                        final Converter<ResponseBody, ?> delegate = retrofit
-                                .nextResponseBodyConverter(this, type, annotations);
-                        return (Converter<ResponseBody, Object>) body -> {
-                            if (body.contentLength() == 0) return null;
-                            return delegate.convert(body);
-                        };
-                    }
-                })
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        return retrofit;
+        return new Retrofit.Builder().baseUrl(apiBaseUrl).client(okHttpClient).addConverterFactory(new Converter.Factory() {
+            @Override
+            public Converter<ResponseBody, ?> responseBodyConverter(Type type, Annotation[] annotations, Retrofit retrofit1) {
+                final Converter<ResponseBody, ?> delegate = retrofit1.nextResponseBodyConverter(this, type, annotations);
+                return (Converter<ResponseBody, Object>) body -> {
+                    if (body.contentLength() == 0) return null;
+                    return delegate.convert(body);
+                };
+            }
+        }).addConverterFactory(GsonConverterFactory.create()).build();
     }
 
     @Provides
@@ -322,15 +295,31 @@ public class NetModule {
 
     @Provides
     @Singleton
-    public PnRTCClient providePnRTCClient(
-            Application application,
-            CurrentUserProvider currentUserProvider,
-            MessageDAO messageDAO,
-            CurrentPeerUserNameProvider currentPeerUserNameProvider) {
+    public PubNub providePubnub(CurrentUserProvider currentUserProvider, MessageDAO messageDAO) {
+        String uuIDOrUserId = currentUserProvider.getUser().userId;
+        Log.d("BGLM", "providePubnub:" + uuIDOrUserId);
+        PNConfiguration pnConfiguration;
+        try {
+            pnConfiguration = new PNConfiguration(new UserId(uuIDOrUserId));
+        } catch (PubNubException e) {
+            throw new RuntimeException(e);
+        }
+        pnConfiguration.setSubscribeKey(Constants.SUB_KEY);
+        pnConfiguration.setPublishKey(Constants.PUB_KEY);
+        pnConfiguration.setSecretKey(Constants.SEC_KEY);
+        pnConfiguration.setSecure(false);
+        PubNub pubNub = new PubNub(pnConfiguration);
+        ProcessLifecycleOwner.get().getLifecycle().addObserver(new PubnubLifecycleObserver(currentUserProvider, pubNub));
+        pubNub.addListener(new SimpleChatPnListener(messageDAO));
+        return pubNub;
+    }
+
+    @Provides
+    @Singleton
+    public PnRTCClient providePnRTCClient(Application application, CurrentUserProvider currentUserProvider, MessageDAO messageDAO, CurrentPeerUserNameProvider currentPeerUserNameProvider, PubNub pubNub) {
         // First, we initiate the PeerConnectionFactory with our application context and some
         // options.
-        PeerConnectionFactory.initializeAndroidGlobals(
-                application.getApplicationContext(),  // Context
+        PeerConnectionFactory.initializeAndroidGlobals(application.getApplicationContext(),  // Context
                 true,  // Audio Enabled
                 true,  // Video Enabled
                 true  // Hardware Acceleration Enabled
@@ -341,12 +330,10 @@ public class NetModule {
 
         List<PeerConnection.IceServer> servers = XirSysRequest.getIceServers();
         if (!servers.isEmpty()) {
-            pnRTCClient = new PnRTCClient(Constants.PUB_KEY, Constants.SUB_KEY, Constants.SEC_KEY,
-                    currentUserName, new PnSignalingParams(servers));
+            pnRTCClient = new PnRTCClient(pubNub, new PnSignalingParams(servers));
         } else {
             // TODO: revert to use default signal params
-            pnRTCClient = new PnRTCClient(Constants.PUB_KEY, Constants.SUB_KEY, Constants.SEC_KEY,
-                    currentUserName);
+            pnRTCClient = new PnRTCClient(pubNub);
         }
 
         // register global message receiver
@@ -354,19 +341,13 @@ public class NetModule {
             @Override
             public void onMessage(String content, String from, String groupId, long time) {
                 String ownerName = currentUserProvider.getUser().getUsername();
-                Message message =
-                        new Message.Builder()
-                                .setFrom(from).setTo(ownerName).setOwnerName(ownerName)
-                                .setTime(time).setGroupId(groupId).setContent(content)
-                                .setRead(currentPeerUserNameProvider.isPeerUserNameEqualTo(from))
-                                .build();
+                Message message = new Message.Builder().setFrom(from).setTo(ownerName).setOwnerName(ownerName).setTime(time).setGroupId(groupId).setContent(content).setRead(currentPeerUserNameProvider.isPeerUserNameEqualTo(from)).build();
                 messageDAO.insertMessage(message);
             }
         });
 
-        //TODO: consider move this to a single provides method and inject it from SecumApplication
-        ProcessLifecycleOwner.get().getLifecycle().addObserver(new PnRTCClientLifecycleObserver
-                (pnRTCClient, currentUserProvider));
+        // migrated to PubnubLifecycleObserver
+        //        ProcessLifecycleOwner.get().getLifecycle().addObserver(new PnRTCClientLifecycleObserver(pnRTCClient, currentUserProvider));
 
         return pnRTCClient;
     }

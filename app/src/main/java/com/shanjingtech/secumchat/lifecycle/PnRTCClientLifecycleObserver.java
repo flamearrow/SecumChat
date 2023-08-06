@@ -3,6 +3,7 @@ package com.shanjingtech.secumchat.lifecycle;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.OnLifecycleEvent;
+
 import android.util.Log;
 
 import com.shanjingtech.pnwebrtc.PnRTCClient;
@@ -12,8 +13,6 @@ import com.shanjingtech.secumchat.injection.CurrentUserProvider;
  * Observes lifecycle events for pubnub to sub/unsub.
  */
 public class PnRTCClientLifecycleObserver implements LifecycleObserver {
-    private static final String TAG = "MLGB";
-
     private PnRTCClient pnRTCClient;
     private CurrentUserProvider currentUserProvider;
 
@@ -27,16 +26,14 @@ public class PnRTCClientLifecycleObserver implements LifecycleObserver {
 
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
     public void connectPubnub() {
-//        Log.d(TAG, "initializePubnub with channel: " + currentUserProvider.getUser().getNickname());
-
-        Log.d(TAG, "initializePubnub with channel: " + currentUserProvider.getUser().userId);
+        Log.d("BGLM", "PnRTCClientLifecycleObserver connecting pn");
         pnRTCClient.pubnubUnsubscribeAll();
         pnRTCClient.subscribeToPubnubChannel(currentUserProvider.getUser().userId);
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
     public void disconnectPubnub() {
-        Log.d(TAG, "disconnectPubnub");
+        Log.d("BGLM", "PnRTCClientLifecycleObserver disconnecting pn");
         pnRTCClient.pubnubUnsubscribeAll();
     }
 }

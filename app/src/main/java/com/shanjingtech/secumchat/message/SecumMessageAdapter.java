@@ -1,17 +1,16 @@
 package com.shanjingtech.secumchat.message;
 
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.shanjingtech.secumchat.R;
 import com.shanjingtech.secumchat.db.Message;
 import com.shanjingtech.secumchat.db.TimestampConverter;
-import com.shanjingtech.secumchat.model.MessageNew;
 import com.shanjingtech.secumchat.ui.CircleImageView;
 
 import java.util.ArrayList;
@@ -28,7 +27,7 @@ public class SecumMessageAdapter extends RecyclerView.Adapter<SecumMessageAdapte
 
     private final String ownerName;
 
-    private List<MessageNew> messageList;
+    private List<Message> messageList;
 
 
     public SecumMessageAdapter(String ownerName) {
@@ -38,11 +37,14 @@ public class SecumMessageAdapter extends RecyclerView.Adapter<SecumMessageAdapte
 
     @Override
     public int getItemViewType(int position) {
-        return isSelf(messageList.get(position)) ? TYPE_SELF_TEXT_MESSAGE :
+        int ret = isSelf(messageList.get(position)) ? TYPE_SELF_TEXT_MESSAGE :
                 TYPE_OTHER_TEXT_MESSAGE;
+
+        Message m = messageList.get(position);
+        return ret;
     }
 
-    private boolean isSelf(MessageNew message) {
+    private boolean isSelf(Message message) {
         return message.getFrom().equals(ownerName);
     }
 
@@ -61,7 +63,7 @@ public class SecumMessageAdapter extends RecyclerView.Adapter<SecumMessageAdapte
 
     @Override
     public void onBindViewHolder(TextMessageViewHolder textMessageViewHolder, int position) {
-        MessageNew message = messageList.get(position);
+        Message message = messageList.get(position);
         textMessageViewHolder.txtTime.setText(TimestampConverter.fromLongHourMinuteOnly(message
                 .getTime()));
         textMessageViewHolder.txtContent.setText(message.getContent());
@@ -72,12 +74,8 @@ public class SecumMessageAdapter extends RecyclerView.Adapter<SecumMessageAdapte
         return messageList.size();
     }
 
-    public void replaceItems(List<MessageNew> newMessages) {
+    public void replaceItems(List<Message> newMessages) {
         this.messageList = newMessages;
-        notifyDataSetChanged();
-    }
-    public void appendItems(List<MessageNew> newMessages) {
-        this.messageList.addAll(newMessages);
         notifyDataSetChanged();
     }
 

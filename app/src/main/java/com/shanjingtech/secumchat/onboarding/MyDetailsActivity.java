@@ -2,6 +2,7 @@ package com.shanjingtech.secumchat.onboarding;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -15,6 +16,7 @@ import com.shanjingtech.secumchat.SecumBaseActivity;
 import com.shanjingtech.secumchat.SecumChatActivity;
 import com.shanjingtech.secumchat.model.UpdateUserRequest;
 import com.shanjingtech.secumchat.model.User;
+import com.shanjingtech.secumchat.model.UserNew;
 import com.shanjingtech.secumchat.util.Constants;
 import com.wefika.horizontalpicker.HorizontalPicker;
 
@@ -123,38 +125,42 @@ public class MyDetailsActivity extends SecumBaseActivity {
             String age = agesArray[agePicker.getSelectedItem()];
             String gender = isMale ? Constants.MALE : Constants.FEMALE;
 
-            User user = new User();
-            user.setUsername(nickname);
-            currentUserProvider.setUser(user);
-            Intent intent = new Intent(MyDetailsActivity.this, ConversationPreviewActivity.class);
+//            User user = new User();
+//            user.setUsername(nickname);
+//            currentUserProvider.setUser(user);
+//            Intent intent = new Intent(MyDetailsActivity.this, ConversationPreviewActivity.class);
 //                        intent.putExtra(Constants.CURRENT_USER, user);
-            startActivity(intent);
+//            startActivity(intent);
 
-//            secumAPI.updateUser(
-//                    new UpdateUserRequest.Builder()
-//                            .setNickname(nickname)
-//                            .setAge(age)
-//                            .setGender(gender)
-//                            .build()
-//            ).enqueue(new Callback<User>() {
-//                @Override
-//                public void onResponse(Call<User> call, Response<User> response) {
-//                    if (response.isSuccessful()) {
-//                        User user = response.body();
-//                        currentUserProvider.setUser(user);
-//                        Intent intent = new Intent(MyDetailsActivity.this, SecumChatActivity
-//                                .class);
-////                        intent.putExtra(Constants.CURRENT_USER, user);
-//                        startActivity(intent);
-//                        finish();
-//                    }
-//                }
-//
-//                @Override
-//                public void onFailure(Call<User> call, Throwable t) {
-//                    showToast(getResources().getString(R.string.general_error));
-//                }
-//            });
+            secumAPI.updateUser(
+                    new UpdateUserRequest.Builder()
+                            .setNickname(nickname)
+                            .setAge(age)
+                            .setGender(gender)
+                            .build()
+            ).enqueue(new Callback<UserNew>() {
+                @Override
+                public void onResponse(Call<UserNew> call, Response<UserNew> response) {
+
+                    if (response.isSuccessful()) {
+                        Log.d("BGLM", "Update user success");
+                        User user = response.body().userInfo;
+                        Log.d("BGLM", "setting user with nickame:" + user.getNickname() + " and userId: " + user.userId);
+                        currentUserProvider.setUser(user);
+                        Intent intent = new Intent(MyDetailsActivity.this, SecumChatActivity
+                                .class);
+                        startActivity(intent);
+                    } else {
+                        Log.d("BGLM", "Update user failure");
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<UserNew> call, Throwable t) {
+                    Log.d("BGLM", "Update user failure");
+                    showToast(getResources().getString(R.string.general_error));
+                }
+            });
         }
     }
 

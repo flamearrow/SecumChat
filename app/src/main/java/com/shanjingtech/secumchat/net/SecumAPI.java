@@ -123,7 +123,7 @@ public interface SecumAPI {
 
     @Headers("Content-Type: application/json")
     @POST(Constants.PATH_UPDATE_USER)
-    Call<User> updateUser(@Body UpdateUserRequest request);
+    Call<UserNew> updateUser(@Body UpdateUserRequest request);
 
     @Headers("Content-Type: application/json")
     @POST(Constants.PATH_REPORT)

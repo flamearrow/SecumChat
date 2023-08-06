@@ -26,6 +26,6 @@ dependencies {
     })
     api 'androidx.appcompat:appcompat:1.0.0'
     api 'io.pristine:libjingle:11139@aar'
-    api group: 'com.pubnub', name: 'pubnub-gson', version: '4.5.0'
+    api group: 'com.pubnub', name: 'pubnub-gson', version: '6.3.6'
     testImplementation 'junit:junit:4.12'
 }

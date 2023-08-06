@@ -24,25 +24,13 @@ public class PnRTCClient {
     /**
      * pub, sub, sec key are all required.
      * Need to set secure to false.
-     *
-     * @param pubKey
-     * @param subKey
-     * @param secKey
-     * @param UUID
      */
-    public PnRTCClient(String pubKey, String subKey, String secKey, String UUID) {
-        this(pubKey, subKey, secKey, UUID, PnSignalingParams.defaultInstance());
+    public PnRTCClient(PubNub pubnub) {
+        this(pubnub, PnSignalingParams.defaultInstance());
     }
 
-    public PnRTCClient(String pubKey, String subKey, String secKey, String UUID,
-                       PnSignalingParams signalingParams) {
-        PNConfiguration pnConfiguration = new PNConfiguration();
-        pnConfiguration.setSubscribeKey(subKey);
-        pnConfiguration.setPublishKey(pubKey);
-        pnConfiguration.setSecretKey(secKey);
-        pnConfiguration.setSecure(false);
-        pnConfiguration.setUuid(UUID);
-        this.mPubNub = new PubNub(pnConfiguration);
+    public PnRTCClient(PubNub pubnub, PnSignalingParams signalingParams) {
+        this.mPubNub = pubnub;
         this.pnSignalingParams = signalingParams;
         this.pcClient = new PnPeerConnectionClient(this.mPubNub, this.pnSignalingParams);
     }

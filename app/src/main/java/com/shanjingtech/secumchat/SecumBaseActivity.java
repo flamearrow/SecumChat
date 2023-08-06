@@ -117,7 +117,6 @@ public class SecumBaseActivity
      * settings page.
      */
     protected void requestCameraAudioLocationPermissions() {
-        // 你说前半生就这样吧还有明天
         if (needToRequestPermission()) {
             requestAudioPermission();
         }

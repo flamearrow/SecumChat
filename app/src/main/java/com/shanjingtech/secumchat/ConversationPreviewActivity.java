@@ -1,16 +1,17 @@
 package com.shanjingtech.secumchat;
 
-import androidx.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.shanjingtech.secumchat.db.ConversationPreview;
 import com.shanjingtech.secumchat.db.TimestampConverter;
@@ -50,15 +51,14 @@ public class ConversationPreviewActivity extends SecumTabbedActivity {
         recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        conversationPreviewListViewModel = ViewModelProviders.of(this).get
+        conversationPreviewListViewModel = new ViewModelProvider(this).get
                 (ConversationPreviewListViewModel.class);
 
         ConversationAdapter conversationAdapter = new ConversationAdapter();
-//        conversationPreviewListViewModel.getConversationPreviews(currentUserProvider.getUser()
-//                .getUsername())
-//                .observe(
-//                        this,
-//                        items -> conversationAdapter.replaceItems(items));
+        conversationPreviewListViewModel.getConversationPreviews(currentUserProvider.getUser().userId)
+                .observe(
+                        this,
+                        conversationAdapter::replaceItems);
 
         recyclerView.setAdapter(conversationAdapter);
 

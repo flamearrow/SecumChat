@@ -95,7 +95,7 @@ public class SecumDebugAPI implements SecumAPI {
     }
 
     @Override
-    public Call<User> updateUser(UpdateUserRequest request) {
+    public Call<UserNew> updateUser(UpdateUserRequest request) {
         return null;
     }
 

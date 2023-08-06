@@ -1,15 +1,11 @@
 package com.shanjingtech.secumchat;
 
+import static com.shanjingtech.secumchat.util.Constants.PROFILE_USER_ID;
+
 import android.app.SearchManager;
-
-import androidx.lifecycle.ViewModelProviders;
-
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
-
-import androidx.appcompat.app.AlertDialog;
-
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -20,8 +16,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
-import com.shanjingtech.secumchat.db.GroupId;
+import androidx.appcompat.app.AlertDialog;
+import androidx.lifecycle.ViewModelProviders;
+
 import com.shanjingtech.secumchat.message.SecumMessageActivity;
 import com.shanjingtech.secumchat.model.AddContactRequest;
 import com.shanjingtech.secumchat.model.BlockContactRequest;
@@ -31,7 +28,7 @@ import com.shanjingtech.secumchat.model.GenericResponse;
 import com.shanjingtech.secumchat.model.GetInfoRequest;
 import com.shanjingtech.secumchat.model.MessageGroup;
 import com.shanjingtech.secumchat.model.UpdateUserRequest;
-import com.shanjingtech.secumchat.model.User;
+import com.shanjingtech.secumchat.model.UserNew;
 import com.shanjingtech.secumchat.model.UserPublicInfo;
 import com.shanjingtech.secumchat.net.FirebaseImageUploader;
 import com.shanjingtech.secumchat.util.Constants;
@@ -46,9 +43,6 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
-import static com.shanjingtech.secumchat.util.Constants.PROFILE_USER_ID;
-import static com.shanjingtech.secumchat.util.Constants.PROFILE_USER_NAME;
 
 /**
  * ProfileActivity displays a user(myself, contacts or search results) from DB, note before
@@ -353,11 +347,11 @@ public class ProfileActivity extends SecumBaseActivity implements IPickResult {
                     public void onLoadSuccess(String imageUrl) {
                         Log.d(TAG, "image load succeed: " + getMyName() + ", url: " + imageUrl);
                         secumAPI.updateUser(new UpdateUserRequest.Builder().setProfileImageUrl
-                                (imageUrl).build()).enqueue(new Callback<User>() {
+                                (imageUrl).build()).enqueue(new Callback<UserNew>() {
                             @Override
-                            public void onResponse(Call<User> call, Response<User> response) {
+                            public void onResponse(Call<UserNew> call, Response<UserNew> response) {
                                 if (response.isSuccessful()) {
-                                    currentUserProvider.setUser(response.body());
+                                    currentUserProvider.setUser(response.body().userInfo);
                                     Toast.makeText(ProfileActivity.this, getResources().getString(R
                                             .string
                                             .avatar_update_success), Toast.LENGTH_SHORT).show();
@@ -370,7 +364,7 @@ public class ProfileActivity extends SecumBaseActivity implements IPickResult {
                             }
 
                             @Override
-                            public void onFailure(Call<User> call, Throwable t) {
+                            public void onFailure(Call<UserNew> call, Throwable t) {
                                 Toast.makeText(ProfileActivity.this, getResources().getString(R
                                         .string
                                         .avatar_update_failure), Toast.LENGTH_SHORT).show();

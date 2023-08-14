@@ -81,7 +81,6 @@
             android:configChanges="orientation|keyboardHidden"
             android:noHistory="true"
             android:screenOrientation="portrait"
-            android:theme="@style/SplashTheme"
             android:exported="true">
 
             <intent-filter>
@@ -93,20 +92,18 @@
 
         <activity android:name=".DebugActivity"
             android:exported="true">
-<!--            <intent-filter>-->
-<!--                <action android:name="android.intent.action.MAIN"/>-->
-<!--                <category android:name="android.intent.category.LAUNCHER"/>-->
-<!--            </intent-filter>-->
         </activity>
 
         <activity
-            android:name=".contacts.ContactsActivity"
-            android:theme="@style/ListTheme">
+            android:name=".contacts.ContactsActivity">
+<!--            android:theme="@style/ListTheme"-->
+
         </activity>
         <activity
             android:name=".ProfileActivity"
-            android:theme="@style/ProfileTheme"
             android:exported="true">
+<!--            android:theme="@style/ProfileTheme"-->
+
             <meta-data
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable"/>
@@ -119,9 +116,8 @@
             android:name=".message.SecumMessageActivity">
         </activity>
         <activity
-            android:name=".ConversationPreviewActivity"
-            android:theme="@style/ListTheme">
-
+            android:name=".ConversationPreviewActivity">
+<!--            android:theme="@style/ListTheme"-->
 
         </activity>
 

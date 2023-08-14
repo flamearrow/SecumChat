@@ -5,8 +5,8 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.shanjingtech.secumchat.ConversationPreviewActivity;
+import com.shanjingtech.secumchat.R;
 import com.shanjingtech.secumchat.SecumBaseActivity;
-import com.shanjingtech.secumchat.SecumChatActivity;
 import com.shanjingtech.secumchat.model.PingResponse;
 import com.shanjingtech.secumchat.model.User;
 import com.shanjingtech.secumchat.model.UserNew;
@@ -24,6 +24,7 @@ public class SplashActivity extends SecumBaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.splash_activity);
         // use existing oauth token to ping server, if it's valid, go to chat,
         // otherwise go onboarding
         try {

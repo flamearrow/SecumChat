@@ -3,15 +3,15 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/lemon_yellow</item>
-        <item name="colorPrimaryDark">@color/dark_yellow</item>
-        <item name="colorAccent">@color/light_purple</item>
-        <item name="android:windowBackground">@color/lemon_yellow</item>
+<!--        <item name="colorPrimary">@color/lemon_yellow</item>-->
+<!--        <item name="colorPrimaryDark">@color/dark_yellow</item>-->
+<!--        <item name="colorAccent">@color/light_purple</item>-->
+<!--        <item name="android:windowBackground">@color/lemon_yellow</item>-->
     </style>
 
-    <style name="SplashTheme" parent="Theme.AppCompat.NoActionBar">
-        <item name="android:windowBackground">@drawable/splash_screen</item>
-    </style>
+<!--    <style name="SplashTheme" parent="Theme.AppCompat.NoActionBar">-->
+<!--        <item name="android:windowBackground">@drawable/splash_screen_new</item>-->
+<!--    </style>-->
 
     <!-- Theme for list such as contacts and conservation -->
     <style name="ListTheme" parent="Theme.AppCompat.Light">

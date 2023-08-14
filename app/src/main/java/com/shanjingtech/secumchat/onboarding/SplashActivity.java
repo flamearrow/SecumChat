@@ -87,7 +87,6 @@ public class SplashActivity extends SecumBaseActivity {
     }
 
     private void startOnboarding() {
-        Intent intent = new Intent(SplashActivity.this, PhoneNumActivity.class);
-        startActivity(intent);
+        startActivity(new Intent(SplashActivity.this, PhoneNumActivity.class));
     }
 }

@@ -101,4 +101,16 @@
     <string name="send">Send</string>
     <string name="avatar_update_success">Avatar update success!</string>
     <string name="avatar_update_failure">Avatar update failure, check your network!</string>
+
+    <!-- AI update-->
+    <string name="welcome_header">Welcome to AI Mars</string>
+    <string name="login_to_continue">Login in to continue</string>
+    <string name="enter_your_mobile_number">Enter your \nmobile number</string>
+    <string name="we_will_send_verification_code">We will send you verification code</string>
+    <string name="we_will_send_to">We sent it to the number </string>
+    <string name="next">Next</string>
+    <string name="did_not_get_code">Didn\'t receive any code? </string>
+    <string name="resend_code">Resend Code</string>
+    <string name="verification_resent">The verification code is resent</string>
+    <string name="something_went_wrong">Something went wrong, try again later</string>
 </resources>

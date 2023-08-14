@@ -46,6 +46,15 @@ public class AccessCodeLayout extends GridLayout implements
     }
 
 
+    @Override
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+        tt1.setEnabled(enabled);
+        tt2.setEnabled(enabled);
+        tt3.setEnabled(enabled);
+        tt4.setEnabled(enabled);
+    }
+
     public String getAccessCode() {
         StringBuilder sb = new StringBuilder();
         sb.append(tt1.getText().toString())

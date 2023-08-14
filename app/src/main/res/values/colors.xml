@@ -24,4 +24,11 @@
     <color name="light_purple">#7B47D8</color>
     <color name="mid_purple">#6032B1</color>
     <color name="dark_purple">#562D9F</color>
+
+
+    <!--    ai colors-->
+    <color name="cyan_light">#93D5DC</color>
+    <color name="cyan_dark">#78B4BB</color>
+    <color name="light_grey">#F2F2F2</color>
+    <color name="dark_grey">#D8D8D8</color>
 </resources>

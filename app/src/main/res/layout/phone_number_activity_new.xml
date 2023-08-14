@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:ccp="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/light_grey"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginTop="100dp"
+            android:importantForAccessibility="no"
+            android:src="@drawable/cat_head_new" />
+
+        <TextView
+            android:id="@+id/header"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/onboarding_vertical_margin"
+            android:text="@string/welcome_header"
+            android:textColor="@color/black"
+            android:textSize="30sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/login_to_continue"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@drawable/welcome_bottom_border"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:padding="@dimen/onboarding_side_margin_thin">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/enter_your_mobile_number"
+            android:textColor="@color/black"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/send_to_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="8dp"
+            android:text="@string/we_will_send_verification_code"
+            android:textSize="14sp" />
+
+        <LinearLayout
+            android:id="@+id/phone_number_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/edit_text_border"
+            android:gravity="center"
+            android:padding="10dp"
+            android:visibility="visible">
+
+            <com.shanjingtech.countrycodepicker.CountryCodePicker
+                android:id="@+id/country_code"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                ccp:ccpLanguage="ENGLISH"
+                ccp:defaultNameCode="us"
+                ccp:hideNameCode="true" />
+
+            <EditText
+                android:id="@+id/phone_number"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:importantForAutofill="no"
+                android:inputType="phone"
+                android:textSize="25sp"
+                tools:ignore="LabelFor" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/access_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:padding="10dp"
+            android:visibility="gone">
+
+            <com.shanjingtech.secumchat.ui.AccessCodeLayout
+                android:id="@+id/access_code"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                ccp:ccpLanguage="ENGLISH"
+                ccp:defaultNameCode="us"
+                ccp:hideNameCode="true" />
+
+            <TextView
+                android:id="@+id/did_not_get_code_field"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="11sp" />
+        </LinearLayout>
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:layout_gravity="center_horizontal">
+
+            <Button
+                android:id="@+id/next_button"
+                style="@style/OnboardingButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:enabled="false"
+                android:onClick="clickGo"
+                android:paddingHorizontal="80dp"
+                android:text="@string/next" />
+
+            <ProgressBar
+                android:id="@+id/progress_bar"
+                android:visibility="gone"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginEnd="10dp"
+                android:layout_gravity="center_vertical|end"/>
+
+        </FrameLayout>
+
+    </LinearLayout>
+
+
+</LinearLayout>

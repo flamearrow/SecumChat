@@ -10,14 +10,15 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
-import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.crashlytics.android.answers.Answers;
 import com.shanjingtech.secumchat.db.MessageDAO;
@@ -160,15 +161,29 @@ public class SecumBaseActivity
      * callback {@link #onPhoneStatePermissionGranted()}, otherwise bring user to settings page.
      */
     protected void requestPhoneStatePermissions() {
+        String[] phoneStates = {Manifest.permission.READ_PHONE_STATE, Manifest.permission.READ_SMS, Manifest.permission.READ_PHONE_NUMBERS};
         if (needToRequestPermission()) {
-            if (hasPermission(android.Manifest.permission.READ_PHONE_STATE)) {
+            if (hasPermissionsForPhoneNumber()) {
                 onPhoneStatePermissionGranted();
             } else {
-                requestPermission(
-                        Manifest.permission.READ_PHONE_STATE,
-                        Constants.PERMISSION_PHONE_STATE);
+                boolean shouldRequestPermission =
+                        ActivityCompat.shouldShowRequestPermissionRationale(this, phoneStates[0]) &&
+                                ActivityCompat.shouldShowRequestPermissionRationale(this, phoneStates[1]) &&
+                                ActivityCompat.shouldShowRequestPermissionRationale(this, phoneStates[2]);
+
+                if (shouldRequestPermission) {
+                    showBlockingPermissionDialog(Manifest.permission.READ_PHONE_STATE);
+                } else {
+                    ActivityCompat.requestPermissions(this, phoneStates, Constants.PERMISSION_PHONE_STATE);
+                }
             }
         }
+    }
+
+    private boolean hasPermissionsForPhoneNumber() {
+        return hasPermission(Manifest.permission.READ_PHONE_STATE)
+                && hasPermission(Manifest.permission.READ_SMS)
+                && hasPermission(Manifest.permission.READ_PHONE_NUMBERS);
     }
 
     /**
@@ -178,20 +193,15 @@ public class SecumBaseActivity
      * @param code       to tag a permission
      */
     @RequiresApi(api = Build.VERSION_CODES.M)
-    private boolean requestPermission(String permission, int code) {
-        if (!hasPermission(permission)) {
-            boolean shouldRequestPermission = ActivityCompat
-                    .shouldShowRequestPermissionRationale(this, permission);
-            Log.d(PERMISSION_TAG, "shouldRequestPermission: " + shouldRequestPermission);
+    private void requestPermission(String permission, int code) {
+        boolean shouldRequestPermission = ActivityCompat
+                .shouldShowRequestPermissionRationale(this, permission);
+        Log.d(PERMISSION_TAG, "shouldRequestPermission: " + shouldRequestPermission);
 
-            if (shouldRequestPermission) {
-                showBlockingPermissionDialog(permission);
-            } else {
-                ActivityCompat.requestPermissions(this, new String[]{permission}, code);
-            }
-            return false;
+        if (shouldRequestPermission) {
+            showBlockingPermissionDialog(permission);
         } else {
-            return true;
+            ActivityCompat.requestPermissions(this, new String[]{permission}, code);
         }
     }
 

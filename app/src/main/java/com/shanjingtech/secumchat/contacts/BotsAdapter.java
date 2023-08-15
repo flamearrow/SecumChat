@@ -34,8 +34,10 @@ public class BotsAdapter extends RecyclerView.Adapter {
 
     private RecyclerView recyclerView;
     private SecumAPI secumAPI;
+    private ContactsActivity activity;
 
-    public BotsAdapter(RecyclerView recyclerView, SecumAPI secumAPI) {
+    public BotsAdapter(ContactsActivity activity, RecyclerView recyclerView, SecumAPI secumAPI) {
+        this.activity = activity;
         this.recyclerView = recyclerView;
         this.secumAPI = secumAPI;
         contactRequests = new ArrayList<>();
@@ -60,9 +62,8 @@ public class BotsAdapter extends RecyclerView.Adapter {
             secumAPI.createGroup(new CreateGroupRequest(Integer.parseInt(profileUserId))).enqueue(new Callback<MessageGroup>() {
                 @Override
                 public void onResponse(Call<MessageGroup> call, Response<MessageGroup> response) {
-                    Log.d("BGLM", "create group success:" + response);
                     Intent intent = new Intent(
-                            context,
+                            activity,
                             SecumMessageActivity.class);
                     intent.putExtra(SecumMessageActivity.PEER_USER_NAME, profileUserId);
                     intent.putExtra(SecumMessageActivity.GROUP_ID, response.body().msgGrpId);

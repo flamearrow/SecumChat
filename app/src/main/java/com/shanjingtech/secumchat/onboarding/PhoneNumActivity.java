@@ -229,8 +229,6 @@ public class PhoneNumActivity extends SecumBaseActivity {
                                     response) {
                                 User user = response.body();
                                 currentUserProvider.setUser(user);
-                                Log.d("BGLM", "from PhoneNumActivity setting to userProvider " + currentUserProvider);
-                                Log.d("BGLM", "from PhoneNumActivity: setting user with ID " + user.userId);
                                 requestAccessCode();
                             }
 

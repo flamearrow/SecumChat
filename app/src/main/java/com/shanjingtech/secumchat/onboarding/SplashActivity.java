@@ -71,8 +71,6 @@ public class SplashActivity extends SecumBaseActivity {
                 if (response.isSuccessful()) {
                     User user = response.body().userInfo;
                     Intent intent = new Intent(SplashActivity.this, ConversationPreviewActivity.class);
-//                    user.setNickname("phone_+16314560722");
-                    Log.d("BGLM", "setting user with nickame:" + user.getNickname() + " and userId: " + user.userId);
                     currentUserProvider.setUser(user);
                     startActivity(intent);
 

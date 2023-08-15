@@ -23,9 +23,5 @@ public class CurrentUserProvider {
         this.user = user;
     }
 
-    public void setNewUser(NewUser newUser) {
-        this.user = new User(newUser);
-    }
-
     private User user;
 }

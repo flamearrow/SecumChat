@@ -107,8 +107,10 @@ public class SecumMessageActivity extends SecumBaseActivity implements SwipeRefr
     private void observeForMessages() {
         chatHistoryViewModel.getLiveHistoryWithGroupId(groupId).observe(this, messages -> {
             secumMessageAdapter.replaceItems(messages);
-            messageRecyclerView.smoothScrollToPosition(secumMessageAdapter.getItemCount()
-                    - 1);
+            int scrollToPosition = secumMessageAdapter.getItemCount() - 1;
+            if(scrollToPosition > 0) {
+                messageRecyclerView.smoothScrollToPosition(scrollToPosition);
+            }
         });
     }
 

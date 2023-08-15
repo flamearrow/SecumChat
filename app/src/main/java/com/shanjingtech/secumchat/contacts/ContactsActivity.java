@@ -179,7 +179,7 @@ public class ContactsActivity extends SecumTabbedActivity {
         recyclerView = findViewById(R.id.recycler_view);
         contactsType = getIntent().getStringExtra(CONTACTS_TYPE) == null ?
                 CONTACTS_TYPE_CONTACTS : getIntent().getStringExtra(CONTACTS_TYPE);
-        contactsAdapter = new BotsAdapter(recyclerView, secumAPI);
+        contactsAdapter = new BotsAdapter(this, recyclerView, secumAPI);
         recyclerView.setAdapter(contactsAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }

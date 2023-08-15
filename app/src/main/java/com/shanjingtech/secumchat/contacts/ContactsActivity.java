@@ -22,6 +22,7 @@ import com.shanjingtech.secumchat.model.ContactInfos;
 import com.shanjingtech.secumchat.model.ContactInfosValue;
 import com.shanjingtech.secumchat.model.ContactRequest;
 import com.shanjingtech.secumchat.model.PendingRequests;
+import com.shanjingtech.secumchat.util.BotUtils;
 import com.shanjingtech.secumchat.viewModels.ContactsViewModel;
 
 import java.util.ArrayList;
@@ -155,8 +156,11 @@ public class ContactsActivity extends SecumTabbedActivity {
                         }
                         List<ContactRequest> adaptedContactRequests = new LinkedList<>();
                         for (ContactInfosValue value : contactInfosValues) {
-                            Log.d("BGLM", "adding user with nickname" + value.user.getNickname());
-                            adaptedContactRequests.add(new ContactRequest(value.user));
+                            // only adding bot
+                            if (BotUtils.BOT_IDS.contains(value.user.userId)) {
+                                Log.d("BGLM", "adding bot with nickname" + value.user.getNickname());
+                                adaptedContactRequests.add(new ContactRequest(value.user));
+                            }
                         }
                         contactsAdapter.updateContacts(adaptedContactRequests);
                     }

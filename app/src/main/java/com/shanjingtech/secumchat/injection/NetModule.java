@@ -228,7 +228,6 @@ public class NetModule {
             } else {
                 String bearer = sharedPreferences.getString(Constants.SHARED_PREF_ACCESS_TOKEN, "mlgb");
                 credential = "Bearer " + bearer;
-                Log.d("BGLM", "Bearer: " + bearer);
             }
 
             // TODO: when token expires, fail fast

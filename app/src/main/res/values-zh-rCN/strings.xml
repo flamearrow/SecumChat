@@ -1,6 +1,7 @@
 <resources>
-    <string name="app_name">9喵</string>
+<!--    <string name="app_name">9喵</string>-->
 
+    <string name="app_name">AI MARS</string>
     <string name="hello_world">你好世界!</string>
     <string name="action_settings">设置</string>
     <string name="action_update_profile">设置帐号</string>

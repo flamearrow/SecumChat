@@ -17,6 +17,7 @@ import com.shanjingtech.secumchat.model.CreateGroupRequest;
 import com.shanjingtech.secumchat.model.MessageGroup;
 import com.shanjingtech.secumchat.model.User;
 import com.shanjingtech.secumchat.net.SecumAPI;
+import com.shanjingtech.secumchat.util.BotUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,10 +27,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class BotsAdapter extends RecyclerView.Adapter {
-    private static String CHATGPT_NICK_NAME = "Bot:phone_+6661";
-    private static String CHATGPT = "ChatGPT";
-    private static String MIDJOURNEY_NICK_NAME = "Bot:phone_+6662";
-    private static String MIDJOURNEY = "Midjourney";
     private List<ContactRequest> contactRequests;
 
     private RecyclerView recyclerView;
@@ -83,17 +80,7 @@ public class BotsAdapter extends RecyclerView.Adapter {
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         // offset label and pending pointer
         User contact = contactRequests.get(position).user;
-        ((ContactViewHolder) holder).name.setText(nickNameToBotName(contact.getNickname()));
-    }
-
-    private String nickNameToBotName(String nickName) {
-        if (CHATGPT_NICK_NAME.equals(nickName)) {
-            return CHATGPT;
-        } else if (MIDJOURNEY_NICK_NAME.equals(nickName)) {
-            return MIDJOURNEY;
-        } else {
-            return nickName;
-        }
+        ((ContactViewHolder) holder).name.setText(BotUtils.nickNameToBotName(contact.getNickname()));
     }
 
 

@@ -13,9 +13,10 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.shanjingtech.secumchat.db.ConversationPreview;
+import com.shanjingtech.secumchat.db.BotConversationPreview;
 import com.shanjingtech.secumchat.db.TimestampConverter;
 import com.shanjingtech.secumchat.message.SecumMessageActivity;
+import com.shanjingtech.secumchat.util.BotUtils;
 import com.shanjingtech.secumchat.viewModels.ConversationPreviewListViewModel;
 
 import java.util.ArrayList;
@@ -35,6 +36,7 @@ public class ConversationPreviewActivity extends SecumTabbedActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initializeRecyclerView();
+        observeForMessagePreviews();
     }
 
     @Override
@@ -47,6 +49,8 @@ public class ConversationPreviewActivity extends SecumTabbedActivity {
         return R.id.menu_conversation;
     }
 
+    private ConversationAdapter conversationAdapter;
+
     private void initializeRecyclerView() {
         recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -54,15 +58,18 @@ public class ConversationPreviewActivity extends SecumTabbedActivity {
         conversationPreviewListViewModel = new ViewModelProvider(this).get
                 (ConversationPreviewListViewModel.class);
 
-        ConversationAdapter conversationAdapter = new ConversationAdapter();
-        conversationPreviewListViewModel.getConversationPreviews(currentUserProvider.getUser().userId)
-                .observe(
-                        this,
-                        conversationAdapter::replaceItems);
-
+        conversationAdapter = new ConversationAdapter();
         recyclerView.setAdapter(conversationAdapter);
+    }
 
-
+    private void observeForMessagePreviews() {
+        conversationPreviewListViewModel.getBotPreviews(
+                currentUserProvider.getUser().userId).observe(this, conversationPreviews -> {
+            for (BotConversationPreview c : conversationPreviews) {
+                Log.d("BGLM", "new preview " + c);
+                conversationAdapter.replaceItems(conversationPreviews);
+            }
+        });
     }
 
     /**
@@ -70,7 +77,7 @@ public class ConversationPreviewActivity extends SecumTabbedActivity {
      */
     class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapter
             .ConversationPreviewHolder> {
-        List<ConversationPreview> conversationPreviews;
+        List<BotConversationPreview> conversationPreviews;
 
         ConversationAdapter() {
             this.conversationPreviews = new ArrayList<>();
@@ -84,22 +91,24 @@ public class ConversationPreviewActivity extends SecumTabbedActivity {
 
         @Override
         public void onBindViewHolder(ConversationPreviewHolder holder, int position) {
-            ConversationPreview conversationPreview = conversationPreviews.get(position);
-            holder.userName.setText(conversationPreview.getPeerNickName());
-            holder.lastMessage.setText(conversationPreview.getLastUnreadContent());
-            int unreadCount = conversationPreview.getUnreadCount();
-            if (unreadCount > 0) {
-                holder.unreadCount.setText("" + unreadCount);
-                holder.unreadCount.setVisibility(View.VISIBLE);
-            } else {
-                holder.unreadCount.setVisibility(View.GONE);
-            }
+            BotConversationPreview conversationPreview = conversationPreviews.get(position);
+            Log.d("BGLM", "from_username: " + conversationPreview.from_username);
+            Log.d("BGLM", "bot name: " + BotUtils.nickNameToBotName(conversationPreview.from_username));
+            holder.userName.setText(BotUtils.idToBotName(conversationPreview.from_username));
+            holder.lastMessage.setText(conversationPreview.last_message);
+//            int unreadCount = conversationPreview.getUnreadCount();
+//            if (unreadCount > 0) {
+//                holder.unreadCount.setText("" + unreadCount);
+//                holder.unreadCount.setVisibility(View.VISIBLE);
+//            } else {
+//                holder.unreadCount.setVisibility(View.GONE);
+//            }
             holder.sentTime.setText(TimestampConverter.fromLongHourMinuteOnly(
-                    conversationPreview.getTime()));
+                    conversationPreview.time));
 
-            holder.groupId = conversationPreview.getGroupId();
-            holder.peerNickName = conversationPreview.getPeerNickName();
-            holder.peerUserName = conversationPreview.getPeerUserName();
+            holder.groupId = conversationPreview.group_id;
+            holder.peerNickName = BotUtils.idToBotName(conversationPreview.from_username);
+            holder.peerUserName = conversationPreview.from_username;
         }
 
         @Override
@@ -107,7 +116,7 @@ public class ConversationPreviewActivity extends SecumTabbedActivity {
             return conversationPreviews.size();
         }
 
-        public void replaceItems(List<ConversationPreview> newConversationPreviews) {
+        public void replaceItems(List<BotConversationPreview> newConversationPreviews) {
             this.conversationPreviews = newConversationPreviews;
             notifyDataSetChanged();
         }

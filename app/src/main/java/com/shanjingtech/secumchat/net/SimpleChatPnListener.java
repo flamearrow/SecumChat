@@ -21,7 +21,7 @@ import org.jetbrains.annotations.NotNull;
 
 
 public class SimpleChatPnListener extends SubscribeCallback {
-
+    private static String TAG = "SimpleChatPnListener";
     private MessageDAO messageDAO;
 
     public SimpleChatPnListener(MessageDAO messageDAO) {
@@ -30,8 +30,8 @@ public class SimpleChatPnListener extends SubscribeCallback {
 
     @Override
     public void status(@NotNull PubNub pubnub, @NotNull PNStatus status) {
-        Log.d("BGLM", "status: " + status.getOperation());
-        Log.d("BGLM", "category: " + status.getCategory());
+        Log.d(TAG, "status: " + status.getOperation());
+        Log.d(TAG, "category: " + status.getCategory());
         switch (status.getOperation()) {
             // combine unsubscribe and subscribe handling for ease of use
             case PNSubscribeOperation:
@@ -81,31 +81,30 @@ public class SimpleChatPnListener extends SubscribeCallback {
     @Override
     public void message(@NotNull PubNub pubnub, @NotNull PNMessageResult pnMessageResult) {
         String messagePublisher = pnMessageResult.getPublisher();
-        Log.d("BGLM", "Message publisher: " + messagePublisher);
-        Log.d("BGLM", "Message Payload: " + pnMessageResult.getMessage());
-        Log.d("BGLM", "Message Subscription: " + pnMessageResult.getSubscription());
-        Log.d("BGLM", "Message Channel: " + pnMessageResult.getChannel());
-        Log.d("BGLM", "Message timetoken: " + pnMessageResult.getTimetoken());
+        Log.d(TAG, "Message publisher: " + messagePublisher);
+        Log.d(TAG, "Message Payload: " + pnMessageResult.getMessage());
+        Log.d(TAG, "Message Subscription: " + pnMessageResult.getSubscription());
+        Log.d(TAG, "Message Channel: " + pnMessageResult.getChannel());
+        Log.d(TAG, "Message timetoken: " + pnMessageResult.getTimetoken());
 
-//        Message message = new Message.Builder().setMessageId()
         messageDAO.insertMessage(Message.fromPNMessageResult(pnMessageResult));
     }
 
     @Override
     public void presence(@NotNull PubNub pubnub, @NotNull PNPresenceEventResult presence) {
-        Log.d("BGLM", "Presence Event: " + presence.getEvent());
+        Log.d(TAG, "Presence Event: " + presence.getEvent());
         // Can be join, leave, state-change or timeout
 
-        Log.d("BGLM", "Presence Channel: " + presence.getChannel());
+        Log.d(TAG, "Presence Channel: " + presence.getChannel());
         // The channel to which the message was published
 
-        Log.d("BGLM", "Presence Occupancy: " + presence.getOccupancy());
+        Log.d(TAG, "Presence Occupancy: " + presence.getOccupancy());
         // Number of users subscribed to the channel
 
-        Log.d("BGLM", "Presence State: " + presence.getState());
+        Log.d(TAG, "Presence State: " + presence.getState());
         // User state
 
-        Log.d("BGLM", "Presence UUID: " + presence.getUuid());
+        Log.d(TAG, "Presence UUID: " + presence.getUuid());
         // UUID to which this event is related
 
         presence.getJoin();
@@ -124,11 +123,11 @@ public class SimpleChatPnListener extends SubscribeCallback {
 
     @Override
     public void signal(@NotNull PubNub pubnub, @NotNull PNSignalResult signal) {
-        Log.d("BGLM", "Signal publisher: " + signal.getPublisher());
-        Log.d("BGLM", "Signal payload: " + signal.getMessage());
-        Log.d("BGLM", "Signal subscription: " + signal.getSubscription());
-        Log.d("BGLM", "Signal channel: " + signal.getChannel());
-        Log.d("BGLM", "Signal timetoken: " + signal.getTimetoken());
+        Log.d(TAG, "Signal publisher: " + signal.getPublisher());
+        Log.d(TAG, "Signal payload: " + signal.getMessage());
+        Log.d(TAG, "Signal subscription: " + signal.getSubscription());
+        Log.d(TAG, "Signal channel: " + signal.getChannel());
+        Log.d(TAG, "Signal timetoken: " + signal.getTimetoken());
     }
 
     @Override
@@ -149,25 +148,25 @@ public class SimpleChatPnListener extends SubscribeCallback {
     @Override
     public void messageAction(@NotNull PubNub pubnub, @NotNull PNMessageActionResult pnActionResult) {
         PNMessageAction pnMessageAction = pnActionResult.getMessageAction();
-        Log.d("BGLM", "faewfeawfeaw");
-        Log.d("BGLM", "Message action type: " + pnMessageAction.getType());
-        Log.d("BGLM", "Message action value: " + pnMessageAction.getValue());
-        Log.d("BGLM", "Message action uuid: " + pnMessageAction.getUuid());
-        Log.d("BGLM", "Message action actionTimetoken: " + pnMessageAction.getActionTimetoken());
-        Log.d("BGLM", "Message action messageTimetoken: " + pnMessageAction.getMessageTimetoken());
-        Log.d("BGLM", "Message action subscription: " + pnActionResult.getSubscription());
-        Log.d("BGLM", "Message action channel: " + pnActionResult.getChannel());
-        Log.d("BGLM", "Message action timetoken: " + pnActionResult.getTimetoken());
+        Log.d(TAG, "faewfeawfeaw");
+        Log.d(TAG, "Message action type: " + pnMessageAction.getType());
+        Log.d(TAG, "Message action value: " + pnMessageAction.getValue());
+        Log.d(TAG, "Message action uuid: " + pnMessageAction.getUuid());
+        Log.d(TAG, "Message action actionTimetoken: " + pnMessageAction.getActionTimetoken());
+        Log.d(TAG, "Message action messageTimetoken: " + pnMessageAction.getMessageTimetoken());
+        Log.d(TAG, "Message action subscription: " + pnActionResult.getSubscription());
+        Log.d(TAG, "Message action channel: " + pnActionResult.getChannel());
+        Log.d(TAG, "Message action timetoken: " + pnActionResult.getTimetoken());
     }
 
     @Override
     public void file(@NotNull PubNub pubnub, @NotNull PNFileEventResult pnFileEventResult) {
-        Log.d("BGLM", "File channel: " + pnFileEventResult.getChannel());
-        Log.d("BGLM", "File publisher: " + pnFileEventResult.getPublisher());
-        Log.d("BGLM", "File message: " + pnFileEventResult.getMessage());
-        Log.d("BGLM", "File timetoken: " + pnFileEventResult.getTimetoken());
-        Log.d("BGLM", "File file.id: " + pnFileEventResult.getFile().getId());
-        Log.d("BGLM", "File file.name: " + pnFileEventResult.getFile().getName());
-        Log.d("BGLM", "File file.url: " + pnFileEventResult.getFile().getUrl());
+        Log.d(TAG, "File channel: " + pnFileEventResult.getChannel());
+        Log.d(TAG, "File publisher: " + pnFileEventResult.getPublisher());
+        Log.d(TAG, "File message: " + pnFileEventResult.getMessage());
+        Log.d(TAG, "File timetoken: " + pnFileEventResult.getTimetoken());
+        Log.d(TAG, "File file.id: " + pnFileEventResult.getFile().getId());
+        Log.d(TAG, "File file.name: " + pnFileEventResult.getFile().getName());
+        Log.d(TAG, "File file.url: " + pnFileEventResult.getFile().getUrl());
     }
 }

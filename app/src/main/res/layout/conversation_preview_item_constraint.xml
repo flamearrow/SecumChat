@@ -18,9 +18,10 @@
 
         <ImageView
             android:id="@+id/avatar"
+            android:layout_centerInParent="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/cat_head"/>
+            android:src="@drawable/icon_bot"/>
 
         <TextView
             android:id="@+id/unread_count"
@@ -33,6 +34,7 @@
             android:textColor="@color/white"
             android:textSize="15sp"
             android:textStyle="bold"
+            android:visibility="gone"
             tools:text="4"/>
     </RelativeLayout>
 

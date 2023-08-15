@@ -46,7 +46,7 @@ public class SecumMessageActivity extends SecumBaseActivity implements SwipeRefr
 
 
     /**
-     * Once this is declared, PnRTCClientLifecycleObserver would trigger and subscribe to the pn channel
+     * Once this is declared, SimpleChatPnListener would trigger and subscribe to the pn channel
      */
     @Inject
     PubNub pubNub;

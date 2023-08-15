@@ -32,6 +32,7 @@ import com.shanjingtech.secumchat.model.AccessToken;
 import com.shanjingtech.secumchat.model.User;
 import com.shanjingtech.secumchat.model.UserRequest;
 import com.shanjingtech.secumchat.ui.AccessCodeLayout;
+import com.shanjingtech.secumchat.util.APIUtils;
 import com.shanjingtech.secumchat.util.Constants;
 
 import retrofit2.Call;
@@ -201,9 +202,19 @@ public class PhoneNumActivity extends SecumBaseActivity {
                                 editor.putString(Constants.SHARED_PREF_ACCESS_TOKEN, accessToken);
                                 editor.commit();
 
-                                Intent intent = new Intent(PhoneNumActivity.this, ConversationPreviewActivity.class);
-                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                startActivity(intent);
+                                APIUtils.loadBotChats(secumAPI, new APIUtils.APICallback() {
+                                    @Override
+                                    public void onSuccess() {
+                                        Intent intent = new Intent(PhoneNumActivity.this, ConversationPreviewActivity.class);
+                                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                        startActivity(intent);
+                                    }
+
+                                    @Override
+                                    public void onFailure() {
+                                        showToast(getResources().getString(R.string.something_went_wrong));
+                                    }
+                                });
                             }
 
                             @Override

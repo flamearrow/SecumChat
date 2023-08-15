@@ -105,6 +105,7 @@ public class Constants {
     public static final String PATH_CREATE_GROUP = "/api/messages/create_grp/";
     public static final String PATH_GET_INFO = "/api/users/get_info/";
 
+    public static final String LOAD_BOT_CHATS = "/api/users/load_bot_chats/";
     public static final String MALE = "male";
     public static final String FEMALE = "female";
 

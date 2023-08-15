@@ -125,7 +125,7 @@ public class SecumDebugAPI implements SecumAPI {
     }
 
     @Override
-    public Call<GenericResponse> approveContact(ApproveContactRequest request) {
+    public Call<GenericResponse> loadBotChats(ApproveContactRequest request) {
         return null;
     }
 
@@ -172,6 +172,10 @@ public class SecumDebugAPI implements SecumAPI {
         return null;
     }
 
+    @Override
+    public Call<GenericResponse> loadBotChats() {
+        return null;
+    }
 
     private class DebugCall implements Call {
         private boolean success;

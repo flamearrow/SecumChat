@@ -3,6 +3,7 @@ package com.shanjingtech.secumchat.contacts;
 import android.app.SearchManager;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -26,8 +27,10 @@ import com.shanjingtech.secumchat.util.BotUtils;
 import com.shanjingtech.secumchat.viewModels.ContactsViewModel;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -154,8 +157,20 @@ public class ContactsActivity extends SecumTabbedActivity {
                             Log.d("BGLM", "contact infos value is " + null);
                             contactInfosValues = new ArrayList<>();
                         }
+
+                        // filter dupped Contacts
+                        Set<String> idsDedupped = new HashSet<>();
+                        List<ContactInfosValue> deduppedValues = new ArrayList<>();
+
+                        for (ContactInfosValue contactInfo : contactInfosValues) {
+                            if (idsDedupped.add(contactInfo.user.userId)) {
+                                deduppedValues.add(contactInfo);
+                            }
+                        }
+
+
                         List<ContactRequest> adaptedContactRequests = new LinkedList<>();
-                        for (ContactInfosValue value : contactInfosValues) {
+                        for (ContactInfosValue value : deduppedValues) {
                             // only adding bot
                             if (BotUtils.BOT_IDS.contains(value.user.userId)) {
                                 Log.d("BGLM", "adding bot with nickname" + value.user.getNickname());

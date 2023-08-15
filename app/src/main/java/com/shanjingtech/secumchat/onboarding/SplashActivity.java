@@ -10,6 +10,7 @@ import com.shanjingtech.secumchat.SecumBaseActivity;
 import com.shanjingtech.secumchat.model.PingResponse;
 import com.shanjingtech.secumchat.model.User;
 import com.shanjingtech.secumchat.model.UserNew;
+import com.shanjingtech.secumchat.util.APIUtils;
 import com.shanjingtech.secumchat.util.SecumDebug;
 
 import retrofit2.Call;
@@ -70,16 +71,26 @@ public class SplashActivity extends SecumBaseActivity {
                 Log.d("BGLM", "getProfile success: " + response);
                 if (response.isSuccessful()) {
                     User user = response.body().userInfo;
-                    Intent intent = new Intent(SplashActivity.this, ConversationPreviewActivity.class);
-                    currentUserProvider.setUser(user);
-                    startActivity(intent);
 
+                    APIUtils.loadBotChats(secumAPI, new APIUtils.APICallback() {
+                        @Override
+                        public void onSuccess() {
+                            Intent intent = new Intent(SplashActivity.this, ConversationPreviewActivity.class);
+                            currentUserProvider.setUser(user);
+                            startActivity(intent);
+                        }
+
+                        @Override
+                        public void onFailure() {
+                            showToast(getResources().getString(R.string.something_went_wrong));
+                        }
+                    });
                 }
             }
 
             @Override
             public void onFailure(Call<UserNew> call, Throwable t) {
-                Log.d("BGLM", "getProfile error: " + t);
+                showToast(getResources().getString(R.string.something_went_wrong));
             }
         });
     }

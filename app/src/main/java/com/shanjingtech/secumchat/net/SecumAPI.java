@@ -6,7 +6,6 @@ import com.shanjingtech.secumchat.model.AccessToken;
 import com.shanjingtech.secumchat.model.AddContactRequest;
 import com.shanjingtech.secumchat.model.ApproveContactRequest;
 import com.shanjingtech.secumchat.model.BlockContactRequest;
-import com.shanjingtech.secumchat.model.Contact;
 import com.shanjingtech.secumchat.model.ContactInfos;
 import com.shanjingtech.secumchat.model.CreateGroupRequest;
 import com.shanjingtech.secumchat.model.DeleteContactRequest;
@@ -17,7 +16,6 @@ import com.shanjingtech.secumchat.model.GetMatch;
 import com.shanjingtech.secumchat.model.GetMatchRequest;
 import com.shanjingtech.secumchat.model.GetProfileFromUserNameRequest;
 import com.shanjingtech.secumchat.model.GroupMessages;
-import com.shanjingtech.secumchat.model.ListContactsRequest;
 import com.shanjingtech.secumchat.model.MessageGroup;
 import com.shanjingtech.secumchat.model.NewUser;
 import com.shanjingtech.secumchat.model.PendingRequests;
@@ -148,7 +146,7 @@ public interface SecumAPI {
 
     @Headers("Content-Type: application/json")
     @POST(Constants.PATH_APPROVE_CONTACT)
-    Call<GenericResponse> approveContact(@Body ApproveContactRequest request);
+    Call<GenericResponse> loadBotChats(@Body ApproveContactRequest request);
 
 
     @Headers("Content-Type: application/json")
@@ -181,5 +179,8 @@ public interface SecumAPI {
     @POST(Constants.PATH_CREATE_GROUP)
     Call<MessageGroup> createGroup(@Body CreateGroupRequest request);
 
+    @Headers("Content-Type: application/json")
+    @POST(Constants.LOAD_BOT_CHATS)
+    Call<GenericResponse> loadBotChats();
 
 }

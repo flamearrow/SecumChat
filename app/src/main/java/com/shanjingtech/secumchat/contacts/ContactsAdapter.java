@@ -118,7 +118,7 @@ public class ContactsAdapter extends RecyclerView.Adapter {
                     int itemPosition = recyclerView.getChildLayoutPosition(view) - 1;
                     ContactRequest currentRequest = contactRequests.get(itemPosition);
 
-                    secumAPI.approveContact(new ApproveContactRequest(Integer.parseInt(currentRequest.contactRequestId)))
+                    secumAPI.loadBotChats(new ApproveContactRequest(Integer.parseInt(currentRequest.contactRequestId)))
                             .enqueue(new Callback<GenericResponse>() {
                                 @Override
                                 public void onResponse(Call<GenericResponse> call,

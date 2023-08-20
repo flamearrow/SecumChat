@@ -37,20 +37,20 @@
         android:gravity="center"
         android:orientation="vertical">
 
-        <!--<com.shanjingtech.secumchat.ui.SecumCounter-->
+        <!--<com.meichinijiuchiquba.secumchat.ui.SecumCounter-->
         <!--android:id="@+id/chronometer"-->
         <!--android:layout_width="wrap_content"-->
         <!--android:layout_height="wrap_content"-->
         <!--android:layout_marginLeft="40dp"-->
         <!--android:layout_marginTop="60dp"/>-->
 
-        <com.shanjingtech.secumchat.ui.HeartSecumCounter
+        <com.meichinijiuchiquba.secumchat.ui.HeartSecumCounter
             android:id="@+id/chronometer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
 
-        <com.shanjingtech.secumchat.ui.HeartMagicLayout
+        <com.meichinijiuchiquba.secumchat.ui.HeartMagicLayout
             android:id="@+id/heart"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -58,7 +58,7 @@
 
     </LinearLayout>
 
-    <com.shanjingtech.secumchat.ui.DialingReceivingWaitingLayout
+    <com.meichinijiuchiquba.secumchat.ui.DialingReceivingWaitingLayout
         android:id="@+id/drw"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />

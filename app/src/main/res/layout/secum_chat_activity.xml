@@ -21,7 +21,7 @@
         android:layout_height="match_parent"/>
 
 
-    <com.shanjingtech.secumchat.ui.PulseImageView
+    <com.meichinijiuchiquba.secumchat.ui.PulseImageView
         android:id="@+id/matching_view"
         android:layout_width="160dp"
         android:layout_height="160dp"
@@ -35,7 +35,7 @@
         app:animation_scale_start="0.9"
         app:animation_time_interpolator="overshoot"/>
 
-    <com.shanjingtech.secumchat.ui.DialingReceivingWaitingLayout
+    <com.meichinijiuchiquba.secumchat.ui.DialingReceivingWaitingLayout
         android:id="@+id/dialing_receiving_waiting"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -44,7 +44,7 @@
         android:paddingBottom="100dp"/>
 
 
-    <com.shanjingtech.secumchat.ui.HeartSecumCounter
+    <com.meichinijiuchiquba.secumchat.ui.HeartSecumCounter
         android:id="@+id/heart_secum_counter"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

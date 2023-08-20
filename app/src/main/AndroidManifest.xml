@@ -48,18 +48,18 @@
         </provider>
 
         <activity
-            android:name="com.shanjingtech.secumchat.LegacyLoginActivity"
+            android:name="com.meichinijiuchiquba.secumchat.LegacyLoginActivity"
             android:configChanges="orientation|keyboardHidden"
             android:screenOrientation="portrait">
 
         </activity>
         <activity
-            android:name="com.shanjingtech.secumchat.SecumChatActivity"
+            android:name="com.meichinijiuchiquba.secumchat.SecumChatActivity"
             android:configChanges="orientation|keyboardHidden"
             android:screenOrientation="portrait"/>
 
         <activity
-            android:name="com.shanjingtech.secumchat.onboarding.PhoneNumActivity"
+            android:name="com.meichinijiuchiquba.secumchat.onboarding.PhoneNumActivity"
             android:configChanges="orientation|keyboardHidden"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateVisible"
@@ -71,7 +71,7 @@
         </activity>
 
         <activity
-            android:name="com.shanjingtech.secumchat.onboarding.AccessCodeActivity"
+            android:name="com.meichinijiuchiquba.secumchat.onboarding.AccessCodeActivity"
             android:configChanges="orientation|keyboardHidden"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateVisible"/>

@@ -40,10 +40,10 @@
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
     </FrameLayout>
 
-    <com.shanjingtech.secumchat.message.MessageActionBoxView
+    <com.meichinijiuchiquba.secumchat.message.MessageActionBoxView
         android:id="@+id/message_box"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content">
-    </com.shanjingtech.secumchat.message.MessageActionBoxView>
+    </com.meichinijiuchiquba.secumchat.message.MessageActionBoxView>
 
 </LinearLayout>

@@ -6,7 +6,7 @@
                 android:layout_height="wrap_content"
                 android:padding="7dp">
 
-    <com.shanjingtech.secumchat.ui.CircleImageView
+    <com.meichinijiuchiquba.secumchat.ui.CircleImageView
         android:id="@+id/img_user_image"
         style="@style/CircleIconStyle"
         android:layout_alignParentStart="true"

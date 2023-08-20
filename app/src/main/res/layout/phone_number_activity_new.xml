@@ -72,7 +72,7 @@
             android:padding="10dp"
             android:visibility="visible">
 
-            <com.shanjingtech.countrycodepicker.CountryCodePicker
+            <com.meichinijiuchiquba.countrycodepicker.CountryCodePicker
                 android:id="@+id/country_code"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -100,7 +100,7 @@
             android:padding="10dp"
             android:visibility="gone">
 
-            <com.shanjingtech.secumchat.ui.AccessCodeLayout
+            <com.meichinijiuchiquba.secumchat.ui.AccessCodeLayout
                 android:id="@+id/access_code"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

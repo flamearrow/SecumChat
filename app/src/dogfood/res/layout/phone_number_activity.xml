@@ -51,7 +51,7 @@
         android:layout_marginTop="@dimen/onboarding_vertical_margin"
         android:columnCount="2">
 
-        <com.shanjingtech.countrycodepicker.CountryCodePicker
+        <com.meichinijiuchiquba.countrycodepicker.CountryCodePicker
             android:id="@+id/country_code"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

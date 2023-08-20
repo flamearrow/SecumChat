@@ -10,7 +10,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:18081605232:android:36350cde02cdcc39",
         "android_client_info": {
-          "package_name": "com.shanjingtech.secumchat"
+          "package_name": "com.meichinijiuchiquba.secumchat"
         }
       },
       "oauth_client": [
@@ -41,7 +41,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:18081605232:android:ce213d058326431f",
         "android_client_info": {
-          "package_name": "com.shanjingtech.secumchat.dogfood"
+          "package_name": "com.meichinijiuchiquba.secumchat.dogfood"
         }
       },
       "oauth_client": [

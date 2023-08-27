@@ -136,13 +136,13 @@ public class SecumBaseActivity
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     private void requestCameraPermission() {
-        if (hasPermission(android.Manifest.permission.CAMERA)) {
-            requestLocationPermission();
-        } else {
-            requestPermission(
-                    android.Manifest.permission.CAMERA,
-                    Constants.PERMISSION_CAMERA);
-        }
+//        if (hasPermission(android.Manifest.permission.CAMERA)) {
+//            requestLocationPermission();
+//        } else {
+//            requestPermission(
+//                    android.Manifest.permission.CAMERA,
+//                    Constants.PERMISSION_CAMERA);
+//        }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)

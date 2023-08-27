@@ -230,6 +230,7 @@ public class NetModule {
                 credential = "Bearer " + bearer;
             }
 
+            Log.d("BGLM", "token: " + credential);
             // TODO: when token expires, fail fast
             return request.newBuilder().header("Authorization", credential).build();
         }

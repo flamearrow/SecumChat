@@ -59,7 +59,7 @@ android {
         prod {
             applicationId = "com.meichinijiuchiquba.secumchat"
             versionName = "1.0"
-            versionCode 2
+            versionCode 3
             flavorDimensions "default"
         }
 

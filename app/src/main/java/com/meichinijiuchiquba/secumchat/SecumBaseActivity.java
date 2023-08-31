@@ -331,7 +331,11 @@ public class SecumBaseActivity
      * @return my username
      */
     protected String getMyName() {
-        return currentUserProvider.getUser().getNickname();
+        if (currentUserProvider.getUser() != null) {
+            return currentUserProvider.getUser().getNickname();
+        } else {
+            return "";
+        }
     }
 
     /**

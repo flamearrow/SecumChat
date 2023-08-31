@@ -120,7 +120,7 @@ public class SecumMessageAdapter extends RecyclerView.Adapter<SecumMessageAdapte
             txtTime.setText(TimestampConverter.fromLongHourMinuteOnly(message
                     .getTime()));
             txtContent.setText("");
-            if (shouldShowImage) {
+            if (shouldShowImage && !message.getImageUrl().isEmpty()) {
                 txtContent.setVisibility(View.GONE);
                 imgContent.setVisibility(View.VISIBLE);
                 Picasso.get().load(message.getImageUrl()).into(imgContent);

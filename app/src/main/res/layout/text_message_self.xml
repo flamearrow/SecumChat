@@ -37,6 +37,12 @@
                 android:text="Message Text"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textSize="20dp"/>
+
+            <ImageView
+                android:id="@+id/img_content"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:visibility="gone" />
         </FrameLayout>
     </LinearLayout>
 

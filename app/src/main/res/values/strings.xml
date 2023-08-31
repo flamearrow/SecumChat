@@ -114,4 +114,5 @@
     <string name="resend_code">Resend Code</string>
     <string name="verification_resent">The verification code is resent</string>
     <string name="something_went_wrong">Something went wrong, try again later</string>
+    <string name="copied_to_clipboard">Copied to clipboard</string>
 </resources>

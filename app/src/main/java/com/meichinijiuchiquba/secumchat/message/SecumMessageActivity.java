@@ -1,5 +1,7 @@
 package com.meichinijiuchiquba.secumchat.message;
 
+import static com.meichinijiuchiquba.secumchat.util.BotUtils.MIDJOURNEY_ID;
+
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
@@ -43,6 +45,7 @@ public class SecumMessageActivity extends SecumBaseActivity implements SwipeRefr
     private ChatHistoryViewModel chatHistoryViewModel;
     private SwipeRefreshLayout swipeRefreshLayout;
     private SecumMessageAdapter secumMessageAdapter;
+    private boolean shouldShowImage;
 
 
     /**
@@ -77,6 +80,11 @@ public class SecumMessageActivity extends SecumBaseActivity implements SwipeRefr
 
         // TODO: maybe create dagger scope to provide peer user
         peerUserName = getIntent().getStringExtra(PEER_USER_NAME);
+
+        shouldShowImage = MIDJOURNEY_ID.equals(peerUserName);
+        Log.d("BGLM", "should show Image? " + shouldShowImage);
+
+
         ownerName = currentUserProvider.getUser().userId;
 
         setContentView(R.layout.secum_message_activity);
@@ -97,7 +105,7 @@ public class SecumMessageActivity extends SecumBaseActivity implements SwipeRefr
 
     private void initializeRecyclerView() {
         chatHistoryViewModel = new ViewModelProvider(this).get(ChatHistoryViewModel.class);
-        secumMessageAdapter = new SecumMessageAdapter(ownerName);
+        secumMessageAdapter = new SecumMessageAdapter(ownerName, shouldShowImage);
         messageRecyclerView.setAdapter(secumMessageAdapter);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setStackFromEnd(true);
@@ -150,7 +158,7 @@ public class SecumMessageActivity extends SecumBaseActivity implements SwipeRefr
 
     @Override
     public void onRefresh() {
-        Toast.makeText(this, "onRefresh", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(this, "onRefresh", Toast.LENGTH_SHORT).show();
         swipeRefreshLayout.setRefreshing(false);
         refreshMessages();
     }

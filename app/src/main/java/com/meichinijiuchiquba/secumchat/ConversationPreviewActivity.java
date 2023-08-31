@@ -63,6 +63,9 @@ public class ConversationPreviewActivity extends SecumTabbedActivity {
     }
 
     private void observeForMessagePreviews() {
+        if (currentUserProvider.getUser() == null) {
+            return;
+        }
         conversationPreviewListViewModel.getBotPreviews(
                 currentUserProvider.getUser().userId).observe(this, conversationPreviews -> {
             for (BotConversationPreview c : conversationPreviews) {

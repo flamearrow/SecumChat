@@ -59,7 +59,7 @@ android {
         prod {
             applicationId = "com.meichinijiuchiquba.secumchat"
             versionName = "1.0"
-            versionCode 3
+            versionCode 4
             flavorDimensions "default"
         }
 
@@ -160,6 +160,9 @@ dependencies {
     annotationProcessor("javax.annotation:javax.annotation-api:1.3.2")
 
     implementation 'com.googlecode.libphonenumber:libphonenumber:8.13.18'
+
+    // picasso
+    implementation 'com.squareup.picasso:picasso:2.8'
 
 
 }

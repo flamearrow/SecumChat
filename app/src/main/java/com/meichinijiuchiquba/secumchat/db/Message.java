@@ -1,11 +1,16 @@
 package com.meichinijiuchiquba.secumchat.db;
 
+import android.util.Log;
+
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.pubnub.api.models.consumer.pubsub.PNMessageResult;
+
+import java.io.StringReader;
 
 /**
  * Message table to save meta data of all messages.
@@ -24,6 +29,8 @@ public class Message {
         private String to;
 
         private String content;
+
+        private String imageUrl;
 
         private long time;
 
@@ -60,6 +67,11 @@ public class Message {
             return this;
         }
 
+        public Builder setImageUrl(String imageUrl) {
+            this.imageUrl = imageUrl;
+            return this;
+        }
+
         public Builder setTime(long time) {
             this.time = time;
             return this;
@@ -78,6 +90,7 @@ public class Message {
             message.setFrom(from);
             message.setTo(to);
             message.setContent(content);
+            message.setImageUrl(imageUrl);
             message.setTime(time);
             message.setRead(read);
             return message;
@@ -99,7 +112,11 @@ public class Message {
     @ColumnInfo(name = "to_username")
     private String to;
 
+    @ColumnInfo(name = "content")
     private String content;
+
+    @ColumnInfo(name = "image_url")
+    private String imageUrl;
 
     private long time;
 
@@ -153,6 +170,14 @@ public class Message {
         this.content = content;
     }
 
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
     public long getTime() {
         return time;
     }
@@ -170,7 +195,6 @@ public class Message {
     }
 
 
-
     // Create from this
 //    {
 //        "packet": {
@@ -184,8 +208,11 @@ public class Message {
 //    }
     public static Message fromPNMessageResult(PNMessageResult pnMessageResult) {
         JsonObject packet = ((JsonObject) pnMessageResult.getMessage()).get("packet").getAsJsonObject();
+        JsonObject message = JsonParser.parseString(packet.get("message").getAsString()).getAsJsonObject();
+
         return new Builder()
-                .setContent(packet.get("message").getAsString())
+                .setContent(message.get("text").getAsString())
+                .setImageUrl(message.get("picture").getAsString())
                 .setFrom(packet.get("senderId").getAsString())
                 .setTo(pnMessageResult.getChannel())
                 .setOwnerName(pnMessageResult.getChannel())

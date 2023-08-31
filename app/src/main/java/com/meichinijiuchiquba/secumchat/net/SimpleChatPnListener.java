@@ -148,7 +148,6 @@ public class SimpleChatPnListener extends SubscribeCallback {
     @Override
     public void messageAction(@NotNull PubNub pubnub, @NotNull PNMessageActionResult pnActionResult) {
         PNMessageAction pnMessageAction = pnActionResult.getMessageAction();
-        Log.d(TAG, "faewfeawfeaw");
         Log.d(TAG, "Message action type: " + pnMessageAction.getType());
         Log.d(TAG, "Message action value: " + pnMessageAction.getValue());
         Log.d(TAG, "Message action uuid: " + pnMessageAction.getUuid());

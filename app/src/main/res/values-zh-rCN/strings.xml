@@ -82,4 +82,16 @@
     <string name="avatar_update_success">头像上传成功!</string>
     <string name="avatar_update_failure">头像上传失败，请检查你的网络!</string>
 
+    <!-- AI update-->
+    <string name="welcome_header">欢迎使用 AI Mars</string>
+    <string name="login_to_continue">登录以继续</string>
+    <string name="enter_your_mobile_number">输入你的手机号</string>
+    <string name="we_will_send_verification_code">我们将会发送一条验证码</string>
+    <string name="we_will_send_to">发送至了 </string>
+    <string name="next">下一步</string>
+    <string name="did_not_get_code">没有收到验证码？ </string>
+    <string name="resend_code">重新发送</string>
+    <string name="verification_resent">验证码已重新发送</string>
+    <string name="something_went_wrong">出错，请稍后重试</string>
+    <string name="copied_to_clipboard">已复制到剪贴板</string>
 </resources>
